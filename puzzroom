@@ -1,3 +1,9 @@
+mkdir squarespace-project
+cd squarespace-project
+git init
+mkdir assets
+touch puzzroom.html
+echo '
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +28,7 @@
             left: 0;
             width: 100%;
             height: 204px; /* Initial height for rows 0-3 */
-            background: url('graphics/space.png') no-repeat center top;
+            background: url("assets/space.png") no-repeat center top;
             background-size: cover;
             z-index: 0;
         }
@@ -62,7 +68,7 @@
             top: calc(100% - 25px); /* Start at the bottom of the container */
             left: 50%; /* Center horizontally */
             transform: translate(-50%, 0);
-            background: url('graphics/rat.png') no-repeat center center;
+            background: url("assets/rat.png") no-repeat center center;
             background-size: contain;
             pointer-events: all; /* Ensure it can be clicked */
         }
@@ -105,14 +111,14 @@
             <div id="line"></div>
             <script>
                 for (let i = 0; i < 81; i++) {
-                    let tile = document.createElement('div');
-                    tile.classList.add('tile');
+                    let tile = document.createElement("div");
+                    tile.classList.add("tile");
                     tile.dataset.index = i;
-                    document.getElementById('room').appendChild(tile);
+                    document.getElementById("room").appendChild(tile);
                 }
             </script>
         </div>
-        <audio id="siren" src="sounds/siren.m4a" preload="auto"></audio>
+        <audio id="siren" src="assets/siren.m4a" preload="auto"></audio>
     </div>
     <script>
         let wallLevel = 4; // Start the line above the 5th tile (4th row)
@@ -126,14 +132,14 @@
         let barriers = new Set(); // Set to keep track of barrier positions
 
         function playSiren() {
-            let siren = document.getElementById('siren');
+            let siren = document.getElementById("siren");
             siren.play();
         }
 
         function placeSwitch() {
-            let tile = document.querySelector(`.tile[data-index='${switchTile}']`);
-            let switchDiv = document.createElement('div');
-            switchDiv.classList.add('switch');
+            let tile = document.querySelector(\`.tile[data-index="\${switchTile}"]\`);
+            let switchDiv = document.createElement("div");
+            switchDiv.classList.add("switch");
             tile.appendChild(switchDiv);
         }
 
@@ -141,8 +147,8 @@
             if (gameOver) return;
 
             wallLevel++;
-            document.getElementById('line').style.top = (wallLevel * 51) + 'px';
-            document.getElementById('background').style.height = (wallLevel * 51) + 'px';
+            document.getElementById("line").style.top = (wallLevel * 51) + "px";
+            document.getElementById("background").style.height = (wallLevel * 51) + "px";
 
             if (wallLevel > 8) {
                 endGame();
@@ -159,17 +165,17 @@
             const randomIndex = Math.floor(Math.random() * validTiles.length);
             switchTile = validTiles[randomIndex];
 
-            let switchDiv = document.querySelector('.switch');
-            let tile = document.querySelector(`.tile[data-index='${switchTile}']`);
+            let switchDiv = document.querySelector(".switch");
+            let tile = document.querySelector(\`.tile[data-index="\${switchTile}"]\`);
             if (tile) {
                 tile.appendChild(switchDiv);
             }
         }
 
         function revealSwitch() {
-            let switchDiv = document.querySelector('.switch');
-            switchDiv.classList.add('golden');
-            switchDiv.style.display = 'block';
+            let switchDiv = document.querySelector(".switch");
+            switchDiv.classList.add("golden");
+            switchDiv.style.display = "block";
         }
 
         function getAdjacentTiles(index) {
@@ -186,15 +192,15 @@
         }
 
         function spinAndFloatRat() {
-            let switchDiv = document.querySelector('.switch');
+            let switchDiv = document.querySelector(".switch");
             setTimeout(() => {
-                switchDiv.classList.add('flipping');
+                switchDiv.classList.add("flipping");
                 setTimeout(() => {
-                    switchDiv.classList.add('floating');
+                    switchDiv.classList.add("floating");
                     setTimeout(() => {
-                        switchDiv.classList.add('centerSpinning');
+                        switchDiv.classList.add("centerSpinning");
                         setTimeout(() => {
-                            switchDiv.style.display = 'none';
+                            switchDiv.style.display = "none";
                         }, 1000); // Make it disappear after 1 second of spinning
                     }, 1000); // Start rapid spinning after floating for 1 second
                 }, 1000); // Add floating after flip completes
@@ -219,19 +225,19 @@
         gameInterval = setInterval(shortenWall, 10000);
         ratInterval = setInterval(moveSwitch, 500); // Move the rat every 0.5 seconds
 
-        document.getElementById('room').addEventListener('click', function(event) {
-            if (event.target.classList.contains('tile')) {
+        document.getElementById("room").addEventListener("click", function(event) {
+            if (event.target.classList.contains("tile")) {
                 let tileIndex = parseInt(event.target.dataset.index);
                 if (tileIndex >= (wallLevel * 9)) { // Only tiles below the current wall level
-                    let dot = document.createElement('div');
-                    dot.classList.add('dot');
+                    let dot = document.createElement("div");
+                    dot.classList.add("dot");
                     let rect = event.target.getBoundingClientRect();
-                    dot.style.left = (event.clientX - rect.left - 5) + 'px';
-                    dot.style.top = (event.clientY - rect.top - 5) + 'px';
+                    dot.style.left = (event.clientX - rect.left - 5) + "px";
+                    dot.style.top = (event.clientY - rect.top - 5) + "px";
                     event.target.appendChild(dot);
-                    barriers.add(tileIndex); // Add the dot's position to the set of barriers
+                    barriers.add(tileIndex); // Add the dot"s position to the set of barriers
                 }
-            } else if (event.target.classList.contains('switch')) {
+            } else if (event.target.classList.contains("switch")) {
                 clearInterval(gameInterval);
                 clearInterval(ratInterval);
                 clearTimeout(sirenTimeout); // Clear the siren timeout if the switch is found
@@ -241,10 +247,16 @@
                 } else {
                     alert("You successfully picked up the rat before it got sucked out of the airlock!");
                 }
-                event.target.style.display = 'none';
+                event.target.style.display = "none";
                 gameOver = true;
             }
         });
     </script>
 </body>
 </html>
+' > index.html
+git add .
+git commit -m "Initial commit with Puzzle Room 1"
+git remote add origin <puzzroom>
+git push -u origin master
+
