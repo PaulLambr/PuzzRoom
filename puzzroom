@@ -17,3 +17,9 @@ echo '
 git add puzzroom.html
 git commit -m "Add simple Hi page"
 git push origin master
+git clone <Squarespace-Repo-URL>
+cd <Squarespace-Repo-Directory>
+cp ../PuzzRoom/puzzroom.html ./
+git add puzzroom.html
+git commit -m "Add simple Hi page"
+git push origin master
