@@ -1,8 +1,15 @@
+# Create a new directory and navigate into it
 mkdir squarespace-project
 cd squarespace-project
+
+# Initialize a new Git repository
 git init
+
+# Create an assets directory and an HTML file
 mkdir assets
-touch index.html
+touch puzzroom.html
+
+# Add your HTML content to puzzroom.html
 echo '
 <!DOCTYPE html>
 <html lang="en">
@@ -254,9 +261,16 @@ echo '
     </script>
 </body>
 </html>
-' > index.html
-git add .
-git commit -m "Initial commit with Puzzle Room 1"
-git remote add origin <puzzroom>
-git push -u origin master
+' > puzzroom.html
 
+# Add the files to Git
+git add .
+
+# Commit the changes
+git commit -m "Initial commit with Puzzle Room 1"
+
+# Add the remote repository (replace <Your-GitHub-Repo-URL> with your actual GitHub repository URL)
+git remote add origin <https://github.dev/PaulLambr/PuzzRoom/blob/main/puzzroom>
+
+# Push the changes to GitHub
+git push -u origin master
