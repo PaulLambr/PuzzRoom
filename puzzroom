@@ -270,7 +270,7 @@ git add .
 git commit -m "Initial commit with Puzzle Room 1"
 
 # Add the remote repository (replace <Your-GitHub-Repo-URL> with your actual GitHub repository URL)
-git remote add origin <https://github.dev/PaulLambr/PuzzRoom/blob/main/puzzroom>
+git remote add origin <puzzroom>
 
 # Push the changes to GitHub
 git push -u origin master
