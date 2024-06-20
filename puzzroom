@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9x9 Tile Room</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #container {
+            position: relative;
+            width: 459px; /* 9 tiles * 50px + 8 gaps (1px each) */
+            height: 459px; /* 9 tiles * 50px + 8 gaps (1px each) */
+            background-color: grey;
+        }
+        #background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 204px; /* Initial height for rows 0-3 */
+            background: url('graphics/space.png') no-repeat center top;
+            background-size: cover;
+            z-index: 0;
+        }
+        #room {
+            display: grid;
+            grid-template-columns: repeat(9, 50px);
+            grid-template-rows: repeat(9, 50px);
+            gap: 1px;
+            position: relative;
+        }
+        .tile {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+            position: relative;
+        }
+        #line {
+            grid-column: 1 / 10;
+            border-top: 2px solid black;
+            height: 0;
+            z-index: 1;
+            position: absolute;
+            width: 100%;
+            top: 204px; /* Position the line above the 5th tile */
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            border-radius: 50%;
+            position: absolute;
+        }
+        .switch {
+            width: 25px; /* 50% of 50px tile size */
+            height: 25px; /* 50% of 50px tile size */
+            position: absolute;
+            top: calc(100% - 25px); /* Start at the bottom of the container */
+            left: 50%; /* Center horizontally */
+            transform: translate(-50%, 0);
+            background: url('graphics/rat.png') no-repeat center center;
+            background-size: contain;
+            pointer-events: all; /* Ensure it can be clicked */
+        }
+        .golden {
+            background-color: gold;
+        }
+        .spinning {
+            animation: spin 9s linear;
+        }
+        .flipping {
+            animation: flip 1s linear forwards;
+        }
+        .floating {
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%);
+            transition: top 1s linear, left 1s linear;
+        }
+        .centerSpinning {
+            animation: centerSpin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg) translate(-50%, 0); }
+            100% { transform: rotate(360deg) translate(-50%, 0); }
+        }
+        @keyframes flip {
+            0% { transform: rotate(0deg) translate(-50%, 0); }
+            100% { transform: rotate(180deg) translate(-50%, 0); }
+        }
+        @keyframes centerSpin {
+            0% { transform: rotate(0deg) translate(-50%, -50%); }
+            100% { transform: rotate(360deg) translate(-50%, -50%); }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="background"></div>
+        <div id="room">
+            <div id="line"></div>
+            <script>
+                for (let i = 0; i < 81; i++) {
+                    let tile = document.createElement('div');
+                    tile.classList.add('tile');
+                    tile.dataset.index = i;
+                    document.getElementById('room').appendChild(tile);
+                }
+            </script>
+        </div>
+        <audio id="siren" src="sounds/siren.m4a" preload="auto"></audio>
+    </div>
+    <script>
+        let wallLevel = 4; // Start the line above the 5th tile (4th row)
+        let switchTile = Math.floor(Math.random() * 9) + 36; // Random tile index for the switch in the 5th row
+        let gameInterval;
+        let ratInterval;
+        let sirenTimeout;
+        let gameOver = false;
+        let switchFound = false;
+        let spinning = false;
+        let barriers = new Set(); // Set to keep track of barrier positions
+
+        function playSiren() {
+            let siren = document.getElementById('siren');
+            siren.play();
+        }
+
+        function placeSwitch() {
+            let tile = document.querySelector(`.tile[data-index='${switchTile}']`);
+            let switchDiv = document.createElement('div');
+            switchDiv.classList.add('switch');
+            tile.appendChild(switchDiv);
+        }
+
+        function shortenWall() {
+            if (gameOver) return;
+
+            wallLevel++;
+            document.getElementById('line').style.top = (wallLevel * 51) + 'px';
+            document.getElementById('background').style.height = (wallLevel * 51) + 'px';
+
+            if (wallLevel > 8) {
+                endGame();
+            } else {
+                moveSwitch();
+            }
+        }
+
+        function moveSwitch() {
+            if (spinning) return; // Prevent movement when the rat is spinning
+            const adjacentTiles = getAdjacentTiles(switchTile);
+            const validTiles = adjacentTiles.filter(index => !barriers.has(index)); // Filter out tiles with barriers
+            if (validTiles.length === 0) return; // No valid moves if all adjacent tiles are barriers
+            const randomIndex = Math.floor(Math.random() * validTiles.length);
+            switchTile = validTiles[randomIndex];
+
+            let switchDiv = document.querySelector('.switch');
+            let tile = document.querySelector(`.tile[data-index='${switchTile}']`);
+            if (tile) {
+                tile.appendChild(switchDiv);
+            }
+        }
+
+        function revealSwitch() {
+            let switchDiv = document.querySelector('.switch');
+            switchDiv.classList.add('golden');
+            switchDiv.style.display = 'block';
+        }
+
+        function getAdjacentTiles(index) {
+            let adjacentTiles = [];
+            const row = Math.floor(index / 9);
+            const col = index % 9;
+
+            if (col > 0 && (index - 1) >= (wallLevel * 9)) adjacentTiles.push(index - 1); // Left
+            if (col < 8 && (index + 1) >= (wallLevel * 9)) adjacentTiles.push(index + 1); // Right
+            if (row >= wallLevel && (index - 9) >= (wallLevel * 9)) adjacentTiles.push(index - 9); // Up
+            if (row < 8) adjacentTiles.push(index + 9); // Down
+
+            return adjacentTiles;
+        }
+
+        function spinAndFloatRat() {
+            let switchDiv = document.querySelector('.switch');
+            setTimeout(() => {
+                switchDiv.classList.add('flipping');
+                setTimeout(() => {
+                    switchDiv.classList.add('floating');
+                    setTimeout(() => {
+                        switchDiv.classList.add('centerSpinning');
+                        setTimeout(() => {
+                            switchDiv.style.display = 'none';
+                        }, 1000); // Make it disappear after 1 second of spinning
+                    }, 1000); // Start rapid spinning after floating for 1 second
+                }, 1000); // Add floating after flip completes
+            }, 2000); // Wait 2 seconds before starting the flip and float
+        }
+
+        // When the game is over and the wall reaches the bottom, start the spinning and floating animation
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(ratInterval);
+            spinAndFloatRat();
+            spinning = true;
+            setTimeout(() => {
+                alert("Aww... Because of your poor coordination, Slim the Space Rat is now hurtling through the cosmos.");
+            }, 10000); // Delay alert to match animation duration
+            gameOver = true;
+        }
+
+        placeSwitch();
+        sirenTimeout = setTimeout(playSiren, 10000); // Play the siren after 10 seconds
+
+        gameInterval = setInterval(shortenWall, 10000);
+        ratInterval = setInterval(moveSwitch, 500); // Move the rat every 0.5 seconds
+
+        document.getElementById('room').addEventListener('click', function(event) {
+            if (event.target.classList.contains('tile')) {
+                let tileIndex = parseInt(event.target.dataset.index);
+                if (tileIndex >= (wallLevel * 9)) { // Only tiles below the current wall level
+                    let dot = document.createElement('div');
+                    dot.classList.add('dot');
+                    let rect = event.target.getBoundingClientRect();
+                    dot.style.left = (event.clientX - rect.left - 5) + 'px';
+                    dot.style.top = (event.clientY - rect.top - 5) + 'px';
+                    event.target.appendChild(dot);
+                    barriers.add(tileIndex); // Add the dot's position to the set of barriers
+                }
+            } else if (event.target.classList.contains('switch')) {
+                clearInterval(gameInterval);
+                clearInterval(ratInterval);
+                clearTimeout(sirenTimeout); // Clear the siren timeout if the switch is found
+                switchFound = true;
+                if (spinning) {
+                    alert("Too Late!");
+                } else {
+                    alert("You successfully picked up the rat before it got sucked out of the airlock!");
+                }
+                event.target.style.display = 'none';
+                gameOver = true;
+            }
+        });
+    </script>
+</body>
+</html>
