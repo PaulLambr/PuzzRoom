@@ -2,7 +2,7 @@ mkdir squarespace-project
 cd squarespace-project
 git init
 mkdir assets
-touch puzzroom.html
+touch index.html
 echo '
 <!DOCTYPE html>
 <html lang="en">
