@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J Quest - Tower 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <script src="sharedtest3.js"></script> <!-- Reference to sharedtest3.js -->
+</head>
+<body>
+    <script>
+        const configBridge = {
+            type: Phaser.CANVAS,
+            width: 1800,
+            height: 1300,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        window.game = new Phaser.Game(configBridge);
+
+        let sprite;
+        let cursors;
+        let rectangleZone;
+        let rectangleZone2; // Zone for collision
+        let mirrorAddedToInventory = false; // Track if mirror is added to inventory
+        let hashmarkGraphics; // Hashmark graphics
+        let hashmarkText = []; // Hashmark text storage
+        let hashmarksVisible = false; // Initially hide hashmarks
+
+        const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 }; // Adjust as per your panel
+
+        function preload() {
+            // Load the background, character, and item images
+            this.load.image('background', 'graphics/tower.png');
+            this.load.image('parchment_bg', 'graphics/parchment_bg.png');
+            this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
+            this.load.image('amulet', 'graphics/graks_amulet.png');
+            this.load.image('rope', 'graphics/rope.png');
+            this.load.image('mirror', 'graphics/mirror.png');
+
+            // Fetch and load inventory items from the JSON file
+            fetch('inventory-library.json')
+                .then(response => response.json())
+                .then(data => {
+                    data.items.forEach(item => {
+                        this.load.image(item.name, item.img);
+                    });
+                })
+                .catch(error => console.error('Error loading inventory library:', error));
+        }
+
+        function create() {
+            // Ensure gameInstance is set after loading completes
+            gameInstance = this;  // Set gameInstance to the current scene
+
+            this.add.image(750, 450, 'background'); // Center the background in the game window
+
+            // Load the sprite's previous coordinates from localStorage, if available
+            const savedX = localStorage.getItem('spriteX');
+            const savedY = localStorage.getItem('spriteY');
+            const startX = savedX ? parseFloat(savedX) : 100;
+            const startY = savedY ? parseFloat(savedY) : 525;
+
+            sprite = this.physics.add.sprite(startX, startY, 'character');
+            sprite.setScale(3); // Scale up the sprite
+
+            this.anims.create({
+                key: 'walk',
+                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            cursors = this.input.keyboard.createCursorKeys();
+            
+            rectangleZone2 = this.add.zone(680, 150, 100, 200).setRectangleDropZone(100, 200);
+            rectangleZone2.setInteractive();
+
+            rectangleZone2.on('pointerdown', () => {
+                showMessage("This torch is firmly cemented in place.", this);
+            });
+
+            // Create the rectangle zone as a physics object for collision
+            rectangleZone2 = this.add.zone(1350, 50, 200, 50); // Create the zone
+            this.physics.world.enable(rectangleZone2); // Enable physics for the zone
+            rectangleZone2.body.setAllowGravity(false); // Disable gravity for the zone
+            rectangleZone2.body.moves = false; // Make sure the zone doesn't move
+
+            // Check for overlap between sprite and zone
+            this.physics.add.overlap(sprite, rectangleZone2, transitionToTower2, null, this);
+
+            // Initialize the inventory only after the inventory container has been created
+            createInventory(this);
+
+            // Initialize hashmark functionality
+            hashmarkGraphics = this.add.graphics();
+
+            // Add a key listener to toggle hashmarks with the 'H' key
+            this.input.keyboard.on('keydown-H', toggleHashmarks, this);
+
+            // Enable drag and drop for inventory items
+            this.input.on('dragstart', (pointer, gameObject) => {
+                gameObject.setScale(0.28); // Scale up slightly when dragging starts
+                gameObject.originalX = gameObject.x; // Store the original X position
+                gameObject.originalY = gameObject.y; // Store the original Y position
+            });
+
+            this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+            });
+
+            this.input.on('dragend', (pointer, gameObject) => {
+                gameObject.setScale(0.15); // Restore the original scale
+
+                const itemBounds = gameObject.getBounds();
+
+                // Check if the item is still inside the inventory panel bounds
+                if (
+                    itemBounds.right <= inventoryPanel.x + inventoryPanel.width &&
+                    itemBounds.left >= inventoryPanel.x &&
+                    itemBounds.bottom <= inventoryPanel.y + inventoryPanel.height &&
+                    itemBounds.top >= inventoryPanel.y
+                ) {
+                    return; // No message if dropped inside the inventory
+                } else {
+                    // If dropped outside, show the warning message
+                    if (pointer.isDown) {
+                        showMessage("You can't drop the item here!", this);
+                    }
+
+                    // Return the item to its original position within the inventory panel
+                    gameObject.x = gameObject.originalX;
+                    gameObject.y = gameObject.originalY;
+                }
+            });
+
+            // Display a test message in the message panel
+            checkIntroMessage(this, "tower1","The sounds are louder out here in the tower stairwell. They seem to be coming from below where the throne room and other royal apartments are.", this);
+        }
+
+        function transitionToTower2() {
+            if (!hasTransitioned) {
+                // Save the sprite's current coordinates before transitioning
+                localStorage.setItem('spriteX', sprite.x - 1200);
+                localStorage.setItem('spriteY', sprite.y);
+                hasTransitioned = true;
+                window.location.href = "tower2.html"; // Perform the transition
+            }
+        }
+
+        let hasTransitioned = false;  // Flag to prevent multiple transitions
+
+        function update() {
+            let moving = false;
+            if (cursors.left.isDown) {
+                sprite.setVelocityX(-200);
+                sprite.setFlipX(true);
+                moving = true;
+            } else if (cursors.right.isDown) {
+                sprite.setVelocityX(200);
+                sprite.setFlipX(false);
+                moving = true;
+            } else {
+                sprite.setVelocityX(0);
+            }
+
+            if (cursors.up.isDown) {
+                sprite.setVelocityY(-200);
+                moving = true;
+            } else if (cursors.down.isDown) {
+                sprite.setVelocityY(200);
+                moving = true;
+            } else {
+                sprite.setVelocityY(0);
+            }
+
+            // Move the character to "castlebedroom.html" if it moves beyond the left side
+            if (sprite.x < 0 && !hasTransitioned) {
+                // Save the sprite's current coordinates before transitioning
+                localStorage.setItem('spriteX', sprite.x + 1480);
+                localStorage.setItem('spriteY', sprite.y);
+                hasTransitioned = true;
+                window.location.href = "castlebedroom.html"; // Perform the transition
+            }
+
+            if (moving) {
+                sprite.anims.play('walk', true);
+            } else {
+                sprite.setVelocity(0, 0);
+                sprite.anims.stop();
+                sprite.setFrame(1);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // This ensures that the inventory is loaded after the game instance and container are ready
+            if (window.game && inventoryContainer) {
+                inventory.loadInventoryState(); // Load inventory from local storage
+            } else {
+                console.error("Game instance or inventory container is not initialized.");
+            }
+        });
+    </script>
+</body>
+</html>

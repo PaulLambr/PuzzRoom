@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J Quest - Castle Prairie</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <script src="sharedtest3.js"></script> <!-- Reference to sharedtest3.js -->
+</head>
+<body>
+    <script>
+        const configBridge = {
+            type: Phaser.CANVAS,
+            width: 1800,
+            height: 1300,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        window.game = new Phaser.Game(configBridge);
+
+        let sprite;
+        let cursors;
+       
+        let mirrorAddedToInventory = false; // Track if mirror is added to inventory
+        let hashmarkGraphics; // Hashmark graphics
+        let hashmarkText = []; // Hashmark text storage
+        let hashmarksVisible = false; // Initially hide hashmarks
+        let rectangleZone2;
+        let rectangleZone;
+        let torch;
+        let torchAddedToInventory = false;
+
+        // Define inventory panel bounds manually
+        const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 }; // Adjust as per your panel
+
+        function preload() {
+            // Load the background, character, and item images
+            this.load.image('background', 'graphics/castleprairie.png');
+            this.load.image('parchment_bg', 'graphics/parchment_bg.png');
+            this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
+            this.load.image('amulet', 'graphics/graks_amulet.png');
+         
+            this.load.image('mirror', 'graphics/mirror.png');
+
+            // Fetch and load inventory items from the JSON file
+            fetch('inventory-library.json')
+                .then(response => response.json())
+                .then(data => {
+                    data.items.forEach(item => {
+                        this.load.image(item.name, item.img);
+                    });
+                })
+                .catch(error => console.error('Error loading inventory library:', error));
+        }
+
+        function create() {
+            // Ensure gameInstance is set after loading completes
+            gameInstance = this;  // Assign 'this' as the current Phaser scene
+
+            this.add.image(750, 450, 'background'); // Center the background in the game window
+
+            // Load the sprite's previous coordinates from localStorage, if available
+            const savedX = localStorage.getItem('spriteX');
+            const savedY = localStorage.getItem('spriteY');
+            const startX = savedX ? parseFloat(savedX) : 100;
+            const startY = savedY ? parseFloat(savedY) : 525;
+
+            sprite = this.physics.add.sprite(startX, startY, 'character');
+            sprite.setScale(3); // Scale up the sprite
+
+            this.anims.create({
+                key: 'walk',
+                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            cursors = this.input.keyboard.createCursorKeys();
+
+           // Create an interactive rectangular zone for the mirror
+            rectangleZone = this.add.zone(650, 200, 135, 240).setRectangleDropZone(135, 240);
+            rectangleZone.setInteractive();
+
+            rectangleZone.on('pointerdown', () => {
+                if (!torchAddedToInventory) {
+                    inventory.addItem({ name: 'torch', img: 'torch' });
+                    showMessage("The torch holder is a little loose. You add the torch to your bag.", this);
+
+                    const brownBoxGraphics = this.add.graphics();
+                    brownBoxGraphics.fillStyle(0xba71d8, 1);
+                    brownBoxGraphics.fillRect(560, 73, 165, 240); // Draw the brown box
+                    rectangleZone.destroy(); // Remove the mirror zone
+                    torchAddedToInventory = true;
+                }
+            });
+            rectangleZone2 = this.add.zone(1360, 200, 135, 240).setRectangleDropZone(135, 240);
+            rectangleZone2.setInteractive();
+
+            rectangleZone2.on('pointerdown', () => {
+                showMessage("This torch is firmly cemented in place.", this);
+            });
+            // Initialize the inventory only after the inventory container has been created
+            createInventory(this);
+
+            // Initialize hashmark functionality
+            hashmarkGraphics = this.add.graphics();
+
+            // Add a key listener to toggle hashmarks with the 'H' key
+            this.input.keyboard.on('keydown-H', toggleHashmarks, this);
+
+            // Enable drag and drop for inventory items
+            this.input.on('dragstart', (pointer, gameObject) => {
+                gameObject.setScale(0.28); // Scale up slightly when dragging starts
+                gameObject.originalX = gameObject.x; // Store the original X position
+                gameObject.originalY = gameObject.y; // Store the original Y position
+            });
+
+            this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+            });
+
+            this.input.on('dragend', (pointer, gameObject) => {
+                gameObject.setScale(0.15);
+
+                const itemBounds = gameObject.getBounds();
+
+                if (
+                    itemBounds.right <= inventoryPanel.x + inventoryPanel.width &&
+                    itemBounds.left >= inventoryPanel.x &&
+                    itemBounds.bottom <= inventoryPanel.y + inventoryPanel.height &&
+                    itemBounds.top >= inventoryPanel.y
+                ) {
+                    return;
+                } else {
+                    if (pointer.isDown) {
+                        showMessage("You can't drop the item here!", this);
+                    }
+
+                    gameObject.x = gameObject.originalX;
+                    gameObject.y = gameObject.originalY;
+                }
+            });
+
+            // Display a test message in the message panel
+            checkIntroMessage(this, "castleprairie","That was a very long tunnel. Who knows how long the goblins were working on it and for what purpose?", this);
+        }
+
+        let hasTransitioned = false;  // Flag to prevent multiple transitions
+
+        function update() {
+            let moving = false;
+            if (cursors.left.isDown) {
+                sprite.setVelocityX(-200);
+                sprite.setFlipX(true);
+                moving = true;
+            } else if (cursors.right.isDown) {
+                sprite.setVelocityX(200);
+                sprite.setFlipX(false);
+                moving = true;
+            } else {
+                sprite.setVelocityX(0);
+            }
+
+            if (cursors.up.isDown) {
+                sprite.setVelocityY(-200);
+                moving = true;
+            } else if (cursors.down.isDown) {
+                sprite.setVelocityY(200);
+                moving = true;
+            } else {
+                sprite.setVelocityY(0);
+            }
+
+            // Prevent character from walking upwards beyond 450 pixels
+            if (sprite.y < 450) {
+                sprite.y = 450;
+            }
+
+            // Move the character to "diningroom.html" if it moves beyond 1500 pixels to the right
+            if (sprite.x > 1500 && !hasTransitioned) {
+                localStorage.setItem('spriteX', sprite.x - 1480);
+                localStorage.setItem('spriteY', sprite.y);
+                hasTransitioned = true;
+                window.location.href = "diningroom.html";  // Perform the transition
+            }
+
+            // Move the character to "tower2.html" if it moves beyond the left (x < 0)
+            if (sprite.x < 0 && !hasTransitioned) {
+                localStorage.setItem('spriteX', 1350);
+                localStorage.setItem('spriteY', 200);
+                hasTransitioned = true;
+                window.location.href = "tower2.html";  // Perform the transition
+            }
+
+            if (moving) {
+                sprite.anims.play('walk', true);
+            } else {
+                sprite.setVelocity(0, 0);
+                sprite.anims.stop();
+                sprite.setFrame(1);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Ensure the inventory is loaded after the game instance and container are ready
+            if (window.game && inventoryContainer) {
+                inventory.loadInventoryState(); // Load inventory from local storage
+            } else {
+                console.error("Game instance or inventory container is not initialized.");
+            }
+        });
+    </script>
+</body>
+</html>
