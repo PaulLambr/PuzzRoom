@@ -1,53 +1,25 @@
-// Phaser is now available globally via the CDN, so no import is needed
+// game.tsx
+import React, { useEffect } from 'react';
+import Phaser from 'phaser';
+import { CastleBedroomScene } from './scenes/castlebedroom';  // Corrected path
 
-// Define global game configuration
-const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.CANVAS,
-    width: 1800,
-    height: 1300,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 0 },
-            debug: false
-        }
-    },
-    scene: [],  // Scene list to be added dynamically
-};
+export default function GameComponent() {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const gameConfig: Phaser.Types.Core.GameConfig = {
+        type: Phaser.AUTO,
+        width: 1800,
+        height: 1300,
+        scene: [CastleBedroomScene], // Attach the CastleBedroomScene
+      };
 
-// Initialize the Phaser Game
-window.game = new window.Phaser.Game(config);
+      const game = new Phaser.Game(gameConfig);
 
-// Global game variables
-export let sprite: Phaser.Physics.Arcade.Sprite;
-export let cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-export let inventory: any = {}; // Initialize as empty, will load dynamically
-
-// Inventory system functions
-export const loadInventory = () => {
-    fetch('inventory-library.json')
-        .then(response => response.json())
-        .then(data => {
-            data.items.forEach((item: { name: string; img: string }) => {
-                gameInstance.load.image(item.name, item.img);
-            });
-        })
-        .catch(error => console.error('Error loading inventory library:', error));
-};
-
-export const saveInventoryState = () => {
-    // Save inventory to localStorage or some persistent mechanism
-};
-
-export const loadInventoryState = () => {
-    // Load inventory state from localStorage
-    inventory.loadInventoryState();
-};
-
-window.addEventListener('load', () => {
-    if (window.game && inventory) {
-        loadInventoryState();
-    } else {
-        console.error("Game instance or inventory not initialized.");
+      return () => {
+        game.destroy(true); // Clean up the Phaser instance when the component unmounts
+      };
     }
-});
+  }, []);
+
+  return <div id="phaser-game"></div>; // The div where Phaser will render the game
+}
