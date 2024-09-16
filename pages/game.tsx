@@ -1,25 +1,26 @@
-// game.tsx
-import React, { useEffect } from 'react';
-import Phaser from 'phaser';
-import { CastleBedroomScene } from './scenes/castlebedroom';  // Corrected path
+import MenuBar from '../components/MenuBar';
 
-export default function GameComponent() {
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const gameConfig: Phaser.Types.Core.GameConfig = {
-        type: Phaser.AUTO,
-        width: 1800,
-        height: 1300,
-        scene: [CastleBedroomScene], // Attach the CastleBedroomScene
-      };
+export default function Home() {
+  return (
+    <div className="relative w-screen h-screen bg-gray-800">
+      {/* Menu Bar */}
+      <MenuBar />
 
-      const game = new Phaser.Game(gameConfig);
+      {/* Embed the Castle Bedroom Scene */}
+      <div className="flex items-center justify-center w-screen h-screen bg-gray-800">
+        <div className="relative" style={{ width: '1850px', height: '1400px' }}>
+          {/* Castle Bedroom Scene loaded via iframe */}
+          <iframe
+            src="index.html" // Load the scene from the public folder
+            width="1850"
+            height="1400"
+            style={{ border: 'none' }}
+            title="Castle Bedroom Scene"
+          ></iframe>
 
-      return () => {
-        game.destroy(true); // Clean up the Phaser instance when the component unmounts
-      };
-    }
-  }, []);
-
-  return <div id="phaser-game"></div>; // The div where Phaser will render the game
+          
+        </div>
+      </div>
+    </div>
+  );
 }
