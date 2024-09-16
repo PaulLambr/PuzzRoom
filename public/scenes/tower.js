@@ -140,3 +140,4 @@ class Tower extends Phaser.Scene {
         }
     }
 }
+localStorage.setItem('currentScene', '/tower1');

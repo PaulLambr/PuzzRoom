@@ -96,8 +96,10 @@ class CastleBedroom extends Phaser.Scene {
         checkIntroMessage(this, "castleBedroom", "Ah what a bright shining morning it is in the Kingdom of Kenmoria. You have just awoken...");
 
         hasTransitioned = false;  // Initialize it here as well for safety
-    }
 
+        localStorage.setItem('currentScene', '/castlebedroom');
+    }
+    
     update() {
         let moving = false;
 
@@ -141,4 +143,5 @@ class CastleBedroom extends Phaser.Scene {
         }
     }
 }
+
 
