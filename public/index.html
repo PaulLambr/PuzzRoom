@@ -6,12 +6,68 @@
     <title>J Quest - Castle Bedroom</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
     <script src="/components/inventory.js"></script> <!-- Load inventory functionality -->
-    <script src="scenes/castlebedroom.js"></script> <!-- Load CastleBedroom scene -->
-    <script src="scenes/tower.js"></script> <!-- Load Tower scene -->
-    <script src="scripts/phaser-config.js"></script>
-
+    <script src="/scenes/castlebedroom.js"></script> <!-- Load CastleBedroom scene -->
+    <script src="/scenes/tower2.js"></script> <!-- Load Tower2 scene -->
+    <script src="/scenes/tower.js"></script> <!-- Load Tower scene -->
 </head>
 <body>
     <div id="game-container"></div> <!-- Game container for Phaser -->
+    <input type="file" id="fileInput" accept=".json" />
+    <pre id="output"></pre> <!-- This will display the loaded JSON content for debugging -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Phaser game configuration
+            const config = {
+                type: Phaser.AUTO,
+                width: 1800,
+                height: 1300,
+                physics: {
+                    default: 'arcade',
+                    arcade: {
+                        gravity: { y: 0 },
+                        debug: true  // Enable debug mode to visualize physics bodies
+                    }
+                },
+                scene: [CastleBedroom, Tower, Tower2]  // Your scenes
+            };
+    
+            window.game = new Phaser.Game(config);  // Assign Phaser game to global window
+    
+            // Handle file input for loading JSON game state
+            document.getElementById('fileInput').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const fileContent = e.target.result;
+                        const gameState = JSON.parse(fileContent);
+    
+                        // Populate localStorage with the values from the JSON file
+                        Object.keys(gameState).forEach(key => {
+                            localStorage.setItem(key, gameState[key]);
+                        });
+    
+                        // Log the restored state for debugging
+                        console.log('Game state loaded:', gameState);
+    
+                        // Optionally, start a scene using the loaded data
+                        const currentScene = gameState.currentScene || 'CastleBedroom';
+                        if (window.game.scene.keys[currentScene]) {
+                            window.game.scene.start(currentScene);
+                            console.log('Restoring to scene:', currentScene);
+                        }
+                    };
+    
+                    reader.readAsText(file);  // Read the file as text
+                } else {
+                    console.error('No file selected');
+                }
+            });
+        });
+    </script>
+    
+    
 </body>
 </html>

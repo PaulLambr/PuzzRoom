@@ -9,6 +9,10 @@ let hashmarksVisible = false;
 let hasTransitioned = false;  // Initialize hasTransitioned
 
 const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 };
+const configBridge = {
+    width: 1800,   // Define the width as per your game size
+    height: 1300   // Define the height as per your game size
+};
 
 // Define the CastleBedroom scene
 class CastleBedroom extends Phaser.Scene {
@@ -44,8 +48,8 @@ class CastleBedroom extends Phaser.Scene {
         const startX = savedX ? parseFloat(savedX) : 100;
         const startY = savedY ? parseFloat(savedY) : 525;
 
-        sprite = this.physics.add.sprite(startX, startY, 'character');
-        sprite.setScale(3);
+        this.sprite = this.physics.add.sprite(startX, startY, 'character');
+        this.sprite.setScale(3);
 
         this.anims.create({
             key: 'walk',
@@ -91,55 +95,59 @@ class CastleBedroom extends Phaser.Scene {
 
         hashmarkGraphics = this.add.graphics();
         this.input.keyboard.on('keydown-H', toggleHashmarks, this);
-
+        if (messagePanel) {
+            messagePanel.destroy();
+            messagePanel = null;
+        }
         // Check and display the intro message
-        checkIntroMessage(this, "castleBedroom", "Ah what a bright shining morning it is in the Kingdom of Kenmoria. You have just awoken...");
+        checkIntroMessage(this, "CastleBedroom", "Ah what a bright shining morning it is in the Kingdom of Kenmoria. You have just awoken...");
 
-        hasTransitioned = false;  // Initialize it here as well for safety
+        this.hasTransitioned = false;  // Initialize it here as well for safety
 
-        localStorage.setItem('currentScene', '/castlebedroom');
+        localStorage.setItem('currentScene', 'CastleBedroom');
     }
     
     update() {
         let moving = false;
 
         if (cursors.left.isDown) {
-            sprite.setVelocityX(-200);
-            sprite.setFlipX(true);
+            this.sprite.setVelocityX(-200);
+            this.sprite.setFlipX(true);
             moving = true;
         } else if (cursors.right.isDown) {
-            sprite.setVelocityX(200);
-            sprite.setFlipX(false);
+            this.sprite.setVelocityX(200);
+            this.sprite.setFlipX(false);
             moving = true;
         } else {
-            sprite.setVelocityX(0);
+            this.sprite.setVelocityX(0);
         }
 
         if (cursors.up.isDown) {
-            sprite.setVelocityY(-200);
+            this.sprite.setVelocityY(-200);
             moving = true;
         } else if (cursors.down.isDown) {
-            sprite.setVelocityY(200);
+            this.sprite.setVelocityY(200);
             moving = true;
         } else {
-            sprite.setVelocityY(0);
+            this.sprite.setVelocityY(0);
         }
 
-        if (sprite.x > 1500 && !hasTransitioned) {
-            localStorage.setItem('spriteX', sprite.x - 1480);
-            localStorage.setItem('spriteY', sprite.y);
-            hasTransitioned = true;
+        if (this.sprite.x > 1500 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', 200);
+            localStorage.setItem('spriteY', 200);
+            this.hasTransitioned = true;
 
             // Transition to Tower scene
+            
             this.scene.start('Tower');
         }
 
         if (moving) {
-            sprite.anims.play('walk', true);
+            this.sprite.anims.play('walk', true);
         } else {
-            sprite.setVelocity(0, 0);
-            sprite.anims.stop();
-            sprite.setFrame(1);
+            this.sprite.setVelocity(0, 0);
+            this.sprite.anims.stop();
+            this.sprite.setFrame(1);
         }
     }
 }
