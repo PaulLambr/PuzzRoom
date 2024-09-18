@@ -7,6 +7,8 @@ let hashmarkGraphics;
 let hashmarkText = [];
 let hashmarksVisible = false;
 let hasTransitioned = false;  // Initialize hasTransitioned
+let torchAddedToInventory = false;
+let wineskinAddedToInventory = false;
 
 const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 };
 const configBridge = {

@@ -121,7 +121,7 @@ const inventory = {
                     gameInstance.children.bringToTop(itemSprite); // Bring to front
                     itemSprite.originalX = itemSprite.x;
                     itemSprite.originalY = itemSprite.y;
-                    itemSprite.setScale(0.18); // Scale up slightly when dragging
+                    itemSprite.setScale(0.05); // Scale up slightly when dragging
                 });
 
                 itemSprite.on('drag', (pointer, dragX, dragY) => {
@@ -133,13 +133,19 @@ const inventory = {
                 itemSprite.on('dragend', (pointer) => {
                     console.log(`Drag ended on: ${item.name}`);
                     itemSprite.setScale(0.15); // Reset size after dragging
+                
                     const itemBounds = itemSprite.getBounds();
                     const panelBounds = { x: 1500, y: 0, width: 300, height: 900 };
-
-                    // If dropped outside inventory panel, return to original position
+                    const tolerance = 5;  // Allow small tolerance
+                
+                    // Log the item and panel bounds for debugging
+                    console.log(`Item bounds for ${item.name}:`, itemBounds);
+                    console.log(`Panel bounds:`, panelBounds);
+                
+                    // If dropped outside inventory panel with tolerance, return to original position
                     if (
                         itemBounds.right > panelBounds.x + panelBounds.width ||
-                        itemBounds.left < panelBounds.x ||
+                        itemBounds.left < panelBounds.x - tolerance ||  // Adjust the left bound with tolerance
                         itemBounds.bottom > panelBounds.y + panelBounds.height ||
                         itemBounds.top < panelBounds.y
                     ) {
@@ -147,8 +153,12 @@ const inventory = {
                         console.log(`Item ${item.name} dropped outside of inventory. Returning to original position.`);
                         itemSprite.x = itemSprite.originalX;
                         itemSprite.y = itemSprite.originalY;
+                    } else {
+                        console.log(`Item ${item.name} dropped inside the inventory.`);
                     }
                 });
+                
+                
 
                 // Add click event to show the item's message
                 itemSprite.on('pointerdown', () => {
