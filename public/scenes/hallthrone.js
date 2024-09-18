@@ -146,7 +146,7 @@ class HallThrone extends Phaser.Scene {
                     this.guard.setInteractive();
                     this.guard.on('pointerdown', () => {
                         showMessage("You rummage through the brave guard's pockets and take possession of his ring of keys.", this);
-                        inventory.addItem({ name: 'keys', img: 'keys' });
+                        inventory.addItem({ name: 'keys', img: 'keys', x:350, y:650 }, this.sprite);
                     });
                 }
             });
@@ -159,7 +159,7 @@ class HallThrone extends Phaser.Scene {
             this.guard.setInteractive();
             this.guard.on('pointerdown', () => {
                 showMessage("You rummage through the brave guard's pockets and take possession of his ring of keys.", this);
-                inventory.addItem({ name: 'keys', img: 'keys' });
+                inventory.addItem({ name: 'keys', img: 'keys', x:350, y:650 }, this.sprite);
             });
         }
     }

@@ -54,20 +54,26 @@ class Hall extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // Create interactive zone for the torch
-        const rectangleZone = this.add.zone(650, 200, 135, 240).setRectangleDropZone(135, 240);
-        rectangleZone.setInteractive();
-        rectangleZone.on('pointerdown', () => {
-            if (!torchAddedToInventory) {
-                inventory.addItem({ name: 'torch', img: 'torch' });
-                showMessage("The torch holder is a little loose. You add the torch to your bag.", this);
+        // Create interactive zone for the torch
+const rectangleZone = this.add.zone(650, 200, 135, 240).setRectangleDropZone(135, 240);
+rectangleZone.setInteractive();
+rectangleZone.on('pointerdown', () => {
+    if (!torchAddedToInventory) {
+        // Call addItem to handle proximity check and inventory addition
+        inventory.addItem({ name: 'torch', img: 'torch', x: 650, y: 350 }, this.sprite);
 
-                const brownBoxGraphics = this.add.graphics();
-                brownBoxGraphics.fillStyle(0xba71d8, 1);
-                brownBoxGraphics.fillRect(560, 73, 165, 240); // Draw the brown box
-                rectangleZone.destroy(); // Remove the mirror zone
-                torchAddedToInventory = true;
-            }
-        });
+        // Only proceed with the success logic if the torch is successfully added to the inventory
+        if (inventory.items.find(item => item.name === 'torch')) {
+            showMessage("The torch holder was a little loose. You wrench it free.", this);
+            const brownBoxGraphics = this.add.graphics();
+            brownBoxGraphics.fillStyle(0xba71d8, 1);
+            brownBoxGraphics.fillRect(560, 73, 165, 240); // Draw the brown box
+            rectangleZone.destroy(); // Remove the torch zone
+            torchAddedToInventory = true;
+        }
+    }
+});
+
         // Create another zone for interaction with a fixed torch
         const rectangleZone2 = this.add.zone(1360, 200, 135, 240).setRectangleDropZone(135, 240);
         rectangleZone2.setInteractive();

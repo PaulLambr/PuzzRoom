@@ -76,29 +76,35 @@ class DiningRoom extends Phaser.Scene {
         createInventory(this);
 
         // Check if wineskin is already in the inventory
-        if (inventory.items.find(item => item.name === 'wineskin')) {
-            // Wineskin already in inventory, show a brown box instead
-            const brownBoxGraphics = this.add.graphics();
-            brownBoxGraphics.fillStyle(0x742c0c, 1);
-            brownBoxGraphics.fillRect(715, 260, 200, 200); // Brown box where the wineskin was
-            this.wineskinAddedToInventory = true;
-        } else {
-            // Wineskin is not in inventory, create a zone for picking it up
-            this.rectangleZone = this.add.zone(815, 360, 200, 200).setRectangleDropZone(200, 200);
-            this.rectangleZone.setInteractive();
-            this.rectangleZone.on('pointerdown', () => {
-                if (!this.wineskinAddedToInventory) {
-                    inventory.addItem({ name: 'wineskin', img: 'wineskin' });
-                    showMessage("You pick up the distinctively green goblin wineskin. It reeks of mold.", this);
+if (inventory.items.find(item => item.name === 'wineskin')) {
+    // Wineskin already in inventory, show a brown box instead
+    const brownBoxGraphics = this.add.graphics();
+    brownBoxGraphics.fillStyle(0x742c0c, 1);
+    brownBoxGraphics.fillRect(715, 260, 200, 200); // Brown box where the wineskin was
+    this.wineskinAddedToInventory = true;
+} else {
+    // Wineskin is not in inventory, create a zone for picking it up
+    this.rectangleZone = this.add.zone(815, 360, 200, 200).setRectangleDropZone(200, 200);
+    this.rectangleZone.setInteractive();
+    this.rectangleZone.on('pointerdown', () => {
+        if (!this.wineskinAddedToInventory) {
+            // Call addItem to handle proximity check and inventory addition
+            inventory.addItem({ name: 'wineskin', img: 'wineskin', x: 815, y: 350}, this.sprite);
 
-                    const brownBoxGraphics = this.add.graphics();
-                    brownBoxGraphics.fillStyle(0x742c0c, 1);
-                    brownBoxGraphics.fillRect(715, 260, 200, 200); // Brown box where the wineskin was
-                    this.rectangleZone.destroy(); // Remove wineskin zone after it's picked up
-                    this.wineskinAddedToInventory = true; // Mark wineskin as collected
-                }
-            });
+            // Only proceed with the success logic if the wineskin is successfully added to the inventory
+            if (inventory.items.find(item => item.name === 'wineskin')) {
+                showMessage("You pick up the distinctively green goblin wineskin. It reeks of mold.", this);
+
+                const brownBoxGraphics = this.add.graphics();
+                brownBoxGraphics.fillStyle(0x742c0c, 1);
+                brownBoxGraphics.fillRect(715, 260, 200, 200); // Brown box where the wineskin was
+                this.rectangleZone.destroy(); // Remove wineskin zone after it's picked up
+                this.wineskinAddedToInventory = true; // Mark wineskin as collected
+            }
         }
+    });
+}
+
 
         // Reset message panel if it exists
         if (messagePanel) {

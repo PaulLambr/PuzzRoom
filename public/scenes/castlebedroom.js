@@ -72,16 +72,30 @@ class CastleBedroom extends Phaser.Scene {
         // Interactive zone for the mirror
         rectangleZone = this.add.zone(800, 310, 100, 60).setRectangleDropZone(100, 60);
         rectangleZone.setInteractive();
+
         rectangleZone.on('pointerdown', () => {
             if (!mirrorAddedToInventory) {
-                inventory.addItem({ name: 'mirror', img: 'mirror' });
-                showMessage("You pick up your handy-dandy hand mirror.", this);
+                // Calculate the distance between the player and the mirror
+                const distance = Phaser.Math.Distance.Between(this.sprite.x, this.sprite.y, 800, 310);
 
-                const brownBoxGraphics = this.add.graphics();
-                brownBoxGraphics.fillStyle(0x7f2100, 1);
-                brownBoxGraphics.fillRect(750, 290, 100, 45);
-                rectangleZone.destroy();
-                mirrorAddedToInventory = true;
+                if (distance <= 200) {  // Check if the player is within 200 pixels
+                    // Add the mirror to the inventory
+                    inventory.addItem({ name: 'mirror', img: 'mirror', x: 800, y: 310 }, this.sprite);
+
+                    showMessage("You pick up your handy-dandy hand mirror.", this);
+
+                    // Draw the brown box on the screen after picking up the mirror
+                    const brownBoxGraphics = this.add.graphics();
+                    brownBoxGraphics.fillStyle(0x7f2100, 1);
+                    brownBoxGraphics.fillRect(750, 290, 100, 45);
+
+                    // Destroy the rectangle zone once the mirror is picked up
+                    rectangleZone.destroy();
+                    mirrorAddedToInventory = true;
+                } else {
+                    // Show a message if the player is too far away
+                    showMessage("You're too far away from the mirror to pick it up!", this);
+                }
             }
         });
 
@@ -108,7 +122,7 @@ class CastleBedroom extends Phaser.Scene {
 
         localStorage.setItem('currentScene', 'CastleBedroom');
     }
-    
+
     update() {
         let moving = false;
 
@@ -140,7 +154,6 @@ class CastleBedroom extends Phaser.Scene {
             this.hasTransitioned = true;
 
             // Transition to Tower scene
-            
             this.scene.start('Tower');
         }
 
@@ -153,5 +166,3 @@ class CastleBedroom extends Phaser.Scene {
         }
     }
 }
-
-
