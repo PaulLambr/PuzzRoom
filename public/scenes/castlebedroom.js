@@ -13,6 +13,7 @@ let wineskinAddedToInventory = false;
 let cornDropZone;
 let pig;
 let isCornZoneUnlocked = false;
+let circularZone;
 
 const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 };
 const configBridge = {

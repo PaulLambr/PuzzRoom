@@ -70,11 +70,9 @@ class G1grasslandswamp extends Phaser.Scene {
         // Show intro message when entering Castle Prairie
         checkIntroMessage(this, "G1grasslandswamp", "The prairie stretches eastward with the skirts of a swamp beginning in the southeast corner.", this);
 
-        // Hashmark debugging graphics
-        this.hashmarkGraphics = this.add.graphics();
-
-        // Toggle hashmarks with the 'H' key
-        this.input.keyboard.on('keydown-H', () => toggleHashmarks(this));
+         // Hashmark debugging graphics
+         hashmarkGraphics = this.add.graphics();
+         this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
 
         // Set current scene
         localStorage.setItem('currentScene', 'G1grasslandswamp');

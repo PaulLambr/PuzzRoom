@@ -164,7 +164,7 @@ class Poke extends Phaser.Scene {
         this.physics.add.overlap(this.sprite, this.cornDropZone, () => {
             if (this.isCornZoneUnlocked) {
                 console.log('Corn zone unlocked, transitioning to Cellar scene...');
-                this.scene.start('Cellar');  // Transition to the Cellar scene
+                this.scene.start('HutInterior');  // Transition to the Cellar scene
             }
         });
     }
