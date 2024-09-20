@@ -8,7 +8,11 @@ let hashmarkText = [];
 let hashmarksVisible = false;
 let hasTransitioned = false;  // Initialize hasTransitioned
 let torchAddedToInventory = false;
+let boneAddedToInventory = false;
 let wineskinAddedToInventory = false;
+let cornDropZone;
+let pig;
+let isCornZoneUnlocked = false;
 
 const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 };
 const configBridge = {
@@ -110,7 +114,8 @@ class CastleBedroom extends Phaser.Scene {
         }
 
         hashmarkGraphics = this.add.graphics();
-        this.input.keyboard.on('keydown-H', toggleHashmarks, this);
+        this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
+
         if (messagePanel) {
             messagePanel.destroy();
             messagePanel = null;
@@ -125,6 +130,7 @@ class CastleBedroom extends Phaser.Scene {
 
     update() {
         let moving = false;
+       
 
         if (cursors.left.isDown) {
             this.sprite.setVelocityX(-200);

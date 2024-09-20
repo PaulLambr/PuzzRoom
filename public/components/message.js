@@ -64,33 +64,46 @@ function checkIntroMessage(scene, roomID, introText) {
     showIntroMessage(introText, scene, roomID);
 }
 
-// Function to toggle the visibility of hashmarks for debugging purposes
-function toggleHashmarks() {
-    hashmarksVisible = !hashmarksVisible;
-    hashmarkGraphics.clear(); // Clear existing hashmarks
+function toggleHashmarks(scene, event) {
+    console.log('toggleHashmarks called. Scene:', scene);
+    console.log('Event:', event);
 
-    // Clear any previous hashmark text objects
-    if (hashmarkText) {
-        hashmarkText.forEach(text => text.destroy());
+    if (!scene) {
+        console.error('Scene is undefined!');
+        return;
     }
 
-    if (hashmarksVisible) {
+    scene.showHashmarks = !scene.showHashmarks;
+
+    if (!scene.hashmarkGraphics) {
+        console.warn('hashmarkGraphics not initialized, creating now.');
+        scene.hashmarkGraphics = scene.add.graphics();
+    }
+
+    scene.hashmarkGraphics.clear(); // Clear existing hashmarks
+
+    // Clear any previous hashmark text objects
+    if (scene.hashmarkText) {
+        scene.hashmarkText.forEach(text => text.destroy());
+    }
+
+    if (scene.showHashmarks) {
         // Set line style for hashmarks
-        hashmarkGraphics.lineStyle(1, 0xffffff, 1);
-        hashmarkText = [];
+        scene.hashmarkGraphics.lineStyle(1, 0xffffff, 1);
+        scene.hashmarkText = [];
 
         // Draw vertical hashmarks every 50 pixels
-        for (let i = 0; i < configBridge.width; i += 50) {
-            hashmarkGraphics.strokeLineShape(new Phaser.Geom.Line(i, 0, i, configBridge.height));
-            let text = gameInstance.add.text(i, 10, i, { font: '16px Arial', fill: '#ffffff' });
-            hashmarkText.push(text);
+        for (let i = 0; i < scene.sys.game.config.width; i += 50) {
+            scene.hashmarkGraphics.strokeLineShape(new Phaser.Geom.Line(i, 0, i, scene.sys.game.config.height));
+            let text = scene.add.text(i, 10, i, { font: '16px Arial', fill: '#ffffff' });
+            scene.hashmarkText.push(text);
         }
 
         // Draw horizontal hashmarks every 50 pixels
-        for (let j = 0; j < configBridge.height; j += 50) {
-            hashmarkGraphics.strokeLineShape(new Phaser.Geom.Line(0, j, configBridge.width, j));
-            let text = gameInstance.add.text(10, j, j, { font: '16px Arial', fill: '#ffffff' });
-            hashmarkText.push(text);
+        for (let j = 0; j < scene.sys.game.config.height; j += 50) {
+            scene.hashmarkGraphics.strokeLineShape(new Phaser.Geom.Line(0, j, scene.sys.game.config.width, j));
+            let text = scene.add.text(10, j, j, { font: '16px Arial', fill: '#ffffff' });
+            scene.hashmarkText.push(text);
         }
     }
 }

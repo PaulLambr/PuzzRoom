@@ -100,6 +100,10 @@ class CastlePrairie extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
+
+        // Initialize previous position variables
+        this.previousX = this.sprite.x;
+        this.previousY = this.sprite.y;
     }
 
     handleZoneOverlap() {
@@ -138,20 +142,28 @@ class CastlePrairie extends Phaser.Scene {
             this.sprite.setVelocityY(0);
         }
 
-        // Transition to dining room if sprite moves beyond 1500 pixels on the right
-        if (this.sprite.x > 1500 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x - 1480);
-            localStorage.setItem('spriteY', this.sprite.y);
-            this.hasTransitioned = true;
-            this.scene.start('DiningRoom');
+        // Log the position only if it changes
+        if (this.sprite.x !== this.previousX || this.sprite.y !== this.previousY) {
+            console.log(`Sprite position: X=${this.sprite.x}, Y=${this.sprite.y}`);
+            this.previousX = this.sprite.x;
+            this.previousY = this.sprite.y;
         }
 
-        // Transition to Tower2 if sprite moves beyond the left side (x < 0)
-        if (this.sprite.x < 0 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', 1350);
-            localStorage.setItem('spriteY', 500);
+        // Transition to dining room if sprite moves beyond 1500 pixels on the right
+        if (this.sprite.x > 1500 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x - 1400);
+            localStorage.setItem('spriteY', this.sprite.y);
             this.hasTransitioned = true;
-            this.scene.start('Cellar');
+            this.scene.start('G1grasslandswamp');
+        }
+
+        // Transition to another scene if sprite moves beyond 1550 pixels on the Y axis
+        if (this.sprite.y > 900 && !this.hasTransitioned) {
+            console.log('Transitioning to G3grasslandcorn scene');
+            localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y - 750);
+            this.hasTransitioned = true;
+            this.scene.start('G3grasslandcorn');
         }
 
         // Check if the player leaves the rock's bounds

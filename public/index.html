@@ -17,6 +17,11 @@
     <script src="/scenes/cellar.js"></script>
     <script src="/scenes/castleprairie.js"></script>
     <script src="/components/message.js"></script>
+    <script src="/scenes/g1grasslandswamp.js"></script>
+    <script src="/scenes/g3grasslandcorn.js"></script>
+    <script src="/scenes/shoreriver1.js"></script>
+    <script src="/scenes/poke.js"></script>
+    
 
     <style>
         body {
@@ -102,7 +107,9 @@
                         debug: true  // Enable debug mode to visualize physics bodies
                     }
                 },
-                scene: [CastleBedroom, Tower, Tower2, Hall, DiningRoom, HallThrone, Cellar, CastlePrairie]  // All your scenes
+                scene: [CastleBedroom, Tower, Tower2, Hall, DiningRoom, HallThrone, Cellar, CastlePrairie, G1grasslandswamp, G3grasslandcorn, ShoreRiver1,
+                Poke
+            ]  // All your scenes
             };
 
             window.game = new Phaser.Game(config);  // Assign Phaser game to global window

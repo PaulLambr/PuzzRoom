@@ -16,7 +16,8 @@ const inventory = {
             'rope': "It's a sturdy rope that could come in handy.",
             'wineskin': "It's empty, and even if it had something in it, you wouldn't drink from it.",
             'keys': "It's the brave guard's ring of keys for various areas of the castle.",
-            'torch': "It's hot. Good thing your bag is made of kevlar!"
+            'torch': "It's hot. Good thing your bag is made of kevlar!",
+            'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner."
         };
     
         // Proximity check: Calculate the distance between the player and the item
@@ -31,8 +32,6 @@ const inventory = {
                 console.log(`Added item to inventory: ${item.name}`);
                 this.updateInventoryDisplay();
                 this.saveInventoryState();
-    
-                
             }
         } else {
             // Show the "too far" message if the player is too far from the item
@@ -40,8 +39,19 @@ const inventory = {
             console.log(`Player is too far from the item: ${item.name}`);
         }
     },
-    
-    
+
+    // Add removeItem method here
+    removeItem(item) {
+        const itemIndex = this.items.findIndex(i => i.name === item.name);
+        if (itemIndex !== -1) {
+            this.items.splice(itemIndex, 1);  // Remove the item from the inventory
+            console.log(`Removed item from inventory: ${item.name}`);
+            this.updateInventoryDisplay();   // Update inventory UI after removing
+            this.saveInventoryState();       // Save updated inventory state to localStorage
+        } else {
+            console.log(`Item not found in inventory: ${item.name}`);
+        }
+    },
 
     // Function to update the inventory display and enable drag-and-drop
     updateInventoryDisplay() {
@@ -136,6 +146,7 @@ const inventory = {
         this.saveInventoryState();
     }
 };
+
 
 // Function for creating inventory in the game
 function createInventory(scene) {
