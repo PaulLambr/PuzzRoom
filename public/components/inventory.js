@@ -17,7 +17,9 @@ const inventory = {
             'wineskin': "It's empty, and even if it had something in it, you wouldn't drink from it.",
             'keys': "It's the brave guard's ring of keys for various areas of the castle.",
             'torch': "It's hot. Good thing your bag is made of kevlar!",
-            'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner."
+            'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner.",
+            'corn': "This piece of corn definitely has your ear.",
+            'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters."
         };
     
         // Proximity check: Calculate the distance between the player and the item

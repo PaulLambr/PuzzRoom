@@ -6,6 +6,7 @@
         { "name": "keys", "img": "graphics/keys.png" },
         { "name": "torch", "img": "graphics/torch.png" },
         { "name": "bone", "img": "graphics/bone.png" },
+        { "name": "wineskinwater", "img": "graphics/wineskin.png" },
         { "name": "mirror", "img": "graphics/mirror.png" }
     ]
 }

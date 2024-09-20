@@ -79,6 +79,7 @@ class Poke extends Phaser.Scene {
         // Prevent multiple transitions
         this.hasTransitioned = false;
 
+
         // Corn acquisition zone
         const cornZone = this.add.zone(350, 125, 400, 250).setInteractive();
         cornZone.on('pointerdown', () => {
@@ -167,6 +168,8 @@ class Poke extends Phaser.Scene {
                 this.scene.start('HutInterior');  // Transition to the Cellar scene
             }
         });
+
+       
     }
 
     update() {
@@ -201,6 +204,15 @@ class Poke extends Phaser.Scene {
             this.sprite.anims.stop();
             this.sprite.setFrame(1);
         }
+
+         // Transition to CastlePrairie if sprite moves beyond 50 pixels on the left
+     if (this.sprite.x > 1400 && !this.hasTransitioned) {
+        console.log('Transitioning to RplusG scene');
+        localStorage.setItem('spriteX', this.sprite.x - 1200);
+        localStorage.setItem('spriteY', this.sprite.y);
+        this.hasTransitioned = true;
+        this.scene.start('Grassriver1');
+    }
     }
 }
 
@@ -220,6 +232,8 @@ function movePig() {
         },
         callbackScope: this
     });
+
+    
 }
 
 // When corn is successfully dropped and pig crashes through the zone

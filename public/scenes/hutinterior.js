@@ -25,7 +25,7 @@ class HutInterior extends Phaser.Scene {
     }
 
     create() {
-        console.log('Creating G1 scene');
+        console.log('Creating Hut Interior scene');
 
         // Initialize variables
         this.torchAddedToInventory = false;
@@ -73,7 +73,7 @@ class HutInterior extends Phaser.Scene {
          this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
 
         // Set current scene
-        localStorage.setItem('currentScene', 'GHutInterior');
+        localStorage.setItem('currentScene', 'HutInterior');
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
