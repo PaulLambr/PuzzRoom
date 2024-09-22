@@ -114,6 +114,15 @@ class Grassrivermount extends Phaser.Scene {
             this.hasTransitioned = true;
             this.scene.start('CaveEntrance');
 }
+
+        // Transition to dining room if sprite moves beyond 1500 pixels on the right
+        if (this.sprite.x < 80 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x + 1300);
+            localStorage.setItem('spriteY', this.sprite.y);
+            this.hasTransitioned = true;
+            this.scene.start('Grassriver1');
+}
+
         // Play walking animation if moving
         if (moving) {
             this.sprite.anims.play('walk', true);

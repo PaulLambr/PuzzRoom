@@ -108,8 +108,8 @@ class Grassriver1 extends Phaser.Scene {
         }
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
-        if (this.sprite.x < 50 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x + 1400);
+        if (this.sprite.x < 80 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x + 1320);
             localStorage.setItem('spriteY', this.sprite.y);
             this.hasTransitioned = true;
             this.scene.start('Poke');
@@ -122,6 +122,14 @@ class Grassriver1 extends Phaser.Scene {
             this.hasTransitioned = true;
             this.scene.start('Grassrivermount');
 }
+           // Transition to dining room if sprite moves beyond 1500 pixels on the right
+           if (this.sprite.y < 106 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y + 775);
+            this.hasTransitioned = true;
+            this.scene.start('Swampmaze');
+}
+
         // Play walking animation if moving
         if (moving) {
             this.sprite.anims.play('walk', true);

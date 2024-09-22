@@ -81,6 +81,14 @@ class G1grasslandswamp extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
+
+        // Create a no-go zone (1 pixel high, 850 pixels wide, from x: 650 to x: 1500)
+const noGoZone = this.add.zone(1075, 899, 850, 1).setOrigin(0.5, 0.5);  // Positioned at the center of the zone
+this.physics.add.existing(noGoZone, true);  // Add physics to the zone (static)
+
+// Add collision between the sprite and the no-go zone
+this.physics.add.collider(this.sprite, noGoZone);
+
     }
 
     update() {
@@ -115,6 +123,14 @@ class G1grasslandswamp extends Phaser.Scene {
             localStorage.setItem('spriteY', this.sprite.y);
             this.hasTransitioned = true;
             this.scene.start('CastlePrairie');
+        }
+        
+        // Transition to dining room if sprite moves beyond 1500 pixels on the right
+        if (this.sprite.x > 1450 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x -1350);
+            localStorage.setItem('spriteY', this.sprite.y);
+            this.hasTransitioned = true;
+            this.scene.start('G2grasslandswamp');
         }
 
         // Play walking animation if moving

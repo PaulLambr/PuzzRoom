@@ -7,6 +7,9 @@
         { "name": "torch", "img": "graphics/torch.png" },
         { "name": "bone", "img": "graphics/bone.png" },
         { "name": "wineskinwater", "img": "graphics/wineskin.png" },
-        { "name": "mirror", "img": "graphics/mirror.png" }
+        { "name": "mirror", "img": "graphics/mirror.png" },
+        { "name": "magicmirror", "img": "graphics/mirror.png"},
+        { "name": "potentpoppy", "img": "graphics/poppy.png"}
+
     ]
 }

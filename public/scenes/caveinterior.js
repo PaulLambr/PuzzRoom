@@ -79,46 +79,60 @@ class CaveInterior extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
-        
-       // Create the interactive rectangle zone for the pool
-const rectangleZone = this.add.zone(1150, 720, 860, 220).setRectangleDropZone(860, 220);
-
-// Initialize the poolRectangle to match the exact dimensions and position of the rectangleZone
-const poolRectangle = new Phaser.Geom.Rectangle(rectangleZone.x - rectangleZone.width / 2, rectangleZone.y - rectangleZone.height / 2, rectangleZone.width, rectangleZone.height);
-
-
-        
-          // Enable drag and drop for inventory items
-        this.input.on('dragstart', (pointer, gameObject) => {
-            gameObject.setScale(0.28);
-            gameObject.originalX = gameObject.x;
-            gameObject.originalY = gameObject.y;
-        });
-
-        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        });
-
-        this.input.on('dragend', (pointer, gameObject) => {
-            gameObject.setScale(0.15); // Restore the original scale
-            console.log('Dragged item texture key:', gameObject.texture.key);
-            console.log('Pointer dropped at:', pointer.x, pointer.y);
-        
-            // Log the center of the rectangle based on the poolRectangle
-            const centerX = poolRectangle.x + poolRectangle.width / 2;
-            const centerY = poolRectangle.y + poolRectangle.height / 2;
-            console.log('poolRectangle center:', centerX, centerY);
-        
-            // Depending on the dragged item, pass the correct zone
-            if (gameObject.texture.key === 'wineskin') {
-                handleItemInteraction(pointer, gameObject, { rectangle: poolRectangle }, this, inventory);
-            }
-        });
-        
-        
-
-    }
+       
+            // Create interactive pool rectangle zone
+            const poolRectangle = this.add.zone(1150, 720, 860, 220).setRectangleDropZone(860, 220).setInteractive();
+    
+            // Optionally, you can add a debug graphic to visualize the zone (for testing purposes)
+            const debugGraphics = this.add.graphics();
+            debugGraphics.lineStyle(2, 0x00ff00);
+            debugGraphics.strokeRect(poolRectangle.x - poolRectangle.input.hitArea.width / 2, poolRectangle.y - poolRectangle.input.hitArea.height / 2, poolRectangle.input.hitArea.width, poolRectangle.input.hitArea.height);
+    
+            // Drag and drop for inventory items
+            this.input.on('dragstart', (pointer, gameObject) => {
+                gameObject.setScale(0.28);
+                gameObject.originalX = gameObject.x;
+                gameObject.originalY = gameObject.y;
+            });
+    
+            this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+                gameObject.x = dragX;
+                gameObject.y = dragY;
+            });
+    
+            this.input.on('dragend', (pointer, gameObject) => {
+                gameObject.setScale(0.15); // Restore the original scale
+                console.log('Dragged item texture key:', gameObject.texture.key);
+                console.log('Pointer dropped at:', pointer.x, pointer.y);
+            
+                // Log the poolRectangle's boundaries for debugging
+                const poolRectangleBounds = poolRectangle.getBounds();
+                console.log('poolRectangle bounds:', poolRectangleBounds);
+            
+                // Check if the pointer is within the poolRectangle using Phaser.Geom.Rectangle.Contains()
+                if (Phaser.Geom.Rectangle.Contains(poolRectangleBounds, pointer.x, pointer.y)) {
+                    if (gameObject.texture.key === 'wineskin') {
+                        showMessage("You fill up the wineskin with the slightly bitter-smelling waters.", this);
+            
+                        // Remove the original wineskin from inventory
+                        inventory.removeItem({ name: 'wineskin', img: 'wineskin' });
+            
+                        // Add the wineskin filled with water (wineskinwater)
+                        inventory.addItemnp({ name: 'wineskinwater', img: 'wineskinwater' });
+                        console.log('Wineskin water added to inventory:', inventory.items);
+                    } else {
+                        showMessage("The item doesn't interact with the pool.", this);
+                    }
+                } else {
+                    showMessage("You can't drop the item here!", this);
+            
+                    // Return the item to its original position
+                    gameObject.x = gameObject.originalX;
+                    gameObject.y = gameObject.originalY;
+                }
+            });
+            
+        }
 
     update() {
         let moving = false;
@@ -146,15 +160,22 @@ const poolRectangle = new Phaser.Geom.Rectangle(rectangleZone.x - rectangleZone.
             this.sprite.setVelocityY(0);
         }
 
-        /*
+    
         // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
-if (this.sprite.x > 1200 && this.sprite.y > 450 && this.sprite.y < 600 && !this.hasTransitioned) {
-    localStorage.setItem('spriteX', 500);
-    localStorage.setItem('spriteY', 500);
+if (this.sprite.x < 80 && !this.hasTransitioned) {
+    localStorage.setItem('spriteX', this.sprite.x + 1000);
+    localStorage.setItem('spriteY', this.sprite.y);
     this.hasTransitioned = true;
-    this.scene.start('CaveInterior');
+    this.scene.start('CaveEntrance');
 }
-*/
+
+        // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
+        if (this.sprite.y > 1380 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y - 1250);
+            this.hasTransitioned = true;
+            this.scene.start('CaveEntrance');
+        }
         // Play walking animation if moving
         if (moving) {
             this.sprite.anims.play('walk', true);

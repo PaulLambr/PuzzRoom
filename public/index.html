@@ -6,7 +6,7 @@
     <title>J Quest - Scene Tester</title>
     <!-- Bootstrap CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <script src="/libs/phaser.js"></script> <!-- Path to your local Phaser file -->
     <script src="/components/inventory.js"></script> <!-- Load inventory functionality -->
     <script src="/scenes/castlebedroom.js"></script> <!-- Load CastleBedroom scene -->
     <script src="/scenes/tower2.js"></script> <!-- Load Tower2 scene -->
@@ -27,6 +27,12 @@
     <script src="/scenes/grassrivermount.js"></script>
     <script src="/scenes/caveentrance.js"></script>
     <script src="/scenes/caveinterior.js"></script>
+    <script src="/scenes/spellbooks.js"></script>
+    <script src="/scenes/hutinterior2.js"></script>
+    <script src="/scenes/hutinterior3.js"></script>
+    <script src="/scenes/g2grasslandswamp.js"></script>
+    <script src="/scenes/swampmaze.js"></script>
+   
 
     
 
@@ -115,7 +121,10 @@
                     }
                 },
                 scene: [CastleBedroom, Tower, Tower2, Hall, DiningRoom, HallThrone, Cellar, CastlePrairie, G1grasslandswamp, G3grasslandcorn, ShoreRiver1,
-                Poke, HutInterior, Grassriver1, Grassrivermount, CaveEntrance, CaveInterior
+                Poke, HutInterior, Grassriver1, Grassrivermount, CaveEntrance, CaveInterior, Spellbooks, HutInterior2, HutInterior3, G2grasslandswamp,
+                Swampmaze
+
+
             ]  // All your scenes
             };
 

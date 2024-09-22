@@ -144,10 +144,10 @@ rectangleZone.on('pointerdown', () => {
         }
     
         // Transition to another scene if sprite moves beyond 900 pixels on the Y axis
-        if (this.sprite.y < 50 && !this.hasTransitioned) {
+        if (this.sprite.y < 106 && !this.hasTransitioned) {
             console.log('Transitioning to G3grasslandcorn scene');
             localStorage.setItem('spriteX', this.sprite.x);
-            localStorage.setItem('spriteY', this.sprite.y + 800);
+            localStorage.setItem('spriteY', this.sprite.y + 700);
             this.hasTransitioned = true;
             this.scene.start('G3grasslandcorn');
         }

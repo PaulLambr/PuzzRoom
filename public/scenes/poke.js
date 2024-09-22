@@ -213,6 +213,14 @@ class Poke extends Phaser.Scene {
         this.hasTransitioned = true;
         this.scene.start('Grassriver1');
     }
+
+    if (this.sprite.x < 50 && !this.hasTransitioned) {
+        console.log('Transitioning to RplusG scene');
+        localStorage.setItem('spriteX', this.sprite.x + 1200);
+        localStorage.setItem('spriteY', this.sprite.y);
+        this.hasTransitioned = true;
+        this.scene.start('ShoreRiver1');
+    }
     }
 }
 

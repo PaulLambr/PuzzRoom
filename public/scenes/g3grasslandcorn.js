@@ -113,9 +113,9 @@ if (!this.anims.exists('walk')) {
         }
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
-        if (this.sprite.x < 50 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x + 1400);
-            localStorage.setItem('spriteY', this.sprite.y);
+        if (this.sprite.y < 106 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y + 700);
             this.hasTransitioned = true;
             this.scene.start('CastlePrairie');
         }
@@ -128,6 +128,8 @@ if (!this.anims.exists('walk')) {
             this.hasTransitioned = true;
             this.scene.start('ShoreRiver1');
         }
+
+
 
         
         // Play walking animation if moving

@@ -5,7 +5,7 @@ class HutInterior extends Phaser.Scene {
 
     preload() {
         // Preload assets
-        this.load.image('background_hi', 'graphics/hutinterior.png');
+        this.load.image('background_hi', 'graphics/hutinterior_cauldronbefore.png');
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('amulet', 'graphics/graks_amulet.png');
@@ -79,6 +79,10 @@ class HutInterior extends Phaser.Scene {
         this.hasTransitioned = false;
 
         // Create the circular zone for the pig
+        const cauldronCircle = new Phaser.Geom.Circle(750, 600, 150); // Circle centered at (290, 310) with a radius of 140
+        circularZone = this.add.zone(750, 600).setSize(300, 300); // Add a zone for interactive purposes
+
+        // Create the circular zone for the pig
         const pigCircle = new Phaser.Geom.Circle(290, 310, 140); // Circle centered at (290, 310) with a radius of 140
         circularZone = this.add.zone(290, 310).setSize(280, 280); // Add a zone for interactive purposes
 
@@ -124,8 +128,10 @@ class HutInterior extends Phaser.Scene {
 
         // Add event listener for pointerdown (click) on the book zone
         bookZone.on('pointerdown', () => {
-            const bookText = "It must have been a wizard who lived in this hut. These look like spell books. They are all magically sealed shut, with the exception of one. It flips open to this page: \"I must be careful in the creation of this amulet...\"";
-            showMessage(bookText, this);
+            localStorage.setItem('spriteX', this.sprite.x + 1400);
+            localStorage.setItem('spriteY', this.sprite.y);
+            this.hasTransitioned = true;
+            this.scene.start('Spellbooks');
         });
 
         debugGraphics.lineStyle(2, 0x0000ff, 1);
@@ -160,7 +166,7 @@ class HutInterior extends Phaser.Scene {
                     showMessage("You slip the amulet around the pig's neck. It pulses intensely.", this);
         
                     // Display rope on OINK zone
-                    this.add.image(290, 310, 'rope').setScale(0.5);
+                    this.add.image(315, 310, 'amulet').setScale(0.15);
         
                     // Remove the amulet from the inventory
                     inventory.removeItem({ name: 'amulet', img: 'amulet' });
@@ -175,6 +181,28 @@ class HutInterior extends Phaser.Scene {
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;
             }
+
+            if (Phaser.Geom.Circle.Contains(cauldronCircle, pointer.x, pointer.y)) {
+                if (gameObject.texture.key === 'wineskinwater') {
+                    console.log('The wineskinwater is within the pig zone.');
+                    showMessage("You fill up the cauldron with the contents of the wineskin. The waters sparkle green and purple.", this);
+
+                  /* Remove the magic mirror from the inventory
+                    inventory.removeItem({ name: 'magicmirror', img: 'mirror' });
+                    console.log('Magic Mirror removed from inventory:', inventory.items); */
+            
+                    this.scene.start('HutInterior2');
+                } else {
+                    showMessage("Error: The pig doesn't seem interested in this item.", this);
+                }
+            } else {
+                showMessage("Error: You can't drop the item here!", this);
+        
+                // Return the item to its original position within the inventory panel
+                gameObject.x = gameObject.originalX;
+                gameObject.y = gameObject.originalY;
+            }
+            
         });
         
         

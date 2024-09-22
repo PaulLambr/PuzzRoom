@@ -15,6 +15,8 @@ let pig;
 let isCornZoneUnlocked = false;
 let circularZone;
 let poolRectangle;
+let pigCircle;
+let cauldronCircle;
 
 
 const inventoryPanel = { x: 1500, y: 0, width: 300, height: 900 };

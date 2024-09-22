@@ -5,6 +5,39 @@ let gameInstance; // Declare gameInstance here
 const inventory = {
     items: [],
 
+        // Function to add an item to the inventory without proximity check
+addItemnp(item) {
+    console.log("Item being added (no proximity check):", item);  // Debugging: Check the item object
+
+    const defaultMessages = {
+        'mirror': "It's your handy-dandy hand mirror.",
+        'amulet': "It's the ancient amulet of Grak the Goblin King.",
+        'rope': "It's a sturdy rope that could come in handy.",
+        'wineskin': "It's empty, and even if it had something in it, you wouldn't drink from it.",
+        'keys': "It's the brave guard's ring of keys for various areas of the castle.",
+        'torch': "It's hot. Good thing your bag is made of kevlar!",
+        'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner.",
+        'corn': "This piece of corn definitely has your ear.",
+        'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
+        'magicmirror': "Your handy-dandy mirror went to Wizard School like Hawk from Real Bros.",
+        'potentpoppy': "A very rare and not easily attainable soporific plant."
+    };
+
+    // Only proceed if the item is not already in the inventory
+    if (!this.items.find(i => i.name === item.name)) {
+        // Add the item to the inventory
+        item.message = defaultMessages[item.name] || "This is an item with no description.";
+        this.items.push(item);
+        console.log(`Added item to inventory (no proximity check): ${item.name}`);
+        this.updateInventoryDisplay();
+        this.saveInventoryState();
+    } else {
+        console.log(`Item already in inventory: ${item.name}`);
+    }
+}
+,
+    
+
     // Add an item to the inventory with a proximity check
     addItem(item, sprite) {
         console.log("Item being added:", item);  // Debugging: Check the item object
@@ -19,7 +52,8 @@ const inventory = {
             'torch': "It's hot. Good thing your bag is made of kevlar!",
             'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner.",
             'corn': "This piece of corn definitely has your ear.",
-            'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters."
+            'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
+            'potentpoppy': "A very rare and not easily attainable soporific plant."
         };
     
         // Proximity check: Calculate the distance between the player and the item
@@ -55,6 +89,8 @@ const inventory = {
         }
     },
 
+    
+    
     // Function to update the inventory display and enable drag-and-drop
     updateInventoryDisplay() {
         if (inventoryContainer && gameInstance) {
@@ -120,6 +156,7 @@ const inventory = {
         }
     },
 
+        
     // Save the current inventory state to local storage
     saveInventoryState() {
         window.localStorage.setItem('inventoryState', JSON.stringify(this.items));
@@ -147,6 +184,7 @@ const inventory = {
         this.updateInventoryDisplay();
         this.saveInventoryState();
     }
+    
 };
 
 
