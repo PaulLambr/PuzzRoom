@@ -36,6 +36,9 @@ class HutInterior extends Phaser.Scene {
         const background = this.add.image(750, 450, 'background_hi');
         background.setDepth(0);
 
+        checkPigWearingAmulet(this);
+        localStorage.setItem('lastVisitedHutInteriorScene', 'HutInterior');
+
         // Load sprite position from localStorage or set default
         const savedX = localStorage.getItem('spriteX');
         const savedY = localStorage.getItem('spriteY');
@@ -171,6 +174,7 @@ class HutInterior extends Phaser.Scene {
                     // Remove the amulet from the inventory
                     inventory.removeItem({ name: 'amulet', img: 'amulet' });
                     console.log('Amulet removed from inventory:', inventory.items);
+                    localStorage.setItem('Pig Wearing Amulet?', 'True');
                 } else {
                     showMessage("Error: The pig doesn't seem interested in this item.", this);
                 }
@@ -246,8 +250,8 @@ class HutInterior extends Phaser.Scene {
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y > 850 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', 650);
-            localStorage.setItem('spriteY', 650);
+            localStorage.setItem('spriteX', 250);
+            localStorage.setItem('spriteY', 250);
             this.hasTransitioned = true;
             this.scene.start('Poke');
         }

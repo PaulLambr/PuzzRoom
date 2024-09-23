@@ -1,11 +1,11 @@
-class G3grasslandcorn extends Phaser.Scene {
+class GFCM extends Phaser.Scene {
     constructor() {
-        super({ key: 'G3grasslandcorn' });
+        super({ key: 'GFCM' });
     }
 
     preload() {
         // Preload assets
-        this.load.image('background_g3', 'graphics/g3.png');
+        this.load.image('background_gfcm', 'graphics/gfmc.png');
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('amulet', 'graphics/graks_amulet.png');
@@ -32,7 +32,7 @@ class G3grasslandcorn extends Phaser.Scene {
         this.zoneActivated = false;  // Zone activation flag
 
         // Set the background
-        const background = this.add.image(750, 450, 'background_g3');
+        const background = this.add.image(750, 450, 'background_gfcm');
         background.setDepth(0);
 
         // Load sprite position from localStorage or set default
@@ -47,16 +47,13 @@ class G3grasslandcorn extends Phaser.Scene {
         this.sprite.setDepth(1);
         this.sprite.body.collideWorldBounds = true;
 
-       // Before defining the animation, check if it already exists
-if (!this.anims.exists('walk')) {
-    this.anims.create({
-        key: 'walk',
-        frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-        frameRate: 10,
-        repeat: -1
-    });
-}
-;
+        // Walking animation
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
 
         // Input cursor keys for controlling the character
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -71,16 +68,14 @@ if (!this.anims.exists('walk')) {
         }
 
         // Show intro message when entering Castle Prairie
-        checkIntroMessage(this, "G3grasslandcorn", "Hm. Some more prairie and the beginnings of a corn field in the southeast corner", this);
+        checkIntroMessage(this, "GFCM", "A canyon begins as the foothills peter off to the north.", this);
 
-        // Hashmark debugging graphics
-        this.hashmarkGraphics = this.add.graphics();
-
-        // Toggle hashmarks with the 'H' key
-        this.input.keyboard.on('keydown-H', () => toggleHashmarks(this));
+         // Hashmark debugging graphics
+         hashmarkGraphics = this.add.graphics();
+         this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
 
         // Set current scene
-        localStorage.setItem('currentScene', 'G3grasslandcorn');
+        localStorage.setItem('currentScene', 'GFCM');
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
@@ -115,23 +110,19 @@ if (!this.anims.exists('walk')) {
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y < 106 && !this.hasTransitioned) {
             localStorage.setItem('spriteX', this.sprite.x);
-            localStorage.setItem('spriteY', this.sprite.y + 700);
+            localStorage.setItem('spriteY', this.sprite.y + 500);
             this.hasTransitioned = true;
-            this.scene.start('CastlePrairie');
+            this.scene.start('Bridge');
         }
 
-        // Transition to another scene if sprite moves beyond 1550 pixels on the Y axis
-        if (this.sprite.y > 900 && !this.hasTransitioned) {
-            console.log('Transitioning to G3grasslandcorn scene');
+          // Transition to dining room if sprite moves beyond 1500 pixels on the right
+          if (this.sprite.y > 900 && !this.hasTransitioned) {
             localStorage.setItem('spriteX', this.sprite.x);
-            localStorage.setItem('spriteY', this.sprite.y - 775);
+            localStorage.setItem('spriteY', this.sprite.y - 750);
             this.hasTransitioned = true;
-            this.scene.start('ShoreRiver1');
+            this.scene.start('CaveEntrance');
         }
 
-
-
-        
         // Play walking animation if moving
         if (moving) {
             this.sprite.anims.play('walk', true);

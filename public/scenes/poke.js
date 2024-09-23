@@ -20,66 +20,92 @@ class Poke extends Phaser.Scene {
     create() {
         console.log('Creating Poke scene');
         
-        // Initialize corn drop zone unlocked variable
-        this.isCornZoneUnlocked = false;
-
-        // Background and player sprite
-        const background = this.add.image(750, 450, 'background_pig').setDepth(0);
-
+        // Check if the hut has been unlocked (Can enter hut?)
+        const canEnterHut = localStorage.getItem('Can enter hut?');
+        
         // Load saved position of the sprite if available
         const savedX = localStorage.getItem('spriteX');
         const savedY = localStorage.getItem('spriteY');
         const startX = savedX ? parseFloat(savedX) : 100;
         const startY = savedY ? parseFloat(savedY) : 850;
-
-        // Create the player sprite
+        
+        // Create the player sprite (Make sure this is done regardless of hut state)
         this.sprite = this.physics.add.sprite(startX, startY, 'character').setScale(3).setCollideWorldBounds(true);
         this.sprite.setDepth(1);
-
-        // Walking animation
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        // Pig animation
-        this.anims.create({
-            key: 'pigMove',
-            frames: this.anims.generateFrameNumbers('pig', { start: 0, end: 2 }),
-            frameRate: 6,
-            repeat: -1
-        });
-
+        
+        // Load background (this is needed whether or not the hut is unlocked)
+        const background = this.add.image(750, 450, 'background_pig').setDepth(0);
+    
+        if (canEnterHut === 'True') {
+            // Set corn zone unlocked immediately
+            this.isCornZoneUnlocked = true;
+            
+            // Show the black rectangle (hut entry available)
+            const graphics = this.add.graphics();
+            graphics.fillStyle(0x000000, 1);
+            graphics.fillRect(650, 450, 150, 250);
+            
+            // Optionally display a message
+            showMessage("The pig has already broken through the wood.", this);
+            
+        } else {
+            // Initialize corn drop zone unlocked variable
+            this.isCornZoneUnlocked = false;
+    
+            // Pig animation setup only if hut is not already unlocked
+            this.anims.create({
+                key: 'pigMove',
+                frames: this.anims.generateFrameNumbers('pig', { start: 0, end: 2 }),
+                frameRate: 6,
+                repeat: -1
+            });
+        
+            // Pig logic
+            const randomX = Phaser.Math.Between(0, configBridge.width - 57 * 5);
+            const randomY = Phaser.Math.Between(0, configBridge.height - 70 * 5);
+            this.pig = this.physics.add.sprite(randomX, randomY, 'pig').setScale(5);
+            this.pig.anims.play('pigMove', true);
+            movePig.call(this);
+        
+            // Repeated pig movement
+            this.time.addEvent({
+                delay: 2000,
+                loop: true,
+                callback: movePig,
+                callbackScope: this
+            });
+        
+            this.pig.setInteractive();
+            this.pig.on('pointerdown', () => {
+                showMessage("This pig is too slippery to grab.", this);
+            });
+        }
+    
         // Input cursor keys
         this.cursors = this.input.keyboard.createCursorKeys();
-
+    
         // Create the inventory panel and load any saved items
         createInventory(this);
-
+    
         // Reset message panel if it exists
         if (messagePanel) {
             messagePanel.destroy();
             messagePanel = null;
         }
-
+    
         // Display an intro message when entering the scene
-        checkIntroMessage(this, "Poke", "What a quaint boarded-up hut in the middle of nowhere. A strange pig is running amok.");
-
+        checkIntroMessage(this, "Poke", "What a quaint boarded-up hut in the middle of nowhere. A bespectacled and otherwise strangely man-like pig is running amok.");
+    
         // Hashmark debugging graphics
         hashmarkGraphics = this.add.graphics();
         this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
-
-
-
+    
         // Set current scene
         localStorage.setItem('currentScene', 'ShoreRiver1');
-
+    
         // Prevent multiple transitions
         this.hasTransitioned = false;
-
-
+    
         // Corn acquisition zone
         const cornZone = this.add.zone(350, 125, 400, 250).setInteractive();
         cornZone.on('pointerdown', () => {
@@ -91,58 +117,38 @@ class Poke extends Phaser.Scene {
                 showMessage("You already have the corn in your inventory.", this);
             }
         });
-
+    
         // Corn drop zone
         this.cornDropZone = this.add.zone(650, 450, 150, 250).setRectangleDropZone(150, 250).setInteractive();
-
+    
         // For debugging, visualize the drop zone
         const graphics = this.add.graphics();
         graphics.lineStyle(2, 0xff0000);  // Red outline for debugging
         graphics.strokeRect(this.cornDropZone.x - 75, this.cornDropZone.y - 125, 150, 250);
-
+    
         // Enable physics for the corn drop zone
         this.physics.world.enable(this.cornDropZone);
         this.cornDropZone.body.setAllowGravity(false);
         this.cornDropZone.body.moves = false;
-
-        // Pig logic
-        const randomX = Phaser.Math.Between(0, configBridge.width - 57 * 5);
-        const randomY = Phaser.Math.Between(0, configBridge.height - 70 * 5);
-        this.pig = this.physics.add.sprite(randomX, randomY, 'pig').setScale(5);
-        this.pig.anims.play('pigMove', true);
-        movePig.call(this);
-
-        // Repeated pig movement
-        this.time.addEvent({
-            delay: 2000,
-            loop: true,
-            callback: movePig,
-            callbackScope: this
-        });
-
-        this.pig.setInteractive();
-        this.pig.on('pointerdown', () => {
-            showMessage("This pig is too slippery to grab.", this);
-        });
-
-        // Drag and Drop Logic
+    
+        // Drag and Drop Logic (unchanged)
         this.input.on('dragstart', (pointer, gameObject) => {
             gameObject.setScale(0.15);  // Scale during drag
             gameObject.originalX = gameObject.x;
             gameObject.originalY = gameObject.y;
         });
-
+    
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.x = dragX;
             gameObject.y = dragY;
         });
-
+    
         this.input.on('dragend', (pointer, gameObject) => {
             gameObject.setScale(0.15);  // Reset size after dragging
-
+    
             const dropZoneBounds = this.cornDropZone.getBounds();
             const tolerance = 30;
-
+    
             // Check if the pointer is within the drop zone bounds
             if (
                 pointer.x >= dropZoneBounds.x - tolerance &&
@@ -160,17 +166,27 @@ class Poke extends Phaser.Scene {
                 gameObject.y = gameObject.originalY;
             }
         });
-
+    
         // Overlap logic to transition to the Cellar scene after unlocking the corn zone
-        this.physics.add.overlap(this.sprite, this.cornDropZone, () => {
-            if (this.isCornZoneUnlocked) {
-                console.log('Corn zone unlocked, transitioning to Cellar scene...');
-                this.scene.start('HutInterior');  // Transition to the Cellar scene
-            }
-        });
+this.physics.add.overlap(this.sprite, this.cornDropZone, () => {
+    if (this.isCornZoneUnlocked) {
+        console.log('Corn zone unlocked.');
 
-       
+        // Get the most recent HutInterior scene from localStorage
+        const lastScene = localStorage.getItem('lastVisitedHutInteriorScene');
+
+        if (lastScene) {
+            console.log(`Transitioning to ${lastScene}`);
+            this.scene.start(lastScene);  // Transition to the last visited HutInterior scene
+        } else {
+            console.log('Transitioning to HutInterior (default)');
+            this.scene.start('HutInterior');  // Default to the base HutInterior if no record is found
+        }
     }
+});
+
+    }
+    
 
     update() {
         // Player movement logic
@@ -242,39 +258,4 @@ function movePig() {
     });
 
     
-}
-
-// When corn is successfully dropped and pig crashes through the zone
-function handleCornDropSuccess(gameObject) {
-    console.log('Corn recognized');
-    
-    // Pig animation and disappearing logic
-    const targetX = 725;  // Center of the drop zone
-    this.pig.setFlipX(this.pig.x > targetX);
-    
-    this.tweens.add({
-        targets: this.pig,
-        x: targetX,
-        y: 575,
-        duration: 1000,
-        ease: 'Power2',
-        onComplete: () => {
-            this.pig.destroy();
-            const debrisCloud = this.add.image(725, 575, 'debris_cloud').setScale(1.5);
-            this.time.delayedCall(500, () => {
-                debrisCloud.destroy();
-                const graphics = this.add.graphics();
-                graphics.fillStyle(0x000000, 1);
-                graphics.fillRect(650, 450, 150, 250);
-                showMessage("The pig crashes through the wood to reach the corn.", this);
-
-                // Unlock the corn zone
-                this.isCornZoneUnlocked = true;
-            }, [], this);
-        },
-        callbackScope: this
-    });
-
-    // Remove the corn from the inventory
-    inventory.removeItem({ name: 'corn', img: 'corn' });
 }

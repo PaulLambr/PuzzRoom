@@ -9,7 +9,9 @@
         { "name": "wineskinwater", "img": "graphics/wineskin.png" },
         { "name": "mirror", "img": "graphics/mirror.png" },
         { "name": "magicmirror", "img": "graphics/mirror.png"},
-        { "name": "potentpoppy", "img": "graphics/poppy.png"}
+        { "name": "potentpoppy", "img": "graphics/poppy.png"},
+        { "name": "poppysoakedbone", "img": "graphics/bone.png"}
+
 
     ]
 }

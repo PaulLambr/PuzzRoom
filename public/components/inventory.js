@@ -20,7 +20,8 @@ addItemnp(item) {
         'corn': "This piece of corn definitely has your ear.",
         'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
         'magicmirror': "Your handy-dandy mirror went to Wizard School like Hawk from Real Bros.",
-        'potentpoppy': "A very rare and not easily attainable soporific plant."
+        'potentpoppy': "A very rare and not easily attainable soporific plant.",
+        'poppysoakedbone': "The wizard soaked the bone in a sleeping agent."
     };
 
     // Only proceed if the item is not already in the inventory
@@ -53,7 +54,9 @@ addItemnp(item) {
             'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner.",
             'corn': "This piece of corn definitely has your ear.",
             'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
-            'potentpoppy': "A very rare and not easily attainable soporific plant."
+            'potentpoppy': "A very rare and not easily attainable soporific plant.",
+            'poppysoakedbone': "The wizard soaked the bone in a sleeping agent."
+
         };
     
         // Proximity check: Calculate the distance between the player and the item

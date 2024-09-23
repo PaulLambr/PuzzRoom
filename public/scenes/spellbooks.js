@@ -135,11 +135,20 @@ class Spellbooks extends Phaser.Scene {
                 backgroundColor: '#000000'
             }).setInteractive();
         
-            // Handle clicking the Exit button to go back to the HutInterior scene
-            exitButton.on('pointerdown', () => {
-                console.log('Exiting to HutInterior');
-                this.scene.start('HutInterior');
-            });
+            // Handle clicking the Exit button to go back to the most recent HutInterior scene
+exitButton.on('pointerdown', () => {
+    // Get the most recent HutInterior scene from localStorage
+    const lastScene = localStorage.getItem('lastVisitedHutInteriorScene');
+
+    if (lastScene) {
+        console.log(`Exiting to ${lastScene}`);
+        this.scene.start(lastScene);  // Start the last visited HutInterior scene
+    } else {
+        console.log('Exiting to HutInterior (default)');
+        this.scene.start('HutInterior');  // Default to the base HutInterior if no record is found
+    }
+});
+
         
             // Set current scene in localStorage
             localStorage.setItem('currentScene', 'Spellbooks');

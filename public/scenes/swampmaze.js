@@ -84,7 +84,7 @@ class Swampmaze extends Phaser.Scene {
         this.hasTransitioned = false;
     
         // Start a countdown for 20 seconds
-        this.time.delayedCall(10000, () => {
+        this.time.delayedCall(18000, () => {
             if (!this.hasTransitioned) {
                 this.endGame();  // If the player hasn't transitioned, end the game
             }

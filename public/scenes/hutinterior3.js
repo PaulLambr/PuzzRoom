@@ -36,6 +36,8 @@ class HutInterior3 extends Phaser.Scene {
         // Set the background
         const background = this.add.image(750, 450, 'background_hi3');
         background.setDepth(0);
+
+        localStorage.setItem('lastVisitedHutInteriorScene', 'HutInterior3');
     
         // Load sprite position from localStorage or set default
         const savedX = localStorage.getItem('spriteX');
@@ -124,30 +126,61 @@ class HutInterior3 extends Phaser.Scene {
         this.input.on('dragend', (pointer, gameObject) => {
             gameObject.setScale(0.15); // Restore the original scale
             console.log('Dragged item texture key:', gameObject.texture.key);
-    
-            // Log the pointer's position
             console.log('Pointer position:', pointer.x, pointer.y);
-    
+        
+            // Check if the item is dropped on the wizard
             if (Phaser.Geom.Rectangle.Contains(wizardRectangle, pointer.x, pointer.y)) {
+                // Check for bone
                 if (gameObject.texture.key === 'bone') {
                     console.log('You give the wizard the bone.');
-                    localStorage.setItem('gamestate', 'Wuzzard has bone');
-                    showMessage("The wizard takes the bone eagerly. He says, 'Ah this is definitely a suitable snack. Now all we need is a powerful opiate.", this);
-    
-                    // Remove the magic mirror from the inventory
-                    // inventory.removeItem({ name: 'magicmirror', img: 'mirror' });
-                    // console.log('Magic Mirror removed from inventory:', inventory.items);
-                } else {
-                    showMessage("Error: The pig doesn't seem interested in this item.", this);
+                    localStorage.setItem('Wuzzard has bone?', 'True');
+                    showMessage("The wizard takes the bone eagerly. He says, 'Ah this is definitely a suitable snack. Now all we need is a powerful opiate.'", this);
+        
+                    // Remove the bone from the inventory
+                    inventory.removeItem({ name: 'bone', img: 'bone' });
+                    gameObject.destroy();  // Optionally destroy the gameObject after use
+        
+                } else if (gameObject.texture.key === 'potentpoppy') {
+                    console.log('You give the wizard the potent poppy.');
+                    localStorage.setItem('Wuzzard has potentpoppy?', 'True');
+                    showMessage("The wizard takes the potent poppy eagerly. He says, 'Ah, this is definitely a sleeping agent. Now all we need is a delivery system.'", this);
+        
+                    // Remove the potent poppy from the inventory
+                    inventory.removeItem({ name: 'potentpoppy', img: 'potentpoppy' });
+                    gameObject.destroy();  // Optionally destroy the gameObject after use
                 }
+        
+                // Check if both items have been delivered to the wizard
+                const hasBone = localStorage.getItem('Wuzzard has bone?') === 'True';
+                const hasPoppy = localStorage.getItem('Wuzzard has potentpoppy?') === 'True';
+        
+                if (hasBone && hasPoppy) {
+                    console.log('The wizard has both the bone and potent poppy.');
+                    showMessage("'That was a lot of work,' but this should put a charging rhino to sleep. Also, please take this amulet with you, I can't bear the thought of sharing a brain with that pig again. Sigh...'", this);
+        
+                    // Create the new item "Poppy-soaked bone" and add it to the inventory
+                    inventory.addItemnp({ name: 'poppysoakedbone', img: 'poppysoakedbone' });
+                    console.log('Poppy-soaked bone added to inventory:', inventory.items);
+
+                    // Create the new item "Poppy-soaked bone" and add it to the inventory
+                    inventory.addItemnp({ name: 'amulet', img: 'amulet' });
+                    console.log('Poppy-soaked bone added to inventory:', inventory.items);
+        
+                    // Optionally reset the flags if you want the process to start again
+                    localStorage.setItem('Wuzzard has bone?', 'False');
+                    localStorage.setItem('Wuzzard has potentpoppy?', 'False');
+                }
+        
             } else {
+                // If the item was not dropped on the wizard, show an error message
                 showMessage("Error: You can't drop the item here!", this);
-    
+        
                 // Return the item to its original position within the inventory panel
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;
             }
         });
+        
     }
     
 
@@ -179,8 +212,8 @@ class HutInterior3 extends Phaser.Scene {
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y > 850 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', 650);
-            localStorage.setItem('spriteY', 650);
+            localStorage.setItem('spriteX', 250);
+            localStorage.setItem('spriteY', 250);
             this.hasTransitioned = true;
             this.scene.start('Poke');
         }

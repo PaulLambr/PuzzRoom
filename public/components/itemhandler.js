@@ -1,3 +1,50 @@
+// When corn is successfully dropped and pig crashes through the zone
+function handleCornDropSuccess(gameObject) {
+    console.log('Corn recognized');
+    
+    // Pig animation and disappearing logic
+    const targetX = 725;  // Center of the drop zone
+    this.pig.setFlipX(this.pig.x > targetX);
+    
+    this.tweens.add({
+        targets: this.pig,
+        x: targetX,
+        y: 575,
+        duration: 1000,
+        ease: 'Power2',
+        onComplete: () => {
+            this.pig.destroy();
+            const debrisCloud = this.add.image(725, 575, 'debris_cloud').setScale(1.5);
+            this.time.delayedCall(500, () => {
+                debrisCloud.destroy();
+                const graphics = this.add.graphics();
+                graphics.fillStyle(0x000000, 1);
+                graphics.fillRect(650, 450, 150, 250);
+                showMessage("The pig crashes through the wood to reach the corn.", this);
+
+                // Unlock the corn zone
+                this.isCornZoneUnlocked = true;
+                localStorage.setItem('Can enter hut?', 'True');
+            }, [], this);
+        },
+        callbackScope: this
+    });
+
+    // Remove the corn from the inventory
+    inventory.removeItem({ name: 'corn', img: 'corn' });
+}
+
+function checkPigWearingAmulet(scene) {
+    const pigWearingAmulet = localStorage.getItem('Pig Wearing Amulet?') === 'True';
+    if (pigWearingAmulet) {
+        console.log('Pig is already wearing the amulet.');
+        scene.add.image(315, 310, 'amulet').setScale(0.15);
+    }
+}
+
+
+
+
 /*
 
 function handleItemInteraction(pointer, gameObject, zone, scene, inventory) {

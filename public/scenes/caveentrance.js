@@ -123,13 +123,21 @@ if (this.sprite.y > 840 && !this.hasTransitioned) {
     this.hasTransitioned = true;
     this.scene.start('Grassrivermount');
 }
-
+        // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
+        if (this.sprite.y < 106 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y + 700);
+            this.hasTransitioned = true;
+            this.scene.start('GFCM');
+        }
         // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
         if (this.sprite.x < 106 && !this.hasTransitioned) {
             localStorage.setItem('spriteX', this.sprite.x + 1330);
             localStorage.setItem('spriteY', this.sprite.y);
             this.hasTransitioned = true;
             this.scene.start('Swampmaze');
+
+            
         }
 
         // Play walking animation if moving
