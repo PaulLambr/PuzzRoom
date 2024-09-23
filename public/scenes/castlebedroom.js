@@ -165,7 +165,7 @@ class CastleBedroom extends Phaser.Scene {
             this.hasTransitioned = true;
 
             // Transition to Tower scene
-            this.scene.start('Tower');
+            this.scene.start('HutInterior');
         }
 
         if (moving) {

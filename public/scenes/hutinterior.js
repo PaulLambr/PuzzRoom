@@ -253,7 +253,7 @@ class HutInterior extends Phaser.Scene {
             localStorage.setItem('spriteX', 250);
             localStorage.setItem('spriteY', 250);
             this.hasTransitioned = true;
-            this.scene.start('Poke');
+            this.scene.start('Forest1');
         }
 
         // Play walking animation if moving

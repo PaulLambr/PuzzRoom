@@ -11,7 +11,8 @@
         { "name": "magicmirror", "img": "graphics/mirror.png"},
         { "name": "potentpoppy", "img": "graphics/poppy.png"},
         { "name": "poppysoakedbone", "img": "graphics/bone.png"},
-        { "name": "soulswitcher", "img": "graphics/graks_amulet.png"}
+        { "name": "soulswitcher", "img": "graphics/graks_amulet.png"},
+        { "name": "silversword", "img": "graphics/silver_sword.png"}
 
 
 

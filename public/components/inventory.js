@@ -56,7 +56,8 @@ addItemnp(item) {
             'corn': "This piece of corn definitely has your ear.",
             'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
             'potentpoppy': "A very rare and not easily attainable soporific plant.",
-            'poppysoakedbone': "The wizard soaked the bone in a sleeping agent."
+            'poppysoakedbone': "The wizard soaked the bone in a sleeping agent.",
+            'silversword': "The goblin guard's silver sword gleams dangerously."
 
         };
     
