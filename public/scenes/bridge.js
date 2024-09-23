@@ -168,10 +168,10 @@ class Bridge extends Phaser.Scene {
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.x > 1390 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x - 1250);
-            localStorage.setItem('spriteY', this.sprite.y);
+            localStorage.setItem('spriteX', 250);
+            localStorage.setItem('spriteY', 600);
             this.hasTransitioned = true;
-            this.scene.start('CastlePrairie');
+            this.scene.start('Forest1');
         }
 
         // Transition to dining room if sprite moves beyond 900 pixels on the bottom

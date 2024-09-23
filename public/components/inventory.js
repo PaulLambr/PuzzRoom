@@ -21,7 +21,8 @@ addItemnp(item) {
         'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
         'magicmirror': "Your handy-dandy mirror went to Wizard School like Hawk from Real Bros.",
         'potentpoppy': "A very rare and not easily attainable soporific plant.",
-        'poppysoakedbone': "The wizard soaked the bone in a sleeping agent."
+        'poppysoakedbone': "The wizard soaked the bone in a sleeping agent.",
+        'soulswitcher': "The amulet contain's the goblin guard Grak's soul."
     };
 
     // Only proceed if the item is not already in the inventory
