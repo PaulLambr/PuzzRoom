@@ -143,7 +143,7 @@ create() {
        this.cameras.main.fadeOut(2000, 0, 0, 0);
        this.cameras.main.on('camerafadeoutcomplete', () => {
            inventory.saveInventoryState(); // Save inventory before navigating away
-           this.scene.start('Cavern1');
+           this.scene.start('Cavernhall');
        });
    }
 
