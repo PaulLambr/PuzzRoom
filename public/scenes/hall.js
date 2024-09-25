@@ -42,13 +42,12 @@ class Hall extends Phaser.Scene {
         this.sprite = this.physics.add.sprite(startX, startY, 'character');
         this.sprite.setScale(3);
 
-        // Walking animation
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        // Check if the walk animation exists before attempting to play it
+    if (this.anims.exists('walk')) {
+        this.sprite.anims.play('walk', true); // Play the walking animation
+    } else {
+        console.error("Animation 'walk' does not exist");
+    }
 
         // Input cursor keys for controlling the character
         this.cursors = this.input.keyboard.createCursorKeys();

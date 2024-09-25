@@ -51,6 +51,8 @@ class CastleBedroom extends Phaser.Scene {
 
     create() {
         gameInstance = this;
+        // Use animationManager to create animations globally
+animationManager.createAnimations(this);
 
         this.add.image(750, 450, 'background');
 
@@ -59,15 +61,14 @@ class CastleBedroom extends Phaser.Scene {
         const startX = savedX ? parseFloat(savedX) : 100;
         const startY = savedY ? parseFloat(savedY) : 525;
 
+
+
         this.sprite = this.physics.add.sprite(startX, startY, 'character');
         this.sprite.setScale(3);
 
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
+
+    // Play the walking animation
+    this.sprite.anims.play('walk', true);
 
         cursors = this.input.keyboard.createCursorKeys();
 

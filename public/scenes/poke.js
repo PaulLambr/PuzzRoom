@@ -32,6 +32,19 @@ class Poke extends Phaser.Scene {
         // Create the player sprite (Make sure this is done regardless of hut state)
         this.sprite = this.physics.add.sprite(startX, startY, 'character').setScale(3).setCollideWorldBounds(true);
         this.sprite.setDepth(1);
+
+         // Remove 'walk' animation if it exists
+         if (this.anims.exists('walk')) {
+            this.anims.remove('walk');
+        }
+
+        // Recreate 'walk' animation
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
         
         // Load background (this is needed whether or not the hut is unlocked)
         const background = this.add.image(750, 450, 'background_pig').setDepth(0);

@@ -23,6 +23,10 @@ class Tower extends Phaser.Scene {
     }
 
     create() {
+
+        // Use animationManager to create animations globally
+animationManager.createAnimations(this);
+
         console.log('Creating Tower Scene');  
         this.add.image(750, 450, 'backgroundTower'); // Set tower background
 
@@ -36,13 +40,7 @@ class Tower extends Phaser.Scene {
         this.sprite = this.physics.add.sprite(startX, startY, 'character');
         this.sprite.setScale(3);
 
-        // Animation for walking
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-            frameRate: 10,
-            repeat: -1
-        });
+        this.sprite.anims.play('walk', true);
 
         // Input cursor keys for controlling the character
         this.cursors = this.input.keyboard.createCursorKeys();
@@ -87,7 +85,7 @@ class Tower extends Phaser.Scene {
         }
 
         // Show intro message when entering the Tower
-        checkIntroMessage(this, "tower", "The sounds are louder out here in the tower stairwell. They seem to be coming from below where the throne room and other royal apartments are.");
+        checkIntroMessage(this, "Tower", "The sounds are louder out here in the tower stairwell. They seem to be coming from below where the throne room and other royal apartments are.");
 
         // Reset transition state
         this.hasTransitioned = false;

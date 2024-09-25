@@ -63,6 +63,8 @@
         function create() {
             // Ensure gameInstance is set after loading completes
             gameInstance = this;  // Set gameInstance to the current scene
+            // Use animationManager to create animations globally
+animationManager.createAnimations(this);
 
             this.add.image(750, 450, 'background'); // Center the background in the game window
 
@@ -75,12 +77,8 @@
             sprite = this.physics.add.sprite(startX, startY, 'character');
             sprite.setScale(3); // Scale up the sprite
 
-            this.anims.create({
-                key: 'walk',
-                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
+            // Play the 'walk' animation that was defined globally
+        this.sprite.anims.play('walk', true);
 
             cursors = this.input.keyboard.createCursorKeys();
 
@@ -148,7 +146,7 @@
             });
 
             // Display a test message in the message panel
-            checkIntroMessage(this, "tower2","The sounds are louder out here in the tower stairwell. They seem to be coming from below where the throne room and other royal apartments are.", this);
+            checkIntroMessage(this, "Tower2","The sounds are louder out here in the tower stairwell. They seem to be coming from below where the throne room and other royal apartments are.", this);
         }
 
         function transitionToTower2() {

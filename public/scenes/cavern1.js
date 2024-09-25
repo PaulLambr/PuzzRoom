@@ -38,26 +38,37 @@ class Cavern1 extends Phaser.Scene {
         this.sprite = this.physics.add.sprite(1050, 500, 'character').setScale(3);
         this.sprite.body.collideWorldBounds = true;
 
-        // Create the walking animation for the princess
-        if (!this.anims.exists('walk')) {
-            this.anims.create({
-                key: 'walk',
-                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
+        // Remove 'walk' animation if it exists
+        if (this.anims.exists('walk')) {
+            this.anims.remove('walk');
         }
 
+        // Recreate 'walk' animation
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Remove 'walk' animation if it exists
+       if (this.anims.exists('goblinWalk3')) {
+        this.anims.remove('goblinWalk3');
+    }
         // Create the walking animation for Goblin Girl
-        if (!this.anims.exists('goblinWalk')) {
+        if (!this.anims.exists('goblinWalk3')) {
             this.anims.create({
-                key: 'goblinWalk',
+                key: 'goblinWalk3',
                 frames: this.anims.generateFrameNumbers('goblingirl', { start: 0, end: 5 }),
                 frameRate: 10,
                 repeat: -1
             });
         }
 
+        // Remove 'walk' animation if it exists
+       if (this.anims.exists('goblinKingwalk')) {
+        this.anims.remove('goblinKingwalk');
+    }
         // Create the walking animation for Goblin King
         if (!this.anims.exists('goblinKingWalk')) {
             this.anims.create({
@@ -143,8 +154,8 @@ class Cavern1 extends Phaser.Scene {
         if (moving) {
             if (this.isGoblinForm) {
                 // Play Goblin Girl walking animation
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk') {
-                    this.sprite.anims.play('goblinWalk', true);
+                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk3') {
+                    this.sprite.anims.play('goblinWalk3', true);
                 }
             } else {
                 // Play Princess walking animation
@@ -184,7 +195,7 @@ class Cavern1 extends Phaser.Scene {
     console.log("Current sprite texture after transformation:", this.sprite.texture.key);
 
     // Ensure Goblin Girl's walk animation starts
-    this.sprite.anims.play('goblinWalk', true);
+    this.sprite.anims.play('goblinWalk3', true);
 
     showMessage("You have transformed into the Goblin Girl!", this);
     localStorage.setItem('isGoblinForm', true);  // Set true when transforming into Goblin Girl
@@ -198,7 +209,7 @@ class Cavern1 extends Phaser.Scene {
         showMessage("The Goblin Girl is free!", this);
 
         // Ensure Goblin Girl's walk animation plays continuously
-        this.sprite.anims.play('goblinWalk', true);
+        this.sprite.anims.play('goblinWalk3', true);
 
         // Exit Goblin King
         this.exitGoblinKing();

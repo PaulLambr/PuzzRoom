@@ -66,16 +66,25 @@ create() {
        // Create goblin sprite (invisible initially)
        this.goblin = this.physics.add.sprite(50, 600, 'goblin').setScale(3).setVisible(false);
    
-       // Walking animation
-       this.anims.create({
-           key: 'walk',
-           frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-           frameRate: 10,
-           repeat: -1
-       });
+       // Remove 'walk' animation if it exists
+       if (this.anims.exists('walk')) {
+        this.anims.remove('walk');
+    }
+
+    // Recreate 'walk' animation
+    this.anims.create({
+        key: 'walk',
+        frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
    
+    // Remove 'walk' animation if it exists
+   if (this.anims.exists('goblinwalk2')) {
+    this.anims.remove('goblinwalk2');
+}
        this.anims.create({
-           key: 'goblinWalk',
+           key: 'goblinWalk2',
            frames: this.anims.generateFrameNumbers('goblin', { start: 0, end: 5 }),
            frameRate: 10,
            repeat: -1
@@ -114,7 +123,7 @@ create() {
    
        // After 4 seconds, goblin appears and starts walking
        this.time.delayedCall(4000, () => {
-           this.goblin.setVisible(true).anims.play('goblinWalk', true);
+           this.goblin.setVisible(true).anims.play('goblinWalk2', true);
            this.physics.moveTo(this.goblin, 500, 600, 100);
        });
    
@@ -143,7 +152,7 @@ create() {
        this.cameras.main.fadeOut(2000, 0, 0, 0);
        this.cameras.main.on('camerafadeoutcomplete', () => {
            inventory.saveInventoryState(); // Save inventory before navigating away
-           this.scene.start('Cavernhall');
+           this.scene.start('Cavern1');
        });
    }
 

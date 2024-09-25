@@ -48,10 +48,15 @@ class Bridge extends Phaser.Scene {
         this.sprite.setDepth(1);
         this.sprite.body.collideWorldBounds = true;
 
-        // Walking animation
+        // Remove 'walk' animation if it exists
+        if (this.anims.exists('walk')) {
+            this.anims.remove('walk');
+        }
+
+        // Recreate 'walk' animation
         this.anims.create({
             key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
+            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
             frameRate: 10,
             repeat: -1
         });
