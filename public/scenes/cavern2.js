@@ -1,6 +1,5 @@
-/* 
+/*
 
-back up
 
 class Cavern1 extends Phaser.Scene {
     constructor() {
@@ -42,26 +41,37 @@ class Cavern1 extends Phaser.Scene {
         this.sprite = this.physics.add.sprite(1050, 500, 'character').setScale(3);
         this.sprite.body.collideWorldBounds = true;
 
-        // Create the walking animation for the princess
-        if (!this.anims.exists('walk')) {
-            this.anims.create({
-                key: 'walk',
-                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
+        // Remove 'walk' animation if it exists
+        if (this.anims.exists('walk')) {
+            this.anims.remove('walk');
         }
 
+        // Recreate 'walk' animation
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Remove 'walk' animation if it exists
+       if (this.anims.exists('goblinWalk3')) {
+        this.anims.remove('goblinWalk3');
+    }
         // Create the walking animation for Goblin Girl
-        if (!this.anims.exists('goblinWalk')) {
+        if (!this.anims.exists('goblinWalk3')) {
             this.anims.create({
-                key: 'goblinWalk',
+                key: 'goblinWalk3',
                 frames: this.anims.generateFrameNumbers('goblingirl', { start: 0, end: 5 }),
                 frameRate: 10,
                 repeat: -1
             });
         }
 
+        // Remove 'walk' animation if it exists
+       if (this.anims.exists('goblinKingwalk')) {
+        this.anims.remove('goblinKingwalk');
+    }
         // Create the walking animation for Goblin King
         if (!this.anims.exists('goblinKingWalk')) {
             this.anims.create({
@@ -147,8 +157,8 @@ class Cavern1 extends Phaser.Scene {
         if (moving) {
             if (this.isGoblinForm) {
                 // Play Goblin Girl walking animation
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk') {
-                    this.sprite.anims.play('goblinWalk', true);
+                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk3') {
+                    this.sprite.anims.play('goblinWalk3', true);
                 }
             } else {
                 // Play Princess walking animation
@@ -163,13 +173,20 @@ class Cavern1 extends Phaser.Scene {
         }
 
         // Check if Goblin Girl moves past x = 100 and transition to the Bridge scene
-    if (this.sprite.x < 100 && !this.hasTransitioned) {
-        localStorage.setItem('spriteX', 500);  // Set new starting position in the next scene
-        localStorage.setItem('spriteY', 300);
+    if (this.sprite.x < 200 && !this.hasTransitioned) {
+        localStorage.setItem('spriteX', this.sprite.x + 1100);  // Set new starting position in the next scene
+        localStorage.setItem('spriteY', this.sprite.y);
         this.hasTransitioned = true;
 
         // Transition to the Bridge scene
         this.scene.start('Cavernhall');
+    }
+
+    if (this.sprite.x > 1400) {
+        console.log('Transitioning to Cavern1 scene');
+        localStorage.setItem('spriteX', this.sprite.x - 1300);  // Optionally save the sprite's current position
+        localStorage.setItem('spriteY', this.sprite.y);  // Optionally save the sprite's current position
+        this.scene.start('Cavernhall2');
     }
     }
 
@@ -188,7 +205,7 @@ class Cavern1 extends Phaser.Scene {
     console.log("Current sprite texture after transformation:", this.sprite.texture.key);
 
     // Ensure Goblin Girl's walk animation starts
-    this.sprite.anims.play('goblinWalk', true);
+    this.sprite.anims.play('goblinWalk3', true);
 
     showMessage("You have transformed into the Goblin Girl!", this);
     localStorage.setItem('isGoblinForm', true);  // Set true when transforming into Goblin Girl
@@ -202,7 +219,7 @@ class Cavern1 extends Phaser.Scene {
         showMessage("The Goblin Girl is free!", this);
 
         // Ensure Goblin Girl's walk animation plays continuously
-        this.sprite.anims.play('goblinWalk', true);
+        this.sprite.anims.play('goblinWalk3', true);
 
         // Exit Goblin King
         this.exitGoblinKing();
@@ -368,207 +385,4 @@ class Cavern1 extends Phaser.Scene {
     }
 }    
 
-
-cavern3
-class Cavernhall extends Phaser.Scene {
-    constructor() {
-        super({ key: 'Cavernhall' });
-    }
-
-    preload() {
-        // Preload assets
-        this.load.image('background_c3', 'graphics/cavern.png');
-        this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
-        this.load.spritesheet('goblingirl', 'graphics/goblingirl.png', { frameWidth: 28.5, frameHeight: 70 });
-        this.load.image('grak', 'graphics/grak.png'); // Grak guard sprite
-        this.load.image('door', 'graphics/door.png'); // Door for interactive zone
-        this.load.image('amulet', 'graphics/graks_amulet.png'); // Amulet image
-    }
-
-    create() {
-        console.log('Creating Cavernhall scene');
-    
-        // Set the background
-        const background = this.add.image(750, 450, 'background_c3');
-        background.setDepth(0);
-    
-        // Initialize the inventory
-        createInventory(this);
-    
-        // Reset message panel if it exists
-        if (messagePanel) {
-            messagePanel.destroy();
-            messagePanel = null;
-        }
-    
-        // Show intro message when entering Cavernhall
-        checkIntroMessage(this, "Cavernhall", "Nothing is as it seems.", this);
-    
-        // Set the sprite to appear in the middle of the canvas
-        const startX = 750; // Center X of the canvas
-        const startY = 450; // Center Y of the canvas
-    
-        // Retrieve isGoblinForm from local storage or set default to false (princess)
-        this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
-    
-        // Create walking animations for both forms
-        if (!this.anims.exists('walk')) {
-            this.anims.create({
-                key: 'walk',
-                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
-        }
-    
-        // Remove 'walk' animation if it exists
-       if (this.anims.exists('goblinwalk')) {
-        this.anims.remove('goblinwalk');
-    }
-
-        if (!this.anims.exists('goblinWalk')) {
-            this.anims.create({
-                key: 'goblinWalk',
-                frames: this.anims.generateFrameNumbers('goblingirl', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
-        }
-    
-        // Create the main sprite for the player character based on isGoblinForm
-        this.sprite = this.physics.add.sprite(startX, startY, this.isGoblinForm ? 'goblingirl' : 'character');
-        this.sprite.setScale(3);
-        this.sprite.setDepth(1);
-        this.sprite.body.collideWorldBounds = true;
-    
-        // Play the correct animation on creation
-        this.sprite.anims.play(this.isGoblinForm ? 'goblinWalk' : 'walk', true);
-    
-        // Input cursor keys for controlling the character
-        this.cursors = this.input.keyboard.createCursorKeys();
-    
-        // Input keyboard for transitioning between forms
-        this.input.keyboard.on('keydown-T', () => {
-            this.toggleForm();
-        });
-    
-        // Add Grak the guard sprite at the defined position
-        this.grak = this.add.sprite(550, 260, 'grak').setScale(1.5);
-        
-        // Convert Grak to an interactive zone with radius 100
-        this.grakZone = this.add.zone(550, 260, 200, 200).setCircleDropZone(100);
-        this.physics.add.existing(this.grakZone, true);
-        
-        // Enable interaction with Grak
-        this.grakZone.setInteractive();
-        
-        // Create an interactive zone near the door
-        this.createInteractiveZones();
-    
-        // Create amulet object for dragging
-        this.createAmulet();
-    }
-    
-    toggleForm() {
-        // Toggle the form
-        this.isGoblinForm = !this.isGoblinForm;
-        
-        // Save the updated form to local storage
-        localStorage.setItem('isGoblinForm', this.isGoblinForm);
-    
-        // Stop any currently playing animations
-        this.sprite.anims.stop();
-    
-        // Switch the sprite texture and play the appropriate animation
-        if (this.isGoblinForm) {
-            this.sprite.setTexture('goblingirl'); // Switch to goblin girl texture
-            this.sprite.anims.play('goblinWalk', true); // Play goblin girl walking animation
-        } else {
-            this.sprite.setTexture('character'); // Switch to princess texture
-            this.sprite.anims.play('walk', true); // Play princess walking animation
-        }
-    }
-    
-
-    createInteractiveZones() {
-        // Create door interactive zone
-        const doorZone = this.add.zone(350, 175, 220, 250).setRectangleDropZone(175, 250);
-        this.physics.add.existing(doorZone, true);
-        const doorImage = this.add.image(350, 175, 'door').setScale(1);
-        doorZone.setInteractive();
-        doorZone.on('pointerdown', () => {
-            showMessage("You hear goblin revelry.", this);
-        });
-    }
-
-    createAmulet() {
-        // Create the amulet sprite and make it draggable
-        const amulet = this.add.sprite(100, 100, 'amulet').setScale(1.5);
-        amulet.setInteractive({ draggable: true });
-
-        this.input.setDraggable(amulet);
-
-        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        });
-
-        // Check for drag drop over Grak zone
-        this.input.on('dragend', (pointer, gameObject) => {
-            if (Phaser.Geom.Intersects.CircleToRectangle(this.grakZone.input.hitArea, gameObject.getBounds())) {
-                this.sprite.setTexture('goblingirl'); // Change to goblin girl when amulet is dropped on Grak
-                this.sprite.anims.play('goblinWalk', true); // Play goblin girl walking animation
-                showMessage("Grak acknowledges your transformation.", this);
-            }
-        });
-    }
-
-    update() {
-        console.log(this.sprite.anims.currentAnim ? this.sprite.anims.currentAnim.key : 'No animation playing');
-    
-        let moving = false;
-    
-        // Character movement logic
-        if (this.cursors.left.isDown) {
-            this.sprite.setVelocityX(-200);
-            this.sprite.setFlipX(true);
-            moving = true;
-        } else if (this.cursors.right.isDown) {
-            this.sprite.setVelocityX(200);
-            this.sprite.setFlipX(false);
-            moving = true;
-        } else {
-            this.sprite.setVelocityX(0);
-        }
-    
-        if (this.cursors.up.isDown) {
-            this.sprite.setVelocityY(-200);
-            moving = true;
-        } else if (this.cursors.down.isDown) {
-            this.sprite.setVelocityY(200);
-            moving = true;
-        } else {
-            this.sprite.setVelocityY(0);
-        }
-    
-        // Play the correct walking animation based on the current form
-        if (moving) {
-            if (this.isGoblinForm) {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk') {
-                    this.sprite.anims.play('goblinWalk', true);  // Play Goblin Girl walking animation
-                }
-            } else {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
-                    this.sprite.anims.play('walk', true);  // Play Princess walking animation
-                }
-            }
-        } else {
-            this.sprite.setVelocity(0, 0);
-            this.sprite.anims.stop();
-            this.sprite.setFrame(1);  // Reset to idle frame
-        }
-    }
-}
-
 */
-

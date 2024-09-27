@@ -19,6 +19,7 @@ class Cavern1 extends Phaser.Scene {
         this.load.image('silversword', 'graphics/silver_sword.png');
         this.load.image('door', 'graphics/door.png');
         this.load.image('grak', 'graphics/grak.png');
+        this.load.image('dooropen', 'graphics/dooropen.png');  // Preload door open image
     }
 
     create() {
@@ -170,13 +171,20 @@ class Cavern1 extends Phaser.Scene {
         }
 
         // Check if Goblin Girl moves past x = 100 and transition to the Bridge scene
-    if (this.sprite.x < 100 && !this.hasTransitioned) {
-        localStorage.setItem('spriteX', 500);  // Set new starting position in the next scene
-        localStorage.setItem('spriteY', 300);
+    if (this.sprite.x < 200 && !this.hasTransitioned) {
+        localStorage.setItem('spriteX', this.sprite.x + 1100);  // Set new starting position in the next scene
+        localStorage.setItem('spriteY', this.sprite.y);
         this.hasTransitioned = true;
 
         // Transition to the Bridge scene
         this.scene.start('Cavernhall');
+    }
+
+    if (this.sprite.x > 1400) {
+        console.log('Transitioning to Cavern1 scene');
+        localStorage.setItem('spriteX', this.sprite.x - 1300);  // Optionally save the sprite's current position
+        localStorage.setItem('spriteY', this.sprite.y);  // Optionally save the sprite's current position
+        this.scene.start('Cavernhall2');
     }
     }
 

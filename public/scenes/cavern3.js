@@ -36,9 +36,11 @@ class Cavernhall extends Phaser.Scene {
           hashmarkGraphics = this.add.graphics();
           this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
     
-        // Set the sprite to appear in the middle of the canvas
-        const startX = 750; // Center X of the canvas
-        const startY = 450; // Center Y of the canvas
+        // Load the sprite's previous coordinates from localStorage, if available
+        const savedX = localStorage.getItem('spriteX');
+        const savedY = localStorage.getItem('spriteY');
+        const startX = savedX ? parseFloat(savedX) : 100;
+        const startY = savedY ? parseFloat(savedY) : 525;
     
         // Retrieve isGoblinForm from local storage or set default to false (princess)
         this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
@@ -146,7 +148,7 @@ class Cavernhall extends Phaser.Scene {
         // Play the correct walking animation based on the current form
         if (moving) {
             if (this.isGoblinForm) {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk') {
+                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk4') {
                     this.sprite.anims.play('goblinWalk4', true);  // Play Goblin Girl walking animation
                 }
             } else {
@@ -163,8 +165,15 @@ class Cavernhall extends Phaser.Scene {
         if (this.sprite.x > 550 && this.sprite.x < 800 && this.sprite.y < 300) {
             console.log('Transitioning to Cavern1 scene');
             localStorage.setItem('spriteX', this.sprite.x);  // Optionally save the sprite's current position
+            localStorage.setItem('spriteY', this.sprite.y + 400);  // Optionally save the sprite's current position
+            this.scene.start('Cavernthrone');
+        }
+        
+        if (this.sprite.x > 1400) {
+            console.log('Transitioning to Cavern1 scene');
+            localStorage.setItem('spriteX', this.sprite.x - 1300);  // Optionally save the sprite's current position
             localStorage.setItem('spriteY', this.sprite.y);  // Optionally save the sprite's current position
-            this.scene.start('Cavern1');
+            this.scene.start('Cavern1b');
         }
         
     }
