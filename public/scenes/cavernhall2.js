@@ -166,7 +166,7 @@ class Cavernhall2 extends Phaser.Scene {
             console.log('Transitioning to Caverntower1 scene');
             localStorage.setItem('spriteX', 450);  // Optionally save the sprite's current position
             localStorage.setItem('spriteY', 450);  // Optionally save the sprite's current position
-            this.scene.start('Caverntower1b');
+            this.scene.start('Caverntower1');
         }
 
         if (this.sprite.x < 100) {

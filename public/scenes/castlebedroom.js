@@ -166,7 +166,7 @@ animationManager.createAnimations(this);
             this.hasTransitioned = true;
 
             // Transition to Tower scene
-            this.scene.start('HallThrone');
+            this.scene.start('Tower');
         }
 
         if (moving) {

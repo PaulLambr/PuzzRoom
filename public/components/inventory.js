@@ -57,7 +57,9 @@ addItemnp(item) {
             'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
             'potentpoppy': "A very rare and not easily attainable soporific plant.",
             'poppysoakedbone': "The wizard soaked the bone in a sleeping agent.",
-            'silversword': "The goblin guard's silver sword gleams dangerously."
+            'silversword': "The goblin guard's silver sword gleams dangerously.",
+            'mirrorshard': "It's a shard of the exploded magic mirror in the Goblin King's private quarters."
+
 
         };
     

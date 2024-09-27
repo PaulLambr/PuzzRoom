@@ -21,7 +21,8 @@ class Cavern1b extends Phaser.Scene {
 
     create() {
         console.log('Creating Cavern1b scene');
-    
+        this.hasTransitioned = false;
+
         // Set the background
         const background = this.add.image(750, 450, 'background_cavb');
         background.setDepth(0);
@@ -186,7 +187,7 @@ class Cavern1b extends Phaser.Scene {
         
 
          // Check if Goblin Girl moves past x = 100 and transition to the Bridge scene
-    if (this.sprite.x < 200 && !this.hasTransitioned) {
+    if (this.sprite.x < 150 && !this.hasTransitioned) {
         localStorage.setItem('spriteX', this.sprite.x + 1100);  // Set new starting position in the next scene
         localStorage.setItem('spriteY', this.sprite.y);
         this.hasTransitioned = true;
@@ -257,9 +258,6 @@ class Cavern1b extends Phaser.Scene {
     unlockDoor(gameObject) {
         // Overlay the 'dooropen' image on top of the 'door' image
         this.add.image(350, 175, 'dooropen').setScale(1).setDepth(1);
-    
-        // Destroy the keys as they are used up
-        gameObject.destroy();
     
         showMessage("The door is unlocked!", this);
     

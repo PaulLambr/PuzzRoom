@@ -163,11 +163,23 @@ class Caverntower2 extends Phaser.Scene {
         }
 
         if (this.sprite.x > 1300 && this.sprite.x < 1500 && this.sprite.y < 106) {
-            console.log('Transitioning to Cavernbedroom scene');
-            localStorage.setItem('spriteX', 150);  // Optionally save the sprite's current position
-            localStorage.setItem('spriteY', 535);  // Optionally save the sprite's current position
-            this.scene.start('Cavernbedroom');
+            const hasShard = localStorage.getItem('has shard') === 'true';  // Check if 'has shard' is true in localStorage
+            
+            if (hasShard) {
+                // If the shard has already been collected, transition to Cavernbedroom2
+                console.log('Transitioning to Cavernbedroom2 scene');
+                localStorage.setItem('spriteX', 150);  // Optionally save the sprite's current position
+                localStorage.setItem('spriteY', 535);  // Optionally save the sprite's current position
+                this.scene.start('Cavernbedroom2');  // Transition to Cavernbedroom2
+            } else {
+                // Otherwise, transition to Cavernbedroom
+                console.log('Transitioning to Cavernbedroom scene');
+                localStorage.setItem('spriteX', 150);  // Optionally save the sprite's current position
+                localStorage.setItem('spriteY', 535);  // Optionally save the sprite's current position
+                this.scene.start('Cavernbedroom');  // Transition to Cavernbedroom
+            }
         }
+        
         
 
         if (this.sprite.x < 150 && this.sprite.y > 0 && this.sprite.y < 150) {

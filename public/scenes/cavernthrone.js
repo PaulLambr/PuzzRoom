@@ -36,9 +36,11 @@ class Cavernthrone extends Phaser.Scene {
           hashmarkGraphics = this.add.graphics();
           this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
     
-        // Set the sprite to appear in the middle of the canvas
-        const startX = 750; // Center X of the canvas
-        const startY = 450; // Center Y of the canvas
+        // Load the sprite's previous coordinates from localStorage, if available
+        const savedX = localStorage.getItem('spriteX');
+        const savedY = localStorage.getItem('spriteY');
+        const startX = savedX ? parseFloat(savedX) : 100;
+        const startY = savedY ? parseFloat(savedY) : 525;
     
         // Retrieve isGoblinForm from local storage or set default to false (princess)
         this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
@@ -161,9 +163,9 @@ class Cavernthrone extends Phaser.Scene {
         }
 
         if (this.sprite.y > 900) {
-            console.log('Transitioning to Cavern1 scene');
+            console.log('Transitioning to Cavernhall scene');
             localStorage.setItem('spriteX', this.sprite.x);  // Optionally save the sprite's current position
-            localStorage.setItem('spriteY', this.sprite.y - 700);  // Optionally save the sprite's current position
+            localStorage.setItem('spriteY', 500);  // Optionally save the sprite's current position
             this.scene.start('Cavernhall');
         }
         

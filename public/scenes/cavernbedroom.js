@@ -114,62 +114,141 @@ class Cavernbedroom extends Phaser.Scene {
         }
     }
     
-
-   
-
     update() {
         console.log(this.sprite.anims.currentAnim ? this.sprite.anims.currentAnim.key : 'No animation playing');
     
-        let moving = false;
+        if (!this.isFrozen) {
+            let moving = false;
     
-        // Character movement logic
-        if (this.cursors.left.isDown) {
-            this.sprite.setVelocityX(-200);
-            this.sprite.setFlipX(true);
-            moving = true;
-        } else if (this.cursors.right.isDown) {
-            this.sprite.setVelocityX(200);
-            this.sprite.setFlipX(false);
-            moving = true;
-        } else {
-            this.sprite.setVelocityX(0);
-        }
+            // Character movement logic
+            if (this.cursors.left.isDown) {
+                this.sprite.setVelocityX(-200);
+                this.sprite.setFlipX(true);
+                moving = true;
+            } else if (this.cursors.right.isDown) {
+                this.sprite.setVelocityX(200);
+                this.sprite.setFlipX(false);
+                moving = true;
+            } else {
+                this.sprite.setVelocityX(0);
+            }
     
-        if (this.cursors.up.isDown) {
-            this.sprite.setVelocityY(-200);
-            moving = true;
-        } else if (this.cursors.down.isDown) {
-            this.sprite.setVelocityY(200);
-            moving = true;
-        } else {
-            this.sprite.setVelocityY(0);
-        }
+            if (this.cursors.up.isDown) {
+                this.sprite.setVelocityY(-200);
+                moving = true;
+            } else if (this.cursors.down.isDown) {
+                this.sprite.setVelocityY(200);
+                moving = true;
+            } else {
+                this.sprite.setVelocityY(0);
+            }
     
-        // Play the correct walking animation based on the current form
-        if (moving) {
-            if (this.isGoblinForm) {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk4') {
-                    this.sprite.anims.play('goblinWalk4', true);  // Play Goblin Girl walking animation
+            // Play the correct walking animation based on the current form
+            if (moving) {
+                if (this.isGoblinForm) {
+                    if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk4') {
+                        this.sprite.anims.play('goblinWalk4', true);  // Play Goblin Girl walking animation
+                    }
+                } else {
+                    if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
+                        this.sprite.anims.play('walk', true);  // Play Princess walking animation
+                    }
                 }
             } else {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
-                    this.sprite.anims.play('walk', true);  // Play Princess walking animation
-                }
+                this.sprite.setVelocity(0, 0);
+                this.sprite.anims.stop();
+                this.sprite.setFrame(1);  // Reset to idle frame
             }
-        } else {
-            this.sprite.setVelocity(0, 0);
-            this.sprite.anims.stop();
-            this.sprite.setFrame(1);  // Reset to idle frame
+    
+            // Check if the sprite is within the circle to display the reflection
+            const spriteX = this.sprite.x;
+            const spriteY = this.sprite.y;
+            const distanceToMirror = Phaser.Math.Distance.Between(spriteX, spriteY, 725, 400);
+    
+            if (distanceToMirror <= 100 && !this.hasSeenReflection) {
+                // Trigger the reflection and freeze
+                this.showReflection(spriteX, spriteY);
+                this.triggerMirrorEffect();
+            } else if (this.hasSeenReflection && this.reflection) {
+                // Keep the reflection visible even after the freeze begins
+                this.reflection.setVisible(true);
+            }
         }
-        
-
+    
+        // Scene transition logic (example)
         if (this.sprite.x < 150) {
             console.log('Transitioning to Cavernhall2 scene');
-            localStorage.setItem('spriteX', 1300);  // Optionally save the sprite's current position
-            localStorage.setItem('spriteY', 250);  // Optionally save the sprite's current position
+            localStorage.setItem('spriteX', 1300);  // Save the sprite's position for the next scene
+            localStorage.setItem('spriteY', 250);
             this.scene.start('Caverntower2');
         }
-        
-        
     }
-}
+    
+    // Function to create a mirror reflection
+    showReflection(spriteX, spriteY) {
+        if (!this.reflection) {
+            // Create the reflection sprite at (725, 200)
+            this.reflection = this.add.sprite(725, 190, this.isGoblinForm ? 'goblingirl' : 'character')
+                .setFlipY(false)     // Keep it right-side up
+                .setFlipX(false)     // No horizontal flip (mirror effect)
+                .setScale(1.9)       // Slightly smaller reflection
+                .setAlpha(0.5);      // Semi-transparent for reflection effect
+    
+            this.reflection.setDepth(0); // Ensure it appears behind other objects
+        }
+    
+        // Get the current frame index (ensure it doesn't exceed the frame count)
+        const currentFrame = this.sprite.anims.currentFrame.index;
+        const maxFrameIndex = this.anims.get(this.isGoblinForm ? 'goblinWalk4' : 'walk').frames.length - 1;
+        const validFrame = Math.min(currentFrame, maxFrameIndex); // Ensure the frame index is valid
+    
+        // Set the reflection frame
+        this.reflection.setFrame(validFrame);
+    }
+    
+    // Function to trigger the mirror effect, freeze the sprite, and transition scenes
+    triggerMirrorEffect() {
+        // Show the message
+        showMessage("This must be a magic mirror. You feel something tear apart at your soul. The amulet around your neck has become as heavy as a boat anchor.", this);
+    
+        // Freeze the character in place by disabling movement
+        this.sprite.setVelocity(0);
+        this.isFrozen = true;
+        this.hasSeenReflection = true;
+    
+        // Stop animations
+        this.sprite.anims.stop();
+    
+        // Ensure the reflection remains visible for the duration of the effect
+        if (this.reflection) {
+            this.reflection.setVisible(true); // Keep reflection visible during the freeze
+        }
+    
+        // Set a 5-second freeze
+        this.time.delayedCall(5000, () => {
+            // Camera shake for 4 seconds
+            this.cameras.main.shake(4000, 0.01);
+    
+            // After shake completes, fade to black for 2 seconds
+            this.time.delayedCall(4000, () => {
+                this.cameras.main.fadeOut(2000, 0, 0, 0);  // Fade out over 2 seconds
+    
+                // After fade out completes, switch to the next scene
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    localStorage.setItem('spriteX', this.sprite.x);  // Save the sprite's position for the next scene
+                    localStorage.setItem('spriteY', this.sprite.y);
+                    this.scene.start('Cavernbedroom2');  // Start the next scene
+                    
+                    // Fade in the new scene over 2 seconds
+                    this.cameras.main.fadeIn(2000, 0, 0, 0);  // Fade in over 2 seconds
+                });
+    
+                // Flash after fade-out
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    this.cameras.main.flash(3000, 255, 255, 255); // Flash for 3 seconds
+                });
+            });
+        });
+    }
+    
+}    

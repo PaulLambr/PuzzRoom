@@ -327,6 +327,23 @@ class Cavern1 extends Phaser.Scene {
                 inventory.updateInventoryDisplay();
                 gameObject.destroy();
             }
+
+            // Ensure doorZone exists and has bounds before using them
+    if (this.doorZone) {
+        const doorBounds = this.doorZone.getBounds();
+        const pointerX = pointer.worldX || pointer.x;
+        const pointerY = pointer.worldY || pointer.y;
+
+        // Check if the keys were dropped on the door
+        if (Phaser.Geom.Rectangle.Contains(doorBounds, pointerX, pointerY) && gameObject.texture.key === 'keys') {
+            this.unlockDoor(gameObject);  // Call the door unlock function
+        } else {
+            // Return the item to the inventory if not dropped on the door
+            inventory.addItemnp({ name: gameObject.texture.key, img: gameObject.texture.key });
+            inventory.updateInventoryDisplay();
+            gameObject.destroy();
+        }
+    }
         });
     }
 
@@ -359,14 +376,20 @@ class Cavern1 extends Phaser.Scene {
     }
 
     createInteractiveZones() {
-        const doorZone = this.add.zone(350, 175, 220, 250).setRectangleDropZone(175, 250);
-        this.physics.add.existing(doorZone, true);
+        // Create doorZone and assign it to this.doorZone for global access
+        this.doorZone = this.add.zone(350, 175, 220, 250).setRectangleDropZone(175, 250);
+        this.physics.add.existing(this.doorZone, true); // Enable physics
+        
+        // Add the door image
         const doorImage = this.add.image(350, 175, 'door').setScale(1);
-        doorZone.setInteractive();
-        doorZone.on('pointerdown', () => {
+        
+        // Make doorZone interactive
+        this.doorZone.setInteractive();
+        this.doorZone.on('pointerdown', () => {
             showMessage("You hear goblin revelry.", this);
         });
     }
+    
 
     gameOver() {
         this.sprite.setVelocity(0, 0);  // Stop any movement of the sprite
@@ -379,6 +402,19 @@ class Cavern1 extends Phaser.Scene {
             this.cameras.main.fadeOut(1000, 0, 0, 0, () => {
                 this.scene.restart();  // Restart the scene after fade-out
             });
+        });
+    }
+
+    unlockDoor(gameObject) {
+        // Overlay the 'dooropen' image on top of the 'door' image
+        this.add.image(350, 175, 'dooropen').setScale(1).setDepth(1);
+    
+        showMessage("The door is unlocked!", this);
+    
+        // Add collision detection between the player and the open door
+        this.physics.add.overlap(this.sprite, this.doorZone, () => {
+            // Transition to the next scene (Caverncellar)
+            this.scene.start('Caverncellar');
         });
     }
 }    
