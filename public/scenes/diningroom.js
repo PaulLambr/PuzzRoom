@@ -164,7 +164,7 @@ this.input.on('dragend', (pointer, gameObject) => {
         this.rectangleZone2.destroy(); // Remove the original zone
 
         // Replace with the open door image
-        this.doorOpenImage = this.add.image(1130, 125, 'dooropen').setScale(0.75);
+        this.doorOpenImage = this.add.image(1135, 115, 'dooropen').setScale(0.77);
 
         // Create a new interactive zone for the open door
         this.doorOpenZone = this.add.zone(1130, 125, 190, 190);

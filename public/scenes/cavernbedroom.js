@@ -185,26 +185,30 @@ class Cavernbedroom extends Phaser.Scene {
     }
     
     // Function to create a mirror reflection
-    showReflection(spriteX, spriteY) {
-        if (!this.reflection) {
-            // Create the reflection sprite at (725, 200)
-            this.reflection = this.add.sprite(725, 190, this.isGoblinForm ? 'goblingirl' : 'character')
-                .setFlipY(false)     // Keep it right-side up
-                .setFlipX(false)     // No horizontal flip (mirror effect)
-                .setScale(1.9)       // Slightly smaller reflection
-                .setAlpha(0.5);      // Semi-transparent for reflection effect
-    
-            this.reflection.setDepth(0); // Ensure it appears behind other objects
-        }
-    
-        // Get the current frame index (ensure it doesn't exceed the frame count)
-        const currentFrame = this.sprite.anims.currentFrame.index;
-        const maxFrameIndex = this.anims.get(this.isGoblinForm ? 'goblinWalk4' : 'walk').frames.length - 1;
-        const validFrame = Math.min(currentFrame, maxFrameIndex); // Ensure the frame index is valid
-    
-        // Set the reflection frame
-        this.reflection.setFrame(validFrame);
+showReflection(spriteX, spriteY) {
+    if (!this.reflection) {
+        // Create the reflection sprite at (725, 200)
+        this.reflection = this.add.sprite(725, 190, this.isGoblinForm ? 'goblingirl' : 'character')
+            .setFlipY(false)     // Keep it right-side up
+            .setFlipX(this.sprite.flipX) // Mirror the sprite's horizontal flip (direction)
+            .setScale(1.9)       // Slightly smaller reflection
+            .setAlpha(0.5);      // Semi-transparent for reflection effect
+
+        this.reflection.setDepth(0); // Ensure it appears behind other objects
     }
+
+    // Update the reflection's flipX to match the player's flipX
+    this.reflection.setFlipX(this.sprite.flipX); // Flip the reflection in relation to the sprite
+
+    // Get the current frame index (ensure it doesn't exceed the frame count)
+    const currentFrame = this.sprite.anims.currentFrame.index;
+    const maxFrameIndex = this.anims.get(this.isGoblinForm ? 'goblinWalk4' : 'walk').frames.length - 1;
+    const validFrame = Math.min(currentFrame, maxFrameIndex); // Ensure the frame index is valid
+
+    // Set the reflection frame
+    this.reflection.setFrame(validFrame);
+}
+
     
     // Function to trigger the mirror effect, freeze the sprite, and transition scenes
     triggerMirrorEffect() {

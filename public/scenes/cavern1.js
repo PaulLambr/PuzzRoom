@@ -103,7 +103,7 @@ class Cavern1 extends Phaser.Scene {
         inventory.updateInventoryDisplay();
 
         // Start a delayed event for spawning the Goblin King
-        this.time.delayedCall(10000, this.spawnGoblinKing, [], this);
+        this.time.delayedCall(40000, this.spawnGoblinKing, [], this);
     }
 
     update() {
@@ -351,6 +351,9 @@ class Cavern1 extends Phaser.Scene {
         console.log("Removing amulet from inventory...");
         console.log("Adding SoulSwitcher to inventory...");
         inventory.addItemnp({ name: 'soulswitcher', img: 'soulswitcher' });
+        // Remove the bone from the inventory
+        inventory.removeItem({ name: 'amulet', img: 'amulet' });
+        gameObject.destroy();  // Optionally destroy the gameObject after use
         inventory.updateInventoryDisplay();
         showMessage("Grak's soul is captured in the amulet, which is now the SoulSwitcher!", this);
         this.grak.destroy();

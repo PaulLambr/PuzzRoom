@@ -100,13 +100,13 @@ addItemnp(item) {
 
     
     
-    // Function to update the inventory display and enable drag-and-drop
-    updateInventoryDisplay() {
+     // Function to update the inventory display and enable drag-and-drop
+     updateInventoryDisplay() {
         if (inventoryContainer && gameInstance) {
             inventoryContainer.removeAll(true); // Clear existing items
-            const itemSize = 64;
-            const padding = 10;
-            const itemsPerRow = 2;
+            const itemSize = 64;  // Adjusted item size
+            const padding = 30;   // Increased padding for spacing
+            const itemsPerRow = 2; // Set to 3 items per row to accommodate 15 items easily
 
             // Loop through all inventory items and make them draggable
             this.items.forEach((item, index) => {
@@ -127,7 +127,7 @@ addItemnp(item) {
                     gameInstance.children.bringToTop(itemSprite); // Bring to front
                     itemSprite.originalX = itemSprite.x;
                     itemSprite.originalY = itemSprite.y;
-                    itemSprite.setScale(0.05); // Scale up slightly when dragging
+                    itemSprite.setScale(0.05); // Scale down slightly when dragging
                 });
 
                 itemSprite.on('drag', (pointer, dragX, dragY) => {
@@ -137,19 +137,21 @@ addItemnp(item) {
 
                 itemSprite.on('dragend', (pointer) => {
                     itemSprite.setScale(0.15); // Reset size after dragging
-                
+
                     const itemBounds = itemSprite.getBounds();
                     const panelBounds = { x: 1500, y: 0, width: 300, height: 900 };
-                    const tolerance = 5;  // Allow small tolerance
-                
-                    // If dropped outside inventory panel with tolerance, return to original position
+                    const tolerance = 15;  // Increased tolerance for dropping
+
+                    // If dropped outside the inventory panel, return to original position
                     if (
                         itemBounds.right > panelBounds.x + panelBounds.width ||
-                        itemBounds.left < panelBounds.x - tolerance ||  // Adjust the left bound with tolerance
+                        itemBounds.left < panelBounds.x - tolerance ||  // Adjusted tolerance
                         itemBounds.bottom > panelBounds.y + panelBounds.height ||
                         itemBounds.top < panelBounds.y
                     ) {
-                        showMessage("You can't drop the item here!", gameInstance);
+                        if (itemSprite.texture.key !== 'corn') {  // Skip error for corn
+                            showMessage("You can't drop the item here!", gameInstance);
+                        }
                         itemSprite.x = itemSprite.originalX;
                         itemSprite.y = itemSprite.originalY;
                     }

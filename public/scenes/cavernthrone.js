@@ -91,7 +91,7 @@ class Cavernthrone extends Phaser.Scene {
         });
     
         // Create interactive zone for Goblin King
-        this.goblinKingZone = this.add.zone(720, 200, 200, 400).setOrigin(0, 0).setInteractive();
+        this.goblinKingZone = this.add.zone(620, 60, 200, 400).setOrigin(0, 0).setInteractive();
         this.goblinKingZone.on('pointerdown', () => {
             this.interactWithGoblinKing();
         });

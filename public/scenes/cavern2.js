@@ -1,193 +1,228 @@
 /* 
-class Cavernthrone extends Phaser.Scene {
-    constructor() {
-        super({ key: 'Cavernthrone' });
-    }
+let inventoryContainer;  // Declare inventoryContainer here
+let gameInstance; // Declare gameInstance here
 
-    preload() {
-        // Preload assets
-        this.load.image('background_ct1', 'graphics/goblin_throneroom_grak.png');
-        this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
-        this.load.spritesheet('goblingirl', 'graphics/goblingirl.png', { frameWidth: 28.5, frameHeight: 70 });
-        this.load.image('grak', 'graphics/grak.png'); // Grak guard sprite
-        this.load.image('door', 'graphics/door.png'); // Door for interactive zone
-        this.load.image('amulet', 'graphics/graks_amulet.png'); // Amulet image
-    }
+// Inventory management system with drag-and-drop functionality
+const inventory = {
+    items: [],
 
-    create() {
-        console.log('Creating Cavernthrone scene');
-    
-        // Set the background
-        const background = this.add.image(750, 450, 'background_ct1');
-        background.setDepth(0);
-    
-        // Initialize the inventory
-        createInventory(this);
-    
-        // Reset message panel if it exists
-        if (messagePanel) {
-            messagePanel.destroy();
-            messagePanel = null;
-        }
-    
-        // Show intro message when entering Cavernhall
-        checkIntroMessage(this, "Cavernthrone", "Grak the Goblin King holds court in his rather empty echoing halls.", this);
-    
-        // Hashmark debugging graphics
-        hashmarkGraphics = this.add.graphics();
-        this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
-    
-        // Load the sprite's previous coordinates from localStorage, if available
-        const savedX = localStorage.getItem('spriteX');
-        const savedY = localStorage.getItem('spriteY');
-        const startX = savedX ? parseFloat(savedX) : 100;
-        const startY = savedY ? parseFloat(savedY) : 525;
-    
-        // Retrieve isGoblinForm from local storage or set default to false (princess)
-        this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
-    
-        // Remove 'walk' animation if it exists
-        if (this.anims.exists('walk')) {
-            this.anims.remove('walk');
-        }
-    
-        // Create walking animations for both forms
-        if (!this.anims.exists('walk')) {
-            this.anims.create({
-                key: 'walk',
-                frames: this.anims.generateFrameNumbers('character', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
-        }
-    
-        if (this.anims.exists('goblinWalk4')) {
-            this.anims.remove('goblinWalk4');
-        }
-    
-        if (!this.anims.exists('goblinWalk4')) {
-            this.anims.create({
-                key: 'goblinWalk4',
-                frames: this.anims.generateFrameNumbers('goblingirl', { start: 0, end: 5 }),
-                frameRate: 10,
-                repeat: -1
-            });
-        }
-    
-        // Create the main sprite for the player character based on isGoblinForm
-        this.sprite = this.physics.add.sprite(startX, startY, this.isGoblinForm ? 'goblingirl' : 'character');
-        this.sprite.setScale(3);
-        this.sprite.setDepth(1);
-        this.sprite.body.collideWorldBounds = true;
-    
-        // Play the correct animation on creation
-        this.sprite.anims.play(this.isGoblinForm ? 'goblinWalk4' : 'walk', true);
-    
-        // Input cursor keys for controlling the character
-        this.cursors = this.input.keyboard.createCursorKeys();
-    
-        // Input keyboard for transitioning between forms
-        this.input.keyboard.on('keydown-T', () => {
-            this.toggleForm();
-        });
-    
-        // Create interactive zone for Goblin King
-        this.goblinKingZone = this.add.zone(720, 200, 200, 400).setOrigin(0, 0).setInteractive();
-        this.goblinKingZone.on('pointerdown', () => {
-            this.interactWithGoblinKing();
-        });
+        // Function to add an item to the inventory without proximity check
+addItemnp(item) {
+    console.log("Item being added (no proximity check):", item);  // Debugging: Check the item object
+
+    const defaultMessages = {
+        'mirror': "It's your handy-dandy hand mirror.",
+        'amulet': "It's the ancient amulet of Grak the Goblin King.",
+        'rope': "It's a sturdy rope that could come in handy.",
+        'wineskin': "It's empty, and even if it had something in it, you wouldn't drink from it.",
+        'keys': "It's the brave guard's ring of keys for various areas of the castle.",
+        'torch': "It's hot. Good thing your bag is made of kevlar!",
+        'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner.",
+        'corn': "This piece of corn definitely has your ear.",
+        'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
+        'magicmirror': "Your handy-dandy mirror went to Wizard School like Hawk from Real Bros.",
+        'potentpoppy': "A very rare and not easily attainable soporific plant.",
+        'poppysoakedbone': "The wizard soaked the bone in a sleeping agent.",
+        'soulswitcher': "The amulet contain's the goblin guard Grak's soul."
+    };
+
+    // Only proceed if the item is not already in the inventory
+    if (!this.items.find(i => i.name === item.name)) {
+        // Add the item to the inventory
+        item.message = defaultMessages[item.name] || "This is an item with no description.";
+        this.items.push(item);
+        console.log(`Added item to inventory (no proximity check): ${item.name}`);
+        this.updateInventoryDisplay();
+        this.saveInventoryState();
+    } else {
+        console.log(`Item already in inventory: ${item.name}`);
     }
+}
+,
+    
+
+    // Add an item to the inventory with a proximity check
+    addItem(item, sprite) {
+        console.log("Item being added:", item);  // Debugging: Check the item object
+        console.log("Sprite position:", sprite.x, sprite.y);  // Debugging: Check the sprite position
+    
+        const defaultMessages = {
+            'mirror': "It's your handy-dandy hand mirror.",
+            'amulet': "It's the ancient amulet of Grak the Goblin King.",
+            'rope': "It's a sturdy rope that could come in handy.",
+            'wineskin': "It's empty, and even if it had something in it, you wouldn't drink from it.",
+            'keys': "It's the brave guard's ring of keys for various areas of the castle.",
+            'torch': "It's hot. Good thing your bag is made of kevlar!",
+            'bone': "Not sure what animal this belonged to. Hopefully not some poor Seattle Mariner.",
+            'corn': "This piece of corn definitely has your ear.",
+            'wineskinwater': "The Goblin wineskin has been purified by healing mountain springwaters.",
+            'potentpoppy': "A very rare and not easily attainable soporific plant.",
+            'poppysoakedbone': "The wizard soaked the bone in a sleeping agent.",
+            'silversword': "The goblin guard's silver sword gleams dangerously.",
+            'mirrorshard': "It's a shard of the exploded magic mirror in the Goblin King's private quarters.",
+            'redorb': "It's the tip of the Goblin King's scepter.",
+            'powderkeg': "Contains a magical powder smellier and more flammable than Goblin farts."
+
+
+        };
+    
+        // Proximity check: Calculate the distance between the player and the item
+        const distance = Phaser.Math.Distance.Between(sprite.x, sprite.y, item.x, item.y);
+    
+        if (distance <= 250) {  // Check if the player is within 100 pixels
+            // Only proceed if the item is not already in the inventory
+            if (!this.items.find(i => i.name === item.name)) {
+                // Add the item to the inventory
+                item.message = defaultMessages[item.name] || "This is an item with no description.";
+                this.items.push(item);
+                console.log(`Added item to inventory: ${item.name}`);
+                this.updateInventoryDisplay();
+                this.saveInventoryState();
+            }
+        } else {
+            // Show the "too far" message if the player is too far from the item
+            showMessage("You're too far away!", gameInstance);
+            console.log(`Player is too far from the item: ${item.name}`);
+        }
+    },
+
+    // Add removeItem method here
+    removeItem(item) {
+        const itemIndex = this.items.findIndex(i => i.name === item.name);
+        if (itemIndex !== -1) {
+            this.items.splice(itemIndex, 1);  // Remove the item from the inventory
+            console.log(`Removed item from inventory: ${item.name}`);
+            this.updateInventoryDisplay();   // Update inventory UI after removing
+            this.saveInventoryState();       // Save updated inventory state to localStorage
+        } else {
+            console.log(`Item not found in inventory: ${item.name}`);
+        }
+    },
+
     
     
-    toggleForm() {
-        // Toggle the form
-        this.isGoblinForm = !this.isGoblinForm;
+    // Function to update the inventory display and enable drag-and-drop
+    updateInventoryDisplay() {
+        if (inventoryContainer && gameInstance) {
+            inventoryContainer.removeAll(true); // Clear existing items
+            const itemSize = 64;
+            const padding = 10;
+            const itemsPerRow = 2;
+
+            // Loop through all inventory items and make them draggable
+            this.items.forEach((item, index) => {
+                let itemSprite = gameInstance.add.sprite(0, 0, item.img).setInteractive();
+                itemSprite.setDisplaySize(itemSize, itemSize);
+
+                gameInstance.input.setDraggable(itemSprite);
+                inventoryContainer.add(itemSprite);
+
+                // Set the position in the inventory panel
+                const row = Math.floor(index / itemsPerRow);
+                const col = index % itemsPerRow;
+                itemSprite.x = col * (itemSize + padding) + itemSize / 2 + padding;
+                itemSprite.y = row * (itemSize + padding) + itemSize / 2 + padding + 30;
+
+                // Drag-and-Drop Event Handling
+                itemSprite.on('dragstart', () => {
+                    gameInstance.children.bringToTop(itemSprite); // Bring to front
+                    itemSprite.originalX = itemSprite.x;
+                    itemSprite.originalY = itemSprite.y;
+                    itemSprite.setScale(0.05); // Scale up slightly when dragging
+                });
+
+                itemSprite.on('drag', (pointer, dragX, dragY) => {
+                    itemSprite.x = dragX;
+                    itemSprite.y = dragY;
+                });
+
+                itemSprite.on('dragend', (pointer) => {
+                    itemSprite.setScale(0.15); // Reset size after dragging
+                
+                    const itemBounds = itemSprite.getBounds();
+                    const panelBounds = { x: 1500, y: 0, width: 300, height: 900 };
+                    const tolerance = 5;  // Allow small tolerance
+                
+                    // If dropped outside inventory panel with tolerance, return to original position
+                    if (
+                        itemBounds.right > panelBounds.x + panelBounds.width ||
+                        itemBounds.left < panelBounds.x - tolerance ||  // Adjust the left bound with tolerance
+                        itemBounds.bottom > panelBounds.y + panelBounds.height ||
+                        itemBounds.top < panelBounds.y
+                    ) {
+                        if (itemSprite.texture.key !== 'corn') {  // Check if the item is not corn
+                            showMessage("You can't drop the item here!", gameInstance);
+                        }
+                        itemSprite.x = itemSprite.originalX;
+                        itemSprite.y = itemSprite.originalY;
+                    }
+                });
+
+                // Add click event to show the item's message
+                itemSprite.on('pointerdown', () => {
+                    showMessage(item.message, gameInstance);
+                });
+            });
+        } else {
+            console.error("Inventory container or game instance is missing.");
+        }
+    },
+
         
-        // Save the updated form to local storage
-        localStorage.setItem('isGoblinForm', this.isGoblinForm);
-    
-        // Stop any currently playing animations
-        this.sprite.anims.stop();
-    
-        // Switch the sprite texture and play the appropriate animation
-        if (this.isGoblinForm) {
-            this.sprite.setTexture('goblingirl'); // Switch to goblin girl texture
-            this.sprite.anims.play('goblinWalk4', true); // Play goblin girl walking animation
-        } else {
-            this.sprite.setTexture('character'); // Switch to princess texture
-            this.sprite.anims.play('walk', true); // Play princess walking animation
-        }
-    }
-    
-    interactWithGoblinKing() {
-        if (this.isGoblinForm) {
-            showMessage("What are you doing here? Go find the princess!", this);
-        } else {
-            showMessage("Ah, princess. Your hopes to escape were revealed to be rather empty and pathetic. Soon my plans will be complete. Right now 1,000 goblins march on your castle. By morning, the entire kingdom will belong to me. If you wish to sit at my side, I would be most delighted.", this);
-            
-           
-        }
-    }
-    
-    
-   
+    // Save the current inventory state to local storage
+    saveInventoryState() {
+        window.localStorage.setItem('inventoryState', JSON.stringify(this.items));
+    },
 
-    update() {
-        let moving = false;
-    
-        // Character movement logic
-        if (this.cursors.left.isDown) {
-            this.sprite.setVelocityX(-200);
-            this.sprite.setFlipX(true);
-            moving = true;
-        } else if (this.cursors.right.isDown) {
-            this.sprite.setVelocityX(200);
-            this.sprite.setFlipX(false);
-            moving = true;
-        } else {
-            this.sprite.setVelocityX(0);
-        }
-    
-        if (this.cursors.up.isDown) {
-            this.sprite.setVelocityY(-200);
-            moving = true;
-        } else if (this.cursors.down.isDown) {
-            this.sprite.setVelocityY(200);
-            moving = true;
-        } else {
-            this.sprite.setVelocityY(0);
-        }
-    
-        // Play the correct walking animation based on the current form
-        if (moving) {
-            if (this.isGoblinForm) {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk4') {
-                    this.sprite.anims.play('goblinWalk4', true);  // Play Goblin Girl walking animation
-                }
-            } else {
-                if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
-                    this.sprite.anims.play('walk', true);  // Play Princess walking animation
-                }
-                 // Block the player's exit
-            this.exitBlocked = true; 
-            }
-        } else {
-            this.sprite.setVelocity(0, 0);
-            this.sprite.anims.stop();
-            this.sprite.setFrame(1);  // Reset to idle frame
-        }
-    
-        // Check if the exit is blocked by the Goblin King
-        if (this.sprite.y > 900) {
-            if (this.exitBlocked) {
-                showMessage("The Goblin King has blocked your exit with dark magick.", this);
-            } else {
-                console.log('Transitioning to Cavernhall scene');
-                localStorage.setItem('spriteX', this.sprite.x);  // Optionally save the sprite's current position
-                localStorage.setItem('spriteY', 500);  // Optionally save the sprite's current position
-                this.scene.start('Cavernhall');
+    // Load the inventory state from local storage
+    loadInventoryState() {
+        const savedState = window.localStorage.getItem('inventoryState');
+        if (savedState) {
+            try {
+                this.items = JSON.parse(savedState);
+                this.updateInventoryDisplay();
+            } catch (error) {
+                console.error("Failed to parse inventory state:", error);
+                window.localStorage.removeItem('inventoryState');
+                this.items = [];
+                this.updateInventoryDisplay();
             }
         }
+    },
+
+    // Clear the entire inventory
+    clearInventory() {
+        this.items = [];
+        this.updateInventoryDisplay();
+        this.saveInventoryState();
     }
-}    
+    
+};
+
+
+// Function for creating inventory in the game
+function createInventory(scene) {
+    gameInstance = scene; // Set the gameInstance to the current scene
+
+    const panelWidth = 300;
+    const panelHeight = 900;
+    const panelX = 1500;
+    const panelY = 0;
+
+    const inventoryPanelBg = scene.add.image(panelX + panelWidth / 2, panelY + panelHeight / 2, 'parchment_bg');
+    inventoryPanelBg.setDisplaySize(panelWidth, panelHeight);
+
+    const inventoryTitle = scene.add.text(panelX + panelWidth / 2 + 95, panelY + 10, 'INVENTORY BAG:', {
+        fontFamily: 'Papyrus',
+        fontSize: '28px',
+        fontStyle: 'bold',
+        color: '#000000',
+    });
+    inventoryTitle.setOrigin(1, 0);
+
+    inventoryContainer = scene.add.container(panelX, panelY + 50);
+
+    // Load inventory state from local storage
+    inventory.loadInventoryState();
+}
 */

@@ -48,6 +48,13 @@ class Tower2 extends Phaser.Scene {
         // Input cursor keys for controlling the character
         this.cursors = this.input.keyboard.createCursorKeys();
 
+        // Create interactive torch zone
+        const torchZone = this.add.zone(680, 150, 100, 200).setRectangleDropZone(100, 200);
+        torchZone.setInteractive();
+        torchZone.on('pointerdown', () => {
+            showMessage("This torch is firmly cemented in place.", this);
+        });
+
         // Create interactive zone for transition to a new scene
         const rectangleZone2 = this.add.zone(1350, 50, 200, 50);
         this.physics.world.enable(rectangleZone2);

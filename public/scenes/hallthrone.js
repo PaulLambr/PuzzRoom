@@ -205,7 +205,7 @@ class HallThrone extends Phaser.Scene {
             localStorage.setItem('spriteX', this.sprite.x + 1400);
             localStorage.setItem('spriteY', this.sprite.y);
             this.hasTransitioned = true;
-            this.scene.start('Caverntower2');  // Perform the transition to Dining Room
+            this.scene.start('DiningRoom');  // Perform the transition to Dining Room
         }
 
         if (moving) {

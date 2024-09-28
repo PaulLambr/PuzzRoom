@@ -31,7 +31,7 @@
 
         let sprite;
         let cursors;
-        let rectangleZone;
+        let rectangleZone3;
         let rectangleZone2; // Zone for collision
         let mirrorAddedToInventory = false; // Track if mirror is added to inventory
         let hashmarkGraphics; // Hashmark graphics
@@ -82,10 +82,10 @@ animationManager.createAnimations(this);
 
             cursors = this.input.keyboard.createCursorKeys();
 
-            rectangleZone2 = this.add.zone(680, 150, 100, 200).setRectangleDropZone(100, 200);
-            rectangleZone2.setInteractive();
+            rectangleZone3 = this.add.zone(680, 150, 100, 200).setInteractive({ useHandCursor: true });
 
-            rectangleZone2.on('pointerdown', () => {
+
+            rectangleZone3.on('pointerdown', () => {
                 showMessage("This torch is firmly cemented in place.", this);
             });
             

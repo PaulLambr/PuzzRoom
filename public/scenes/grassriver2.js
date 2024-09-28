@@ -6,6 +6,7 @@ class Grassriver2 extends Phaser.Scene {
     preload() {
         // Preload assets
         this.load.image('background_gr2', 'graphics/gplusrwindowsnight.png');
+        this.load.image('background_gr2b', 'graphics/gplusrwindowsnightb.png');
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('amulet', 'graphics/graks_amulet.png');
@@ -79,6 +80,24 @@ class Grassriver2 extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
+
+        // Create an interactive zone at (360, 550, 120, 15)
+    const doorZone = this.add.zone(300, 475, 120, 150).setOrigin(0);
+    this.physics.world.enable(doorZone);  // Enable physics on the zone
+    doorZone.body.setAllowGravity(false);  // Prevent the zone from being affected by gravity
+    doorZone.body.setImmovable(true);  // Make the zone immovable
+
+    // Overlap check between sprite and zone
+    this.physics.add.overlap(this.sprite, doorZone, () => {
+        this.scene.start('Poke');  // Start TreeInterior scene on collision
+    }, null, this);
+
+    // Listen for zone click event (if still needed)
+    doorZone.setInteractive();
+    doorZone.on('pointerdown', () => {
+        showMessage("You knock on the door and this time it opens.", this);
+        this.add.image(750, 450, 'background_gr2b')
+    });
     }
 
     update() {
@@ -120,7 +139,7 @@ class Grassriver2 extends Phaser.Scene {
 }
            // Transition to dining room if sprite moves beyond 1500 pixels on the right
            if (this.sprite.y < 106 && !this.hasTransitioned) {
-            this.sprite.x=106;
+            this.sprite.y=106;
             showMessage("You hear wolves howling and decide against venturing further.", this);
 }
 

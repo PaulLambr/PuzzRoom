@@ -90,13 +90,13 @@ class HutInterior2 extends Phaser.Scene {
          circularZone = this.add.zone(290, 310).setSize(280, 280); // Add a zone for interactive purposes
 
         // Create an interactive rectangular zone at (1300, 300) with size 150x270
-        const rectangleZone = this.add.zone(1325, 300, 125, 250).setRectangleDropZone(125, 250);
+        const rectangleZone = this.add.zone(1260, 300, 125, 250).setRectangleDropZone(125, 250);
         rectangleZone.setInteractive();
 
         // Add event listener for pointerdown (click) on the rectangular zone
         rectangleZone.on('pointerdown', () => {
             const previousItemCount = inventory.items.length;
-            inventory.addItem({ name: 'amulet', img: 'amulet', x: 1325, y: 300 }, this.sprite);
+            inventory.addItem({ name: 'amulet', img: 'amulet', x: 1260, y: 300 }, this.sprite);
             console.log('Current Inventory Items:', inventory.items);
             
             if (inventory.items.length > previousItemCount) {
@@ -105,7 +105,7 @@ class HutInterior2 extends Phaser.Scene {
 
                 const brownBoxGraphics = this.add.graphics();
                 brownBoxGraphics.fillStyle(0x8B4513, 1);
-                brownBoxGraphics.fillRect(1325 - 75, 300 - 135, 125, 250);
+                brownBoxGraphics.fillRect(1200, 175, 125, 250);
 
                 rectangleZone.destroy();
             } else {
@@ -149,115 +149,86 @@ class HutInterior2 extends Phaser.Scene {
             // Log the pointer's position
             console.log('Pointer position:', pointer.x, pointer.y);
         
+            // Define the bounds of the inventory panel
+            const inventoryBounds = new Phaser.Geom.Rectangle(1500, 0, 300, 900);
+        
+            // Check if the pointer is within the inventory panel
+            if (Phaser.Geom.Rectangle.ContainsPoint(inventoryBounds, pointer)) {
+                console.log("Item dropped within the inventory panel.");
+                return;  // Don't trigger any error or zone logic for inventory interactions
+            }
+        
+            // Check if the pointer is within the cauldron zone
             if (Phaser.Geom.Circle.Contains(cauldronCircle, pointer.x, pointer.y)) {
                 if (gameObject.texture.key === 'mirror') {
-                    console.log('The mirror is within the pig zone.');
+                    console.log('The mirror is within the cauldron zone.');
                     showMessage("You dip the mirror in the magick waters like the spell booke told you.", this);
-
-                    inventory.removeItem({ name: 'mirror', img: 'mirror' });
-                    console.log('mirror removed from inventory:', inventory.items);
-
+        // Remove the bone from the inventory
+        inventory.removeItem({ name: 'mirror', img: 'mirror' });
+        gameObject.destroy();  // Optionally destroy the gameObject after use
                     inventory.addItemnp({ name: 'magicmirror', img: 'magicmirror' });
                     console.log('Magic mirror added to inventory:', inventory.items);
-            
-                    
-                } else {
-                    showMessage("Error: The pig doesn't seem interested in this item.", this);
-                }
-            } else {
-                showMessage("Error: You can't drop the item here!", this);
         
-                // Return the item to its original position within the inventory panel
-                gameObject.x = gameObject.originalX;
-                gameObject.y = gameObject.originalY;
-            }
-
-
-
-            if (Phaser.Geom.Circle.Contains(pigCircle, pointer.x, pointer.y)) {
-                if (gameObject.texture.key === 'magicmirror' || gameObject.texture.key === 'amulet') {
-                    
-                    if (gameObject.texture.key === 'magicmirror') {
-                        // Check if the pig is wearing the amulet
-                        const pigWearingAmulet = localStorage.getItem('Pig Wearing Amulet?') === 'True';
-                        
-                        if (pigWearingAmulet) {
-                            console.log('The magic mirror is within the pig zone.');
-                            showMessage("The pig catches his reflection in the magic mirror and all hell breaks loose. The magic mirror explodes. The pig squeals in fear, and the room is temporarily clothed in darkness.", this);
-                        
-                            // Start the camera shake for 4 seconds
-                            this.cameras.main.shake(4000, 0.01); // Shake the screen for 4 seconds with magnitude 0.01
-                        
-                            // After shake completes, fade to black for 2 seconds
-                            this.time.delayedCall(4000, () => {
-                                this.cameras.main.fadeOut(2000, 0, 0, 0);  // Fade out over 2 seconds
-                        
-                                // After fade out completes, switch to the next scene
-                                this.cameras.main.once('camerafadeoutcomplete', () => {
-                                    this.scene.start('HutInterior3');  // Start the next scene
-                                    
-                                    // Fade in the new scene over 2 seconds
-                                    this.cameras.main.fadeIn(2000, 0, 0, 0);  // Fade in over 2 seconds
-                                });
-            
-                                // After fade out completes, flash for 3 seconds
-                                this.cameras.main.once('camerafadeoutcomplete', () => {
-                                    this.cameras.main.flash(3000, 255, 255, 255); // Flash for 3 seconds
-                                });
-                            });
-            
-                            /* Remove the magic mirror from the inventory
-                            inventory.removeItem({ name: 'magicmirror', img: 'mirror' });
-                            console.log('Magic Mirror removed from inventory:', inventory.items); */
-            
-                        } else {
-                            // Pig is not wearing the amulet, display a message
-                            showMessage("You seem to recall from the Wuzzard's spellbook that the subject of the spell must be bearing the amulet.", this);
-                            
-                            // Return the magic mirror to its original position
-                            gameObject.x = gameObject.originalX;
-                            gameObject.y = gameObject.originalY;
-                        }
-            
-                    } else if (gameObject.texture.key === 'amulet') {
-                        console.log('The amulet is within the pig zone.');
-                        showMessage("You slip the amulet around the pig's neck. It pulses intensely.", this);
-                
-                        // Display rope on OINK zone
-                        this.add.image(315, 310, 'amulet').setScale(0.15);
-                
-                        // Remove the amulet from the inventory
-                        inventory.removeItem({ name: 'amulet', img: 'amulet' });
-                        console.log('Amulet removed from inventory:', inventory.items);
-                        localStorage.setItem('Pig Wearing Amulet?', 'True');
-                    }
-            
                 } else {
-                    showMessage("Error: The pig doesn't seem interested in this item.", this);
-                    
-                    // Return the item to its original position within the inventory panel
-                    gameObject.x = gameObject.originalX;
-                    gameObject.y = gameObject.originalY;
+                    showMessage("Error: The cauldron doesn't seem interested in this item.", this);
                 }
-            
+            } else if (Phaser.Geom.Circle.Contains(pigCircle, pointer.x, pointer.y)) {
+                // Check if the pig is wearing the amulet and handle accordingly
+                if (gameObject.texture.key === 'magicmirror') {
+                    const pigWearingAmulet = localStorage.getItem('Pig Wearing Amulet?') === 'True';
+        
+                    if (pigWearingAmulet) {
+                        console.log('The magic mirror is within the pig zone.');
+                        showMessage("The pig catches his reflection in the magic mirror and all hell breaks loose. The magic mirror explodes. The pig squeals in fear, and the room is temporarily clothed in darkness.", this);
+                        this.cameras.main.shake(4000, 0.01);
+        
+                        // After shake completes, fade to black for 2 seconds
+                        this.time.delayedCall(4000, () => {
+                            this.cameras.main.fadeOut(2000, 0, 0, 0);
+                            this.cameras.main.once('camerafadeoutcomplete', () => {
+                                this.scene.start('HutInterior3');
+                                this.cameras.main.fadeIn(2000, 0, 0, 0);  // Fade in over 2 seconds
+                            });
+        
+                            this.cameras.main.once('camerafadeoutcomplete', () => {
+                                this.cameras.main.flash(3000, 255, 255, 255);  // Flash for 3 seconds
+                            });
+                        });
+        
+                    } else {
+                        showMessage("You seem to recall from the Wuzzard's spellbook that the subject of the spell must be bearing the amulet.", this);
+                        gameObject.x = gameObject.originalX;
+                        gameObject.y = gameObject.originalY;
+                    }
+        
+                } else if (gameObject.texture.key === 'amulet') {
+                    console.log('The amulet is within the pig zone.');
+                    showMessage("You slip the amulet around the pig's neck. It pulses intensely.", this);
+        
+                    // Display amulet on pig zone
+                    this.add.image(315, 310, 'amulet').setScale(0.15);
+        
+                    // Remove the amulet from the inventory
+                    inventory.removeItem({ name: 'amulet', img: 'amulet' });
+                    console.log('Amulet removed from inventory:', inventory.items);
+                    localStorage.setItem('Pig Wearing Amulet?', 'True');
+                }
+        
             } else {
+                // If the item is dropped outside any valid zone, return it to the original position
                 showMessage("Error: You can't drop the item here!", this);
-                
-                // Return the item to its original position within the inventory panel
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;
             }
-            
-            
-            
         });
+        
         // Check if the amulet was already collected
         this.amuletCollected = localStorage.getItem('amuletCollected') === 'true';
 
         if (this.amuletCollected) {
             const brownBoxGraphics = this.add.graphics();
             brownBoxGraphics.fillStyle(0x8B4513, 1);
-            brownBoxGraphics.fillRect(1325 - 75, 300 - 135, 125, 250);
+            brownBoxGraphics.fillRect(1200, 175, 125, 250);
             rectangleZone.destroy();
         }
     
@@ -293,7 +264,7 @@ class HutInterior2 extends Phaser.Scene {
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y > 850 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', 650);
+            localStorage.setItem('spriteX', 250);
             localStorage.setItem('spriteY', 650);
             this.hasTransitioned = true;
             this.scene.start('Poke');

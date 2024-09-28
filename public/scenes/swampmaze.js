@@ -83,8 +83,8 @@ class Swampmaze extends Phaser.Scene {
         // Prevent multiple transitions
         this.hasTransitioned = false;
     
-        // Start a countdown for 20 seconds
-        this.time.delayedCall(18000, () => {
+        // Start a countdown for 18 seconds is the right time
+        this.time.delayedCall(45000, () => {
             if (!this.hasTransitioned) {
                 this.endGame();  // If the player hasn't transitioned, end the game
             }
@@ -111,19 +111,34 @@ class Swampmaze extends Phaser.Scene {
             this.physics.add.collider(this.sprite, newZone);
         });
     
-        // Create a rectangle representing the potent poppy item at (410, 830) with size (110, 100)
-        const poppyItemZone = this.add.zone(830 + 110 / 2, 410 + 100 / 2, 110, 100).setOrigin(0.5, 0.5).setInteractive();
-        this.physics.add.existing(poppyItemZone, true);
-    
-        // Add a click event to add the poppy to inventory
-        poppyItemZone.on('pointerdown', () => {
-            // Add the potent poppy item to inventory
-            inventory.addItem({ name: 'potentpoppy', img: 'potentpoppy', x:830, y:410 }, this.sprite); // Adjust image path as needed
-    
-            // Replace the item zone with a green box
-            const greenBox = this.add.rectangle(830 + 110 / 2, 410 + 100 / 2, 110, 100, 0x00ff00).setOrigin(0.5, 0.5);
-            poppyItemZone.destroy();  // Remove the interactive zone after the item is collected
-        });
+        // Create a rectangle representing the potent poppy item at (790, 350) with size (110, 100)
+const poppyItemZone = this.add.zone(790 + 110 / 2, 350 + 100 / 2, 110, 100).setOrigin(0.5, 0.5).setInteractive();
+this.physics.add.existing(poppyItemZone, true);
+
+// Define the proximity radius
+const pickupRadius = 100;  // Player must be within 100 pixels to pick up the item
+
+// Add a click event to add the poppy to inventory with proximity check
+poppyItemZone.on('pointerdown', () => {
+    // Calculate the distance between the player and the item
+    const distance = Phaser.Math.Distance.Between(this.sprite.x, this.sprite.y, 790 + 110 / 2, 350 + 100 / 2);
+
+    // If the player is within the defined radius, allow them to pick up the item
+    if (distance <= pickupRadius) {
+        // Add the potent poppy item to inventory
+        inventory.addItem({ name: 'potentpoppy', img: 'potentpoppy', x: 790, y: 350 }, this.sprite);
+
+        // Replace the item zone with a green box
+        const greenBox = this.add.rectangle(790 + 110 / 2, 350 + 100 / 2, 110, 100, 0x00ff00).setOrigin(0.5, 0.5);
+        poppyItemZone.destroy();  // Remove the interactive zone after the item is collected
+
+        showMessage("You have picked up the potent poppy.", this);  // Display success message
+    } else {
+        // If player is too far, show a message and prevent pickup
+        showMessage("You're too far away to pick up the poppy.", this);
+    }
+});
+
     }
     
     // End game when the player stays in the swamp for more than 20 seconds

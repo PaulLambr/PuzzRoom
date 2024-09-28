@@ -79,7 +79,18 @@ class Grassriver1 extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
+
+         // Create an interactive zone at (360, 550, 120, 15)
+    const doorZone = this.add.zone(360, 550, 120, 150).setOrigin(0).setInteractive();
+
+    // Listen for zone click event
+    doorZone.on('pointerdown', () => {
+        showMessage("You knock on the quaint little door set into the tree trunk, but no one appears to be home.", this);
+    });
+
     }
+
+    
 
     update() {
         let moving = false;

@@ -29,6 +29,7 @@ const configBridge = {
 class CastleBedroom extends Phaser.Scene {
     constructor() {
         super({ key: 'CastleBedroom' });
+        this.reflection = null; // Make sure reflection is initialized
     }
 
     preload() {
@@ -76,7 +77,7 @@ animationManager.createAnimations(this);
         rectangleZone2 = this.add.zone(1190, 150, 150, 200).setRectangleDropZone(150, 200);
         rectangleZone2.setInteractive();
         rectangleZone2.on('pointerdown', () => {
-            showMessage("This is your dad, King Graham...", this);
+            showMessage("This is your dad, King Graham. Sadly he disappeared last summer hunting goblins in the Fearful Forest near the Mystic Mountains. Many brave knights went in search of him with no luck thus far.", this);
         });
 
         // Interactive zone for the mirror
@@ -166,7 +167,7 @@ animationManager.createAnimations(this);
             this.hasTransitioned = true;
 
             // Transition to Tower scene
-            this.scene.start('Hall');
+            this.scene.start('Tower');
         }
 
         if (moving) {
@@ -176,5 +177,47 @@ animationManager.createAnimations(this);
             this.sprite.anims.stop();
             this.sprite.setFrame(1);
         }
+
+         // Check if the sprite is within the circle to display the reflection
+const spriteX = this.sprite.x;
+const spriteY = this.sprite.y;
+const distanceToMirror = Phaser.Math.Distance.Between(spriteX, spriteY, 760, 400);
+
+if (distanceToMirror <= 100) {
+    // Show the reflection if within range
+    this.showReflection(spriteX, spriteY);
+} else {
+    // Hide or destroy the reflection if outside the range
+    if (this.reflection) {
+        this.reflection.setVisible(false);  // Hide the reflection
     }
 }
+}
+// Function to create a mirror reflection
+// Function to create a mirror reflection
+showReflection(spriteX, spriteY) {
+    if (!this.reflection || !this.reflection.active) {
+        // Create the reflection sprite only if it doesn't exist or was destroyed
+        this.reflection = this.add.sprite(768, 190, 'character')
+            .setFlipY(false)
+            .setFlipX(this.sprite.flipX) // Mirror the sprite's horizontal flip (direction)
+            .setScale(1.7)
+            .setAlpha(0.5)
+            .setDepth(0); // Ensure it appears behind other objects
+    }
+
+
+    // Make the reflection visible again if it was hidden
+    this.reflection.setVisible(true);
+
+    // Set the reflection's flipX to match the player's flipX
+    this.reflection.setFlipX(this.sprite.flipX);
+
+    // Get the current frame index of the sprite's walk animation
+    const currentFrame = this.sprite.anims.currentFrame.index;
+    const maxFrameIndex = this.anims.get('walk').frames.length - 1;
+    const validFrame = Math.min(currentFrame, maxFrameIndex);
+
+    // Set the reflection frame to match the current walking frame
+    this.reflection.setFrame(validFrame);
+}}

@@ -124,7 +124,7 @@ class Bridge extends Phaser.Scene {
                 // Call the moveNoGoZone function from within the scene's context
                 this.moveNoGoZone();
             } else {
-                showMessage("You can't drop the item here!", this);
+                
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;
             }
@@ -153,7 +153,8 @@ class Bridge extends Phaser.Scene {
             this.sprite.setVelocityX(-200);
             this.sprite.setFlipX(true);
             moving = true;
-        } else if (this.cursors.right.isDown) {
+        } else if (this.cursors.right.isDown && !(this.sprite.x > 550 && (this.sprite.y < 450 || this.sprite.y > 650))) {
+            // Allow right movement only if x <= 550 or y is between 450 and 650
             this.sprite.setVelocityX(200);
             this.sprite.setFlipX(false);
             moving = true;
@@ -196,4 +197,5 @@ class Bridge extends Phaser.Scene {
             this.sprite.setFrame(1);
         }
     }
+
 }

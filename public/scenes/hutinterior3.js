@@ -81,9 +81,15 @@ class HutInterior3 extends Phaser.Scene {
         // Prevent multiple transitions
         this.hasTransitioned = false;
     
-        // Create interactive pool rectangle zone
-        const wizardRectangle = this.add.zone(1050, 300, 250, 250).setRectangleDropZone(250, 250).setInteractive();
-    
+       
+    // Create interactive pool rectangle zone
+const wizardRectangle = this.add.zone(925, 190, 250, 250).setRectangleDropZone(250, 250).setInteractive();
+
+// Debugging: Draw the rectangle representing the wizard interaction zone
+const debugWizardGraphics = this.add.graphics();
+debugWizardGraphics.lineStyle(2, 0x00ff00, 1); // Green color with full opacity
+debugWizardGraphics.strokeRect(wizardRectangle.x - wizardRectangle.input.hitArea.width / 2, wizardRectangle.y - wizardRectangle.input.hitArea.height / 2, wizardRectangle.input.hitArea.width, wizardRectangle.input.hitArea.height);
+
         // Create the new interactive rectangular zone at (650, 60) with size 300x110
         const bookZone = this.add.zone(650, 60, 300, 110).setRectangleDropZone(300, 110);
         bookZone.setInteractive();
@@ -128,6 +134,15 @@ class HutInterior3 extends Phaser.Scene {
             console.log('Dragged item texture key:', gameObject.texture.key);
             console.log('Pointer position:', pointer.x, pointer.y);
         
+            // Define the bounds of the inventory panel
+            const inventoryBounds = new Phaser.Geom.Rectangle(1500, 0, 300, 900);
+        
+            // Check if the pointer is within the inventory panel
+            if (Phaser.Geom.Rectangle.ContainsPoint(inventoryBounds, pointer)) {
+                console.log("Item dropped within the inventory panel.");
+                return;  // Skip further logic if dropped within the inventory panel
+            }
+        
             // Check if the item is dropped on the wizard
             if (Phaser.Geom.Rectangle.Contains(wizardRectangle, pointer.x, pointer.y)) {
                 // Check for bone
@@ -161,10 +176,10 @@ class HutInterior3 extends Phaser.Scene {
                     // Create the new item "Poppy-soaked bone" and add it to the inventory
                     inventory.addItemnp({ name: 'poppysoakedbone', img: 'poppysoakedbone' });
                     console.log('Poppy-soaked bone added to inventory:', inventory.items);
-
-                    // Create the new item "Poppy-soaked bone" and add it to the inventory
+        
+                    // Add the amulet back to the inventory
                     inventory.addItemnp({ name: 'amulet', img: 'amulet' });
-                    console.log('Poppy-soaked bone added to inventory:', inventory.items);
+                    console.log('Amulet added to inventory:', inventory.items);
         
                     // Optionally reset the flags if you want the process to start again
                     localStorage.setItem('Wuzzard has bone?', 'False');
@@ -180,6 +195,7 @@ class HutInterior3 extends Phaser.Scene {
                 gameObject.y = gameObject.originalY;
             }
         });
+        
         
     }
     

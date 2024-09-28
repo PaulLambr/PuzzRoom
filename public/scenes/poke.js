@@ -131,72 +131,87 @@ class Poke extends Phaser.Scene {
             }
         });
     
-        // Corn drop zone
-        this.cornDropZone = this.add.zone(650, 450, 150, 250).setRectangleDropZone(150, 250).setInteractive();
-    
-        // For debugging, visualize the drop zone
-        const graphics = this.add.graphics();
-        graphics.lineStyle(2, 0xff0000);  // Red outline for debugging
-        graphics.strokeRect(this.cornDropZone.x - 75, this.cornDropZone.y - 125, 150, 250);
-    
-        // Enable physics for the corn drop zone
-        this.physics.world.enable(this.cornDropZone);
-        this.cornDropZone.body.setAllowGravity(false);
-        this.cornDropZone.body.moves = false;
-    
-        // Drag and Drop Logic (unchanged)
-        this.input.on('dragstart', (pointer, gameObject) => {
-            gameObject.setScale(0.15);  // Scale during drag
-            gameObject.originalX = gameObject.x;
-            gameObject.originalY = gameObject.y;
-        });
-    
-        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        });
-    
-        this.input.on('dragend', (pointer, gameObject) => {
-            gameObject.setScale(0.15);  // Reset size after dragging
-    
-            const dropZoneBounds = this.cornDropZone.getBounds();
-            const tolerance = 30;
-    
-            // Check if the pointer is within the drop zone bounds
-            if (
-                pointer.x >= dropZoneBounds.x - tolerance &&
-                pointer.x <= dropZoneBounds.x + dropZoneBounds.width + tolerance &&
-                pointer.y >= dropZoneBounds.y - tolerance &&
-                pointer.y <= dropZoneBounds.y + dropZoneBounds.height + tolerance &&
-                gameObject.texture.key === 'corn'  // Only trigger if corn is dropped
-            ) {
-                console.log('Corn dropped in the correct zone');
-                handleCornDropSuccess.call(this, gameObject);
-            } else {
-                console.log("Corn dropped in the wrong zone");
-                showMessage("You can't drop the corn here!", this);
-                gameObject.x = gameObject.originalX;
-                gameObject.y = gameObject.originalY;
-            }
-        });
-    
-        // Overlap logic to transition to the Cellar scene after unlocking the corn zone
-this.physics.add.overlap(this.sprite, this.cornDropZone, () => {
-    if (this.isCornZoneUnlocked) {
-        console.log('Corn zone unlocked.');
+ // Corn drop zone setup
+ this.cornDropZone = this.add.zone(725, 570, 150, 315).setRectangleDropZone(150, 250).setInteractive();
 
-        // Get the most recent HutInterior scene from localStorage
-        const lastScene = localStorage.getItem('lastVisitedHutInteriorScene');
+ // For debugging, visualize the drop zone
+ const graphics = this.add.graphics();
+ graphics.lineStyle(2, 0xff0000);  // Red outline for debugging
+ graphics.strokeRect(this.cornDropZone.x - 75, this.cornDropZone.y - 125, 150, 250);
 
-        if (lastScene) {
-            console.log(`Transitioning to ${lastScene}`);
-            this.scene.start(lastScene);  // Transition to the last visited HutInterior scene
-        } else {
-            console.log('Transitioning to HutInterior (default)');
-            this.scene.start('HutInterior');  // Default to the base HutInterior if no record is found
-        }
-    }
-});
+ // Enable physics for the corn drop zone
+ this.physics.world.enable(this.cornDropZone);
+ this.cornDropZone.body.setAllowGravity(false);
+ this.cornDropZone.body.moves = false;
+
+ // Remove default inventory.js drag listeners for corn completely
+ const cornItem = inventory.items.find(i => i.name === 'corn');
+ if (cornItem && cornItem.sprite) {
+     // Overriding the default behavior: Completely remove drag listeners from the inventory
+     cornItem.sprite.removeAllListeners();
+     this.input.setDraggable(cornItem.sprite, false); // Ensure that inventory.js no longer has control
+ }
+
+ // Implement custom drag-and-drop logic for corn in Poke.js
+ this.input.on('dragstart', (pointer, gameObject) => {
+     if (gameObject.texture.key === 'corn') {
+         gameObject.setScale(0.15);  // Scale during drag
+         gameObject.originalX = gameObject.x;
+         gameObject.originalY = gameObject.y;
+     }
+ });
+
+ this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+     if (gameObject.texture.key === 'corn') {
+         gameObject.x = dragX;
+         gameObject.y = dragY;
+     }
+ });
+
+ this.input.on('dragend', (pointer, gameObject) => {
+     if (gameObject.texture.key === 'corn') {
+         gameObject.setScale(0.15);  // Reset size after dragging
+
+         const dropZoneBounds = this.cornDropZone.getBounds();
+         const tolerance = 30;
+
+         // Check if the pointer is within the drop zone bounds and the corn is being dropped
+         if (
+             pointer.x >= dropZoneBounds.x - tolerance &&
+             pointer.x <= dropZoneBounds.x + dropZoneBounds.width + tolerance &&
+             pointer.y >= dropZoneBounds.y - tolerance &&
+             pointer.y <= dropZoneBounds.y + dropZoneBounds.height + tolerance
+         ) {
+             console.log('Corn dropped in the correct zone');
+             handleCornDropSuccess.call(this, gameObject);  // Show success message and perform the actions
+         } else {
+             // Corn dropped in the wrong zone
+             console.log("Corn dropped in the wrong zone");
+             showMessage("You can't drop the corn here!", this);  // Show error message only when dropped in the wrong place
+             gameObject.x = gameObject.originalX;  // Return the item to its original position
+             gameObject.y = gameObject.originalY;
+         }
+     }
+ });
+
+ // Overlap logic to transition to the Cellar scene after unlocking the corn zone
+ this.physics.add.overlap(this.sprite, this.cornDropZone, () => {
+     if (this.isCornZoneUnlocked) {
+         console.log('Corn zone unlocked.');
+
+         // Get the most recent HutInterior scene from localStorage
+         const lastScene = localStorage.getItem('lastVisitedHutInteriorScene');
+
+         if (lastScene) {
+             console.log(`Transitioning to ${lastScene}`);
+             this.scene.start(lastScene);  // Transition to the last visited HutInterior scene
+         } else {
+             console.log('Transitioning to HutInterior (default)');
+             this.scene.start('HutInterior');  // Default to the base HutInterior if no record is found
+         }
+     }
+ });
+
 
     }
     

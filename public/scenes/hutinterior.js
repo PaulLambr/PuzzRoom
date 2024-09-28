@@ -103,13 +103,13 @@ class HutInterior extends Phaser.Scene {
         console.log('Pig (circular zone) center:', pigCircle.x, pigCircle.y, 'radius:', pigCircle.radius);
 
         // Create an interactive rectangular zone at (1300, 300) with size 150x270
-        const rectangleZone = this.add.zone(1325, 300, 125, 250).setRectangleDropZone(125, 250);
+        const rectangleZone = this.add.zone(1260, 300, 125, 250).setRectangleDropZone(125, 250);
         rectangleZone.setInteractive();
 
         // Add event listener for pointerdown (click) on the rectangular zone
         rectangleZone.on('pointerdown', () => {
             const previousItemCount = inventory.items.length;
-            inventory.addItem({ name: 'amulet', img: 'amulet', x: 1325, y: 300 }, this.sprite);
+            inventory.addItem({ name: 'amulet', img: 'amulet', x: 1260, y: 300 }, this.sprite);
             console.log('Current Inventory Items:', inventory.items);
             
             if (inventory.items.length > previousItemCount) {
@@ -118,7 +118,7 @@ class HutInterior extends Phaser.Scene {
 
                 const brownBoxGraphics = this.add.graphics();
                 brownBoxGraphics.fillStyle(0x8B4513, 1);
-                brownBoxGraphics.fillRect(1325 - 75, 300 - 135, 125, 250);
+                brownBoxGraphics.fillRect(1200, 175, 125, 250);
 
                 rectangleZone.destroy();
             } else {
@@ -164,6 +164,15 @@ class HutInterior extends Phaser.Scene {
             gameObject.setScale(0.15); // Restore the original scale
             console.log('Dragged item texture key:', gameObject.texture.key);
         
+            // Define the bounds of the inventory panel
+            const inventoryBounds = new Phaser.Geom.Rectangle(1500, 0, 300, 900);
+        
+            // Check if the pointer is within the inventory panel
+            if (Phaser.Geom.Rectangle.ContainsPoint(inventoryBounds, pointer)) {
+                console.log("Item dropped within the inventory panel.");
+                return;  // Skip further logic if dropped within the inventory panel
+            }
+        
             // Log the pointer's position
             console.log('Pointer position:', pointer.x, pointer.y);
         
@@ -173,7 +182,7 @@ class HutInterior extends Phaser.Scene {
                     console.log('The amulet is within the pig zone.');
                     showMessage("You slip the amulet around the pig's neck. It pulses intensely.", this);
         
-                    // Display rope on OINK zone
+                    // Display amulet on pig zone
                     this.add.image(315, 310, 'amulet').setScale(0.15);
         
                     // Remove the amulet from the inventory
@@ -190,19 +199,17 @@ class HutInterior extends Phaser.Scene {
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;
             }
-
+        
+            // Check if the pointer is within the cauldron zone
             if (Phaser.Geom.Circle.Contains(cauldronCircle, pointer.x, pointer.y)) {
                 if (gameObject.texture.key === 'wineskinwater') {
-                    console.log('The wineskinwater is within the pig zone.');
+                    console.log('The wineskinwater is within the cauldron zone.');
                     showMessage("You fill up the cauldron with the contents of the wineskin. The waters sparkle green and purple.", this);
-
-                  /* Remove the magic mirror from the inventory
-                    inventory.removeItem({ name: 'magicmirror', img: 'mirror' });
-                    console.log('Magic Mirror removed from inventory:', inventory.items); */
-            
+        
+                    // Transition to the next scene
                     this.scene.start('HutInterior2');
                 } else {
-                    showMessage("Error: The pig doesn't seem interested in this item.", this);
+                    showMessage("Error: The cauldron doesn't seem interested in this item.", this);
                 }
             } else {
                 showMessage("Error: You can't drop the item here!", this);
@@ -211,8 +218,8 @@ class HutInterior extends Phaser.Scene {
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;
             }
-            
         });
+        
         
         
 
@@ -222,7 +229,7 @@ class HutInterior extends Phaser.Scene {
         if (this.amuletCollected) {
             const brownBoxGraphics = this.add.graphics();
             brownBoxGraphics.fillStyle(0x8B4513, 1);
-            brownBoxGraphics.fillRect(1325 - 75, 300 - 135, 125, 250);
+            brownBoxGraphics.fillRect(1200, 175, 125, 250);
             rectangleZone.destroy();
         }
     }
@@ -256,7 +263,7 @@ class HutInterior extends Phaser.Scene {
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y > 850 && !this.hasTransitioned) {
             localStorage.setItem('spriteX', 250);
-            localStorage.setItem('spriteY', 250);
+            localStorage.setItem('spriteY', 650);
             this.hasTransitioned = true;
             this.scene.start('Poke');
         }
