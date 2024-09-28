@@ -264,7 +264,7 @@ class Cavern1b extends Phaser.Scene {
         // Add collision detection between the player and the open door
         this.physics.add.overlap(this.sprite, this.doorZone, () => {
             // Transition to the next scene (Caverncellar)
-            this.scene.start('Caverncellar');
+            this.scene.start('GoblinCellar');
         });
     }
     

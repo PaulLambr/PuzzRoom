@@ -5,7 +5,7 @@ class Grassriver1 extends Phaser.Scene {
 
     preload() {
         // Preload assets
-        this.load.image('background_gr1', 'graphics/gplusr.png');
+        this.load.image('background_gr1', 'graphics/gplusrwindows.png');
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('amulet', 'graphics/graks_amulet.png');

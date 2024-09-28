@@ -13,7 +13,9 @@
         { "name": "poppysoakedbone", "img": "graphics/bone.png"},
         { "name": "soulswitcher", "img": "graphics/graks_amulet.png"},
         { "name": "silversword", "img": "graphics/silver_sword.png"},
-        { "name": "mirrorshard", "img": "graphics/shard.png"}
+        { "name": "mirrorshard", "img": "graphics/shard.png"},
+        { "name": "redorb", "img": "graphics/redorb.png"},
+        { "name": "powderkeg", "img": "graphics/powderkeg.png"}
 
 
 

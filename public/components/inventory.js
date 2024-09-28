@@ -58,7 +58,9 @@ addItemnp(item) {
             'potentpoppy': "A very rare and not easily attainable soporific plant.",
             'poppysoakedbone': "The wizard soaked the bone in a sleeping agent.",
             'silversword': "The goblin guard's silver sword gleams dangerously.",
-            'mirrorshard': "It's a shard of the exploded magic mirror in the Goblin King's private quarters."
+            'mirrorshard': "It's a shard of the exploded magic mirror in the Goblin King's private quarters.",
+            'redorb': "It's the tip of the Goblin King's scepter.",
+            'powderkeg': "Contains a magical powder smellier and more flammable than Goblin farts."
 
 
         };

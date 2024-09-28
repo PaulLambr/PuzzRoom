@@ -31,10 +31,10 @@ class Cavernthrone extends Phaser.Scene {
     
         // Show intro message when entering Cavernhall
         checkIntroMessage(this, "Cavernthrone", "Grak the Goblin King holds court in his rather empty echoing halls.", this);
-
-          // Hashmark debugging graphics
-          hashmarkGraphics = this.add.graphics();
-          this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
+    
+        // Hashmark debugging graphics
+        hashmarkGraphics = this.add.graphics();
+        this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
     
         // Load the sprite's previous coordinates from localStorage, if available
         const savedX = localStorage.getItem('spriteX');
@@ -45,11 +45,11 @@ class Cavernthrone extends Phaser.Scene {
         // Retrieve isGoblinForm from local storage or set default to false (princess)
         this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
     
-         // Remove 'walk' animation if it exists
-         if (this.anims.exists('walk')) {
+        // Remove 'walk' animation if it exists
+        if (this.anims.exists('walk')) {
             this.anims.remove('walk');
         }
-
+    
         // Create walking animations for both forms
         if (!this.anims.exists('walk')) {
             this.anims.create({
@@ -60,11 +60,10 @@ class Cavernthrone extends Phaser.Scene {
             });
         }
     
-        // Remove 'walk' animation if it exists
-       if (this.anims.exists('goblinWalk4')) {
-        this.anims.remove('goblinWalk4');
-    }
-
+        if (this.anims.exists('goblinWalk4')) {
+            this.anims.remove('goblinWalk4');
+        }
+    
         if (!this.anims.exists('goblinWalk4')) {
             this.anims.create({
                 key: 'goblinWalk4',
@@ -91,8 +90,84 @@ class Cavernthrone extends Phaser.Scene {
             this.toggleForm();
         });
     
-       
+        // Create interactive zone for Goblin King
+        this.goblinKingZone = this.add.zone(720, 200, 200, 400).setOrigin(0, 0).setInteractive();
+        this.goblinKingZone.on('pointerdown', () => {
+            this.interactWithGoblinKing();
+        });
+
+        // Draw debugging zone around Goblin King interactive zone
+    const debugGraphics = this.add.graphics();
+    debugGraphics.lineStyle(2, 0xff0000);  // Red outline
+    debugGraphics.strokeRect(this.goblinKingZone.x, this.goblinKingZone.y, this.goblinKingZone.width, this.goblinKingZone.height);
+
+   
+     
+
+       // Handle dragging
+       this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+           gameObject.x = dragX;
+           gameObject.y = dragY;
+       });
+
+       this.input.on('dragend', (pointer, gameObject) => {
+        // Reset the scale after dragging
+        gameObject.setScale(0.15);
+    
+        // Get the bounds of the Goblin King or Grak
+        const grakBounds = this.goblinKingZone.getBounds();
+        const pointerX = pointer.worldX || pointer.x;
+        const pointerY = pointer.worldY || pointer.y;
+    
+        // Check if the dragged item is dropped on Grak and if the item's texture key is 'mirrorshard'
+        if (Phaser.Geom.Rectangle.Contains(grakBounds, pointerX, pointerY) && gameObject.texture.key === 'mirrorshard') {
+            // Call the function to handle the event when the shard is given to Grak
+            
+            showMessage("You confront the Goblin King with the shard of the Magick Mirror to see who really is behind this hall of mirrors.", this);
+
+            // Set a 5-second freeze
+        this.time.delayedCall(5000, () => {
+            // Camera shake for 4 seconds
+            this.cameras.main.shake(4000, 0.01);
+    
+            // After shake completes, fade to black for 2 seconds
+            this.time.delayedCall(4000, () => {
+                this.cameras.main.fadeOut(2000, 0, 0, 0);  // Fade out over 2 seconds
+    
+                // After fade out completes, switch to the next scene
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    localStorage.setItem('spriteX', 750);  // Save the sprite's position for the next scene
+                    localStorage.setItem('spriteY', 750);
+                    this.scene.start('Cavernthrone2');  // Start the next scene
+                    
+                    // Fade in the new scene over 2 seconds
+                    this.cameras.main.fadeIn(2000, 0, 0, 0);  // Fade in over 2 seconds
+                });
+    
+                // Flash after fade-out
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    this.cameras.main.flash(3000, 255, 255, 255); // Flash for 3 seconds
+                });
+            });
+        });
+    
+            /* // Optionally, destroy or handle the shard after interaction
+            gameObject.destroy();
+    
+            // Optionally remove the shard from inventory (if necessary)
+            inventory.removeItem({ name: 'mirrorshard' }); */
+        } else {
+            // If not dropped on Grak or it's a different item, add the item to the inventory based on its texture key
+            inventory.addItemnp({ name: gameObject.texture.key, img: gameObject.texture.key });
+            inventory.updateInventoryDisplay();
+    
+        
+        }
+    });
+    
     }
+    
+    
     
     toggleForm() {
         // Toggle the form
@@ -114,12 +189,20 @@ class Cavernthrone extends Phaser.Scene {
         }
     }
     
-
+    interactWithGoblinKing() {
+        if (this.isGoblinForm) {
+            showMessage("What are you doing here? Go find the princess!", this);
+        } else {
+            showMessage("Ah, princess. Your hopes to escape were revealed to be rather empty and pathetic. Soon my plans will be complete. Right now 1,000 goblins march on your castle. By morning, the entire kingdom will belong to me. If you wish to sit at my side, I would be most delighted.", this);
+            
+           
+        }
+    }
+    
+    
    
 
     update() {
-        console.log(this.sprite.anims.currentAnim ? this.sprite.anims.currentAnim.key : 'No animation playing');
-    
         let moving = false;
     
         // Character movement logic
@@ -155,19 +238,27 @@ class Cavernthrone extends Phaser.Scene {
                 if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
                     this.sprite.anims.play('walk', true);  // Play Princess walking animation
                 }
+                 // Block the player's exit
+            this.exitBlocked = true; 
             }
         } else {
             this.sprite.setVelocity(0, 0);
             this.sprite.anims.stop();
             this.sprite.setFrame(1);  // Reset to idle frame
         }
-
+    
+        // Check if the exit is blocked by the Goblin King
         if (this.sprite.y > 900) {
-            console.log('Transitioning to Cavernhall scene');
-            localStorage.setItem('spriteX', this.sprite.x);  // Optionally save the sprite's current position
-            localStorage.setItem('spriteY', 500);  // Optionally save the sprite's current position
-            this.scene.start('Cavernhall');
+            this.sprite.y = 900;
+            if (this.exitBlocked) {
+                showMessage("The Goblin King has blocked your exit with dark magick.", this);
+                
+            } else {
+                console.log('Transitioning to Cavernhall scene');
+                localStorage.setItem('spriteX', this.sprite.x);  // Optionally save the sprite's current position
+                localStorage.setItem('spriteY', 500);  // Optionally save the sprite's current position
+                this.scene.start('Cavernhall');
+            }
         }
-        
     }
-}
+}    

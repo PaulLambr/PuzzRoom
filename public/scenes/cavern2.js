@@ -1,12 +1,12 @@
-/*
-class Cavernbedroom extends Phaser.Scene {
+/* 
+class Cavernthrone extends Phaser.Scene {
     constructor() {
-        super({ key: 'Cavernbedroom' });
+        super({ key: 'Cavernthrone' });
     }
 
     preload() {
         // Preload assets
-        this.load.image('background_cbr', 'graphics/cavernbedroom.png');
+        this.load.image('background_ct1', 'graphics/goblin_throneroom_grak.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.spritesheet('goblingirl', 'graphics/goblingirl.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('grak', 'graphics/grak.png'); // Grak guard sprite
@@ -15,10 +15,10 @@ class Cavernbedroom extends Phaser.Scene {
     }
 
     create() {
-        console.log('Creating Cavernbedroom scene');
+        console.log('Creating Cavernthrone scene');
     
         // Set the background
-        const background = this.add.image(750, 450, 'background_cbr');
+        const background = this.add.image(750, 450, 'background_ct1');
         background.setDepth(0);
     
         // Initialize the inventory
@@ -31,26 +31,26 @@ class Cavernbedroom extends Phaser.Scene {
         }
     
         // Show intro message when entering Cavernhall
-        checkIntroMessage(this, "Cavernbedroom", "This must be the Goblin King's personal quarters. A mirror sits upon the antique wood writing desk.", this);
-
-          // Hashmark debugging graphics
-          hashmarkGraphics = this.add.graphics();
-          this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
+        checkIntroMessage(this, "Cavernthrone", "Grak the Goblin King holds court in his rather empty echoing halls.", this);
     
-         // Load the sprite's previous coordinates from localStorage, if available
-         const savedX = localStorage.getItem('spriteX');
-         const savedY = localStorage.getItem('spriteY');
-         const startX = savedX ? parseFloat(savedX) : 100;
-         const startY = savedY ? parseFloat(savedY) : 525;
+        // Hashmark debugging graphics
+        hashmarkGraphics = this.add.graphics();
+        this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
+    
+        // Load the sprite's previous coordinates from localStorage, if available
+        const savedX = localStorage.getItem('spriteX');
+        const savedY = localStorage.getItem('spriteY');
+        const startX = savedX ? parseFloat(savedX) : 100;
+        const startY = savedY ? parseFloat(savedY) : 525;
     
         // Retrieve isGoblinForm from local storage or set default to false (princess)
         this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
     
-         // Remove 'walk' animation if it exists
-         if (this.anims.exists('walk')) {
+        // Remove 'walk' animation if it exists
+        if (this.anims.exists('walk')) {
             this.anims.remove('walk');
         }
-
+    
         // Create walking animations for both forms
         if (!this.anims.exists('walk')) {
             this.anims.create({
@@ -61,11 +61,10 @@ class Cavernbedroom extends Phaser.Scene {
             });
         }
     
-        // Remove 'walk' animation if it exists
-       if (this.anims.exists('goblinWalk4')) {
-        this.anims.remove('goblinWalk4');
-    }
-
+        if (this.anims.exists('goblinWalk4')) {
+            this.anims.remove('goblinWalk4');
+        }
+    
         if (!this.anims.exists('goblinWalk4')) {
             this.anims.create({
                 key: 'goblinWalk4',
@@ -92,8 +91,13 @@ class Cavernbedroom extends Phaser.Scene {
             this.toggleForm();
         });
     
-       
+        // Create interactive zone for Goblin King
+        this.goblinKingZone = this.add.zone(720, 200, 200, 400).setOrigin(0, 0).setInteractive();
+        this.goblinKingZone.on('pointerdown', () => {
+            this.interactWithGoblinKing();
+        });
     }
+    
     
     toggleForm() {
         // Toggle the form
@@ -115,12 +119,20 @@ class Cavernbedroom extends Phaser.Scene {
         }
     }
     
-
+    interactWithGoblinKing() {
+        if (this.isGoblinForm) {
+            showMessage("What are you doing here? Go find the princess!", this);
+        } else {
+            showMessage("Ah, princess. Your hopes to escape were revealed to be rather empty and pathetic. Soon my plans will be complete. Right now 1,000 goblins march on your castle. By morning, the entire kingdom will belong to me. If you wish to sit at my side, I would be most delighted.", this);
+            
+           
+        }
+    }
+    
+    
    
 
     update() {
-        console.log(this.sprite.anims.currentAnim ? this.sprite.anims.currentAnim.key : 'No animation playing');
-    
         let moving = false;
     
         // Character movement logic
@@ -156,6 +168,8 @@ class Cavernbedroom extends Phaser.Scene {
                 if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
                     this.sprite.anims.play('walk', true);  // Play Princess walking animation
                 }
+                 // Block the player's exit
+            this.exitBlocked = true; 
             }
         } else {
             this.sprite.setVelocity(0, 0);
@@ -163,62 +177,17 @@ class Cavernbedroom extends Phaser.Scene {
             this.sprite.setFrame(1);  // Reset to idle frame
         }
     
-        // Check if the sprite is within the circle to display the reflection
-        const spriteX = this.sprite.x;
-        const spriteY = this.sprite.y;
-        const distanceToMirror = Phaser.Math.Distance.Between(spriteX, spriteY, 725, 400);
-    
-        if (distanceToMirror <= 100) {
-            // Create the reflection
-            this.showReflection(spriteX, spriteY);
-        } else {
-            // If the sprite moves out of the circle, remove the reflection
-            if (this.reflection) {
-                this.reflection.destroy();
-                this.reflection = null;
+        // Check if the exit is blocked by the Goblin King
+        if (this.sprite.y > 900) {
+            if (this.exitBlocked) {
+                showMessage("The Goblin King has blocked your exit with dark magick.", this);
+            } else {
+                console.log('Transitioning to Cavernhall scene');
+                localStorage.setItem('spriteX', this.sprite.x);  // Optionally save the sprite's current position
+                localStorage.setItem('spriteY', 500);  // Optionally save the sprite's current position
+                this.scene.start('Cavernhall');
             }
         }
-    
-        // Scene transition logic (example)
-        if (this.sprite.x < 150) {
-            console.log('Transitioning to Cavernhall2 scene');
-            localStorage.setItem('spriteX', 1300);  // Save the sprite's position for the next scene
-            localStorage.setItem('spriteY', 250);
-            this.scene.start('Caverntower2');
-        }
     }
-    
-    // Function to create a mirror reflection
-showReflection(spriteX, spriteY) {
-    if (!this.reflection) {
-        // Create the reflection sprite at (725, 200)
-        this.reflection = this.add.sprite(725, 190, this.isGoblinForm ? 'goblingirl' : 'character')
-            .setFlipY(false)     // Keep it right-side up
-            .setFlipX(false)      // Flip horizontally like a mirror reflection
-            .setScale(1.9)       // Slightly smaller reflection
-            .setAlpha(0.5);      // Semi-transparent for reflection effect
-
-        this.reflection.setDepth(0); // Ensure it appears behind other objects
-    }
-
-    // Get the current frame index (ensure it doesn't exceed the frame count)
-    const currentFrame = this.sprite.anims.currentFrame.index;
-    const maxFrameIndex = this.anims.get(this.isGoblinForm ? 'goblinWalk4' : 'walk').frames.length - 1;
-    const validFrame = Math.min(currentFrame, maxFrameIndex); // Ensure the frame index is valid
-
-    // Set the reflection frame
-    this.reflection.setFrame(validFrame);
-
-
-    
-        // Play the correct animation for the reflection
-        if (this.isGoblinForm) {
-            this.reflection.anims.play('goblinWalk4', true);
-        } else {
-            this.reflection.anims.play('walk', true);
-        }
-    }
-    
-}
-
+}    
 */
