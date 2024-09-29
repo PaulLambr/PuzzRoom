@@ -319,41 +319,47 @@ class Cavern1 extends Phaser.Scene {
             const grakBounds = this.grak.getBounds();
             const pointerX = pointer.worldX || pointer.x;
             const pointerY = pointer.worldY || pointer.y;
-
+        
+            // If the amulet is dropped on Grak, capture his soul and don't return the amulet to inventory
             if (Phaser.Geom.Rectangle.Contains(grakBounds, pointerX, pointerY) && gameObject.texture.key === 'amulet') {
                 this.captureGrakSoul(gameObject);
-            } else {
-                inventory.addItemnp({ name: gameObject.texture.key, img: gameObject.texture.key });
-                inventory.updateInventoryDisplay();
-                gameObject.destroy();
+                return;  // Exit early to prevent adding the amulet back to the inventory
             }
-
-            // Ensure doorZone exists and has bounds before using them
-    if (this.doorZone) {
-        const doorBounds = this.doorZone.getBounds();
-        const pointerX = pointer.worldX || pointer.x;
-        const pointerY = pointer.worldY || pointer.y;
-
-        // Check if the keys were dropped on the door
-        if (Phaser.Geom.Rectangle.Contains(doorBounds, pointerX, pointerY) && gameObject.texture.key === 'keys') {
-            this.unlockDoor(gameObject);  // Call the door unlock function
-        } else {
-            // Return the item to the inventory if not dropped on the door
+        
+            // Handle other cases where the item is not used correctly (return it to the inventory)
             inventory.addItemnp({ name: gameObject.texture.key, img: gameObject.texture.key });
             inventory.updateInventoryDisplay();
             gameObject.destroy();
-        }
-    }
+        
+            // Handle door logic
+            if (this.doorZone) {
+                const doorBounds = this.doorZone.getBounds();
+                const pointerX = pointer.worldX || pointer.x;
+                const pointerY = pointer.worldY || pointer.y;
+        
+                if (Phaser.Geom.Rectangle.Contains(doorBounds, pointerX, pointerY) && gameObject.texture.key === 'keys') {
+                    this.unlockDoor(gameObject);
+                } else {
+                    // If the item is not correctly used, return it to the inventory
+                    inventory.addItemnp({ name: gameObject.texture.key, img: gameObject.texture.key });
+                    inventory.updateInventoryDisplay();
+                    gameObject.destroy();
+                }
+            }
         });
+        
+        
+        
     }
 
     captureGrakSoul(amuletSprite) {
         console.log("Removing amulet from inventory...");
         console.log("Adding SoulSwitcher to inventory...");
+            // Remove the original wineskin from inventory
+  inventory.removeItem({ name: 'amulet', img: 'amulet' }); 
         inventory.addItemnp({ name: 'soulswitcher', img: 'soulswitcher' });
-        // Remove the bone from the inventory
-        inventory.removeItem({ name: 'amulet', img: 'amulet' });
-        gameObject.destroy();  // Optionally destroy the gameObject after use
+
+
         inventory.updateInventoryDisplay();
         showMessage("Grak's soul is captured in the amulet, which is now the SoulSwitcher!", this);
         this.grak.destroy();
