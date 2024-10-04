@@ -1,12 +1,11 @@
-class Grassriver2 extends Phaser.Scene {
+class TreeInterior extends Phaser.Scene {
     constructor() {
-        super({ key: 'Grassriver2' });
+        super({ key: 'TreeInterior' });
     }
 
     preload() {
         // Preload assets
-        this.load.image('background_gr2', 'graphics/gplusrwindowsnight.png');
-        this.load.image('background_gr2b', 'graphics/gplusrwindowsnightb.png');
+        this.load.image('background_ti', 'graphics/Squirreltree.png');
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('amulet', 'graphics/graks_amulet.png');
@@ -25,7 +24,7 @@ class Grassriver2 extends Phaser.Scene {
     }
 
     create() {
-        console.log('Creating GR2 scene');
+        console.log('Creating TreeInterior scene');
 
         // Initialize variables
         this.torchAddedToInventory = false;
@@ -33,7 +32,7 @@ class Grassriver2 extends Phaser.Scene {
         this.zoneActivated = false;  // Zone activation flag
 
         // Set the background
-        const background = this.add.image(750, 450, 'background_gr2');
+        const background = this.add.image(750, 450, 'background_ti');
         background.setDepth(0);
 
         // Load sprite position from localStorage or set default
@@ -69,35 +68,19 @@ class Grassriver2 extends Phaser.Scene {
         }
 
         // Show intro message when entering Castle Prairie
-        checkIntroMessage(this, "Grassriver2", "Night has apparently fallen since your time in the Goblin dungeons. The only light on this lazy river bend appears to emanate from the nearby elm tree.", this);
+        checkIntroMessage(this, "TreeInterior", "Truly the stuff of nightmares, it does not surprise you in the least that a squirrel is behind this web of deceit.", this);
 
          // Hashmark debugging graphics
          hashmarkGraphics = this.add.graphics();
          this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
 
         // Set current scene
-        localStorage.setItem('currentScene', 'Grassriver1');
+        localStorage.setItem('currentScene', 'TreeInterior');
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
 
-        // Create an interactive zone at (360, 550, 120, 15)
-    const doorZone = this.add.zone(300, 475, 120, 150).setOrigin(0);
-    this.physics.world.enable(doorZone);  // Enable physics on the zone
-    doorZone.body.setAllowGravity(false);  // Prevent the zone from being affected by gravity
-    doorZone.body.setImmovable(true);  // Make the zone immovable
-
-    // Overlap check between sprite and zone
-    this.physics.add.overlap(this.sprite, doorZone, () => {
-        this.scene.start('TreeInterior');  // Start TreeInterior scene on collision
-    }, null, this);
-
-    // Listen for zone click event (if still needed)
-    doorZone.setInteractive();
-    doorZone.on('pointerdown', () => {
-        showMessage("You knock on the door and this time it opens.", this);
-        this.add.image(750, 450, 'background_gr2b')
-    });
+        
     }
 
     update() {
@@ -126,22 +109,7 @@ class Grassriver2 extends Phaser.Scene {
             this.sprite.setVelocityY(0);
         }
 
-        // Transition to dining room if sprite moves beyond 1500 pixels on the right
-        if (this.sprite.x < 80 && !this.hasTransitioned) {
-            this.sprite.x=80;
-            showMessage("You hear wolves howling and decide against venturing further.", this);
-        }
-
-         // Transition to dining room if sprite moves beyond 1500 pixels on the right
-        if (this.sprite.x > 1400 && !this.hasTransitioned) {
-            this.sprite.x=1400;
-            showMessage("You hear wolves howling and decide against venturing further.", this);
-}
-           // Transition to dining room if sprite moves beyond 1500 pixels on the right
-           if (this.sprite.y < 106 && !this.hasTransitioned) {
-            this.sprite.y=106;
-            showMessage("You hear wolves howling and decide against venturing further.", this);
-}
+       
 
         // Play walking animation if moving
         if (moving) {
