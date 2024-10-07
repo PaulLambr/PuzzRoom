@@ -11,6 +11,8 @@ class TreeInterior extends Phaser.Scene {
         this.load.image('amulet', 'graphics/graks_amulet.png');
         this.load.image('mirror', 'graphics/mirror.png');
         this.load.image('torch', 'graphics/torch.png');
+        this.load.image('silversword', 'graphics/silversword.png');  // Load the silver sword
+        this.load.image('redorb', 'graphics/redorb.png');            // Load the red orb
 
         // Fetch and load inventory items from inventory-library.json
         fetch('components/inventory-library.json')
@@ -30,6 +32,7 @@ class TreeInterior extends Phaser.Scene {
         this.torchAddedToInventory = false;
         this.showHashmarks = false;  // Hashmarks toggle
         this.zoneActivated = false;  // Zone activation flag
+        this.swordDragged = false;   // Track whether the sword was successfully dragged
 
         // Set the background
         const background = this.add.image(750, 450, 'background_ti');
@@ -67,12 +70,12 @@ class TreeInterior extends Phaser.Scene {
             messagePanel = null;
         }
 
-        // Show intro message when entering Castle Prairie
+        // Show intro message when entering TreeInterior
         checkIntroMessage(this, "TreeInterior", "Truly the stuff of nightmares, it does not surprise you in the least that a squirrel is behind this web of deceit.", this);
 
-         // Hashmark debugging graphics
-         hashmarkGraphics = this.add.graphics();
-         this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
+        // Hashmark debugging graphics
+        hashmarkGraphics = this.add.graphics();
+        this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
 
         // Set current scene
         localStorage.setItem('currentScene', 'TreeInterior');
@@ -80,7 +83,94 @@ class TreeInterior extends Phaser.Scene {
         // Prevent multiple transitions
         this.hasTransitioned = false;
 
-        
+        // Add the interactive zone at (560, 360) with width 150 and height 280
+        const zone = this.add.zone(285, 450, 150, 280).setOrigin(0);
+        this.physics.world.enable(zone);
+        zone.body.setAllowGravity(false);
+        zone.setInteractive();
+
+        // Add event listener for clicking the zone
+        zone.on('pointerdown', () => {
+            showMessage(
+                "'Greetings human, I see you've conquered my spell. What remains of it is imprisoned in that red orb you carry, along with your father. If you wish to see him again, you will spare my life. Only I know the magick that will free him.' You get the sense this glorified rat is lying, or stalling somehow. Better find a way to get the truth out of him.",
+                this
+            );
+        });
+
+        // Define the bounds of the inventory panel
+        const inventoryBounds = new Phaser.Geom.Rectangle(1500, 0, 300, 900);
+        const tolerance = 15;  // Tolerance for dropping near edges
+
+        // Drag and drop for inventory items
+        this.input.on('dragstart', (pointer, gameObject) => {
+            gameObject.setScale(0.28);
+            gameObject.originalX = gameObject.x;
+            gameObject.originalY = gameObject.y;
+        });
+
+        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
+            gameObject.x = dragX;
+            gameObject.y = dragY;
+        });
+
+        this.input.on('dragend', (pointer, gameObject) => {
+            gameObject.setScale(0.15); // Restore the original scale
+            console.log('Dragged item texture key:', gameObject.texture.key);
+            console.log('Pointer dropped at:', pointer.x, pointer.y);
+
+            // Check if the pointer is within the inventory panel with tolerance
+            const itemBounds = gameObject.getBounds();
+            if (
+                itemBounds.right > inventoryBounds.x + inventoryBounds.width ||
+                itemBounds.left < inventoryBounds.x - tolerance ||
+                itemBounds.bottom > inventoryBounds.y + inventoryBounds.height ||
+                itemBounds.top < inventoryBounds.y
+            ) {
+                showMessage("You can't drop the item here!", this);
+                gameObject.x = gameObject.originalX;
+                gameObject.y = gameObject.originalY;
+                return; // Exit here if dropped inside inventory panel
+            }
+
+            // Check if the item was dropped into the interactive zone
+            const zoneBounds = zone.getBounds();
+            if (Phaser.Geom.Rectangle.Contains(zoneBounds, pointer.x, pointer.y)) {
+                if (gameObject.texture.key === 'silversword') {
+                    // Sword was successfully dragged into the zone
+                    this.swordDragged = true;
+                    showMessage(
+                        "You brandish the silver sword in the squirrel's direction. His beady little eyes dilate with fear. 'All right,' he says. 'Give me the orb. I'll restore your father to his throne. It won't matter though, my goblin army will be there any second. You'll never reach him in time. Though it's your only chance.'",
+                        this
+                    );
+                } else if (gameObject.texture.key === 'redorb') {
+                    // Red orb logic based on whether the sword was dragged first
+                    if (this.swordDragged) {
+
+                        showMessage(
+                            "You decide to trust the shifty rodent and hand him the pulsing red orb",
+                            this
+                        );
+                        // If sword was dragged, fade out and start 'Poke' scene
+                        this.cameras.main.fadeOut(3000, 0, 0, 0);
+                        this.cameras.main.once('camerafadeoutcomplete', () => {
+                            this.scene.start('CastlePrairie2');
+                        });
+                    } else {
+                        // If sword was not dragged, show failure message
+                        showMessage(
+                            "You hand the evil squirrel back the object of his shiny desire. He then sucks you inside of it where you are reunited with your father, but it's cold comfort considering you're entombed within a shiny bauble.",
+                            this
+                        );
+                    }
+                } else {
+                    showMessage("The item doesn't seem to have any effect here.", this);
+                }
+            } else {
+                // Return the item to its original position
+                gameObject.x = gameObject.originalX;
+                gameObject.y = gameObject.originalY;
+            }
+        });
     }
 
     update() {
@@ -108,8 +198,6 @@ class TreeInterior extends Phaser.Scene {
         } else {
             this.sprite.setVelocityY(0);
         }
-
-       
 
         // Play walking animation if moving
         if (moving) {

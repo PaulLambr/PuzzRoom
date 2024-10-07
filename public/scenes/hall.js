@@ -177,8 +177,8 @@ if (messagePanel) {
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.x > 1500 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x - 1480); // Adjust as needed
-            localStorage.setItem('spriteY', this.sprite.y);
+            localStorage.setItem('spriteX', 200); // Adjust as needed
+            localStorage.setItem('spriteY', 700);
             this.hasTransitioned = true;
             console.log("Transitioning to Dining Room");
             this.scene.start('DiningRoom');  // Replace 'DiningRoom' with the correct scene key
