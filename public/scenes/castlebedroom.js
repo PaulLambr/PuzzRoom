@@ -128,7 +128,7 @@ animationManager.createAnimations(this);
             messagePanel = null;
         }
         // Check and display the intro message
-        checkIntroMessage(this, "CastleBedroom", "Ah what a bright shining morning it is in the Kingdom of Kenmoria. You have just awoken...");
+        checkIntroMessage(this, "CastleBedroom", "Ah what a bright shining morning it is in the Kingdom of Kenmoria. You have just awoken, but instead of the pleasant trills of songbirds greeting your ears, it seems like a din of clashing metal and harsh grunting sounds waft through the tower of the castle where you reside.");
 
         this.hasTransitioned = false;  // Initialize it here as well for safety
 
@@ -167,7 +167,7 @@ animationManager.createAnimations(this);
             this.hasTransitioned = true;
 
             // Transition to Tower scene
-            this.scene.start('Tower');
+            this.scene.start('Bridge');
         }
 
         if (moving) {

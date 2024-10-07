@@ -79,6 +79,20 @@ class GFCM extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
+
+        // Create no-go zones
+ const noGoZones = [
+    { x: 700, y: 5, width: 800, height: 1 },        // From x: 0 to x: 375 at y: 800
+    { x: 1000, y: 450, width: 1, height: 900 },
+    
+    
+];
+
+noGoZones.forEach(zone => {
+    const newZone = this.add.zone(zone.x + zone.width / 2, zone.y, zone.width, zone.height).setOrigin(0.5, 0.5);
+    this.physics.add.existing(newZone, true);
+    this.physics.add.collider(this.sprite, newZone);
+});
     }
 
     update() {

@@ -114,7 +114,7 @@ class Poke extends Phaser.Scene {
         this.input.keyboard.on('keydown-H', toggleHashmarks.bind(this, this));
     
         // Set current scene
-        localStorage.setItem('currentScene', 'ShoreRiver1');
+        localStorage.setItem('currentScene', 'Poke');
     
         // Prevent multiple transitions
         this.hasTransitioned = false;
