@@ -225,6 +225,8 @@ class Poke extends Phaser.Scene {
              this.scene.start(lastScene);  // Transition to the last visited HutInterior scene
          } else {
              console.log('Transitioning to HutInterior (default)');
+             localStorage.setItem('spriteX', 750);
+        localStorage.setItem('spriteY', 750);
              this.scene.start('HutInterior');  // Default to the base HutInterior if no record is found
          }
      }
@@ -282,6 +284,14 @@ class Poke extends Phaser.Scene {
         localStorage.setItem('spriteY', this.sprite.y);
         this.hasTransitioned = true;
         this.scene.start('ShoreRiver1');
+    }
+
+    if (this.sprite.y < 106 && !this.hasTransitioned) {
+        console.log('Transitioning to RplusG scene');
+        localStorage.setItem('spriteX', this.sprite.x);
+        localStorage.setItem('spriteY', this.sprite.y + 620);
+        this.hasTransitioned = true;
+        this.scene.start('GFinalSwamp');
     }
     }
 }

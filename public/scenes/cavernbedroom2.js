@@ -31,7 +31,7 @@ class Cavernbedroom2 extends Phaser.Scene {
         }
     
         // Show intro message when entering Cavernhall
-        checkIntroMessage(this, "Cavernbedroom2", "You have regained your true self, and yet another magic mirror broken. How many years bad luck now?", this);
+        checkIntroMessage(this, "Cavernbedroom2", "You have regained your true self, and yet another magic mirror broken. How many years of bad luck is this now? 50?", this);
 
         // Debugging graphics for hashmarks
         hashmarkGraphics = this.add.graphics();
@@ -103,7 +103,7 @@ class Cavernbedroom2 extends Phaser.Scene {
                 // Draw a little green box in the shard zone
                 const greenBox = this.add.graphics();
                 greenBox.fillStyle(0x019051, 1);  // Set the color to green with full opacity
-                greenBox.fillRect(shardX - 20, shardY - 10, 40, 45);  // Draw the 25x25 box centered at the shard's position
+                greenBox.fillRect(shardX - 20, shardY - 10, 40, 65);  // Draw the 25x25 box centered at the shard's position
     
                 // Optionally, you can stop further pointerdown listeners for this shard after it's picked up
                 this.input.off('pointerdown');
@@ -121,8 +121,8 @@ class Cavernbedroom2 extends Phaser.Scene {
     // Function to display the green box
     showGreenBox(x, y) {
         const greenBox = this.add.graphics();
-        greenBox.fillStyle(0x00ff00, 1);  // Set the color to green with full opacity
-        greenBox.fillRect(x - 20, y - 20, 40, 40);  // Draw the 40x40 box centered at the specified position
+        greenBox.fillStyle(0x019051, 1);  // Set the color to green with full opacity
+        greenBox.fillRect(x - 20, y - 10, 40, 65);  // Draw the 40x40 box centered at the specified position
     }
 
     

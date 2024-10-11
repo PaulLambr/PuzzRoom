@@ -218,10 +218,10 @@ class GoblinCellar extends Phaser.Scene {
         const orbY = 60;
         const pickupRadius = 200;  // Increase pickup radius for easier proximity detection
     
-        // Draw the debugging circle where the player can pick up the shard
+        /* // Draw the debugging circle where the player can pick up the shard
         const debugGraphics = this.add.graphics();
         debugGraphics.lineStyle(2, 0xff0000, 1);  // Red color with full opacity
-        debugGraphics.strokeCircle(orbX, orbY, pickupRadius);  // Draw the circle at the shard's position
+        debugGraphics.strokeCircle(orbX, orbY, pickupRadius);  // Draw the circle at the shard's position */
     
         // Add a listener for when the player clicks near the shard
         this.input.on('pointerdown', (pointer) => {

@@ -1,6 +1,13 @@
 class CaveEntrance extends Phaser.Scene {
     constructor() {
         super({ key: 'CaveEntrance' });
+
+        this.transitionZone = {
+            x: 950,  // x-coordinate of the top-left corner
+            y: 350,   // y-coordinate of the top-left corner
+            width: 200,  // width of the rectangle
+            height: 350  // height of the rectangle
+        };
     }
 
     preload() {
@@ -79,7 +86,11 @@ class CaveEntrance extends Phaser.Scene {
 
         // Prevent multiple transitions
         this.hasTransitioned = false;
+
+        
+        
     }
+    
 
     update() {
         let moving = false;
@@ -108,13 +119,13 @@ class CaveEntrance extends Phaser.Scene {
         }
 
         
-        // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
+       /* // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
 if (this.sprite.x > 1200 && this.sprite.y > 450 && this.sprite.y < 600 && !this.hasTransitioned) {
     localStorage.setItem('spriteX', 100);
     localStorage.setItem('spriteY', 520);
     this.hasTransitioned = true;
     this.scene.start('CaveInterior');
-}
+} */
 
         // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
 if (this.sprite.y > 840 && !this.hasTransitioned) {
@@ -148,5 +159,21 @@ if (this.sprite.y > 840 && !this.hasTransitioned) {
             this.sprite.anims.stop();
             this.sprite.setFrame(1);
         }
+
+        // Check if the sprite is colliding with the transition zone and start the new scene
+    if (isColliding(this.sprite, this.transitionZone) && !this.hasTransitioned) {
+        localStorage.setItem('spriteX', 115);  // Set next scene's starting position
+        localStorage.setItem('spriteY', 520);  // Set next scene's starting position
+        this.hasTransitioned = true;  // Prevent multiple transitions
+        this.scene.start('CaveInterior');  // Start the new scene
     }
+    }
+}
+function isColliding(sprite, zone) {
+    return (
+        sprite.x > zone.x &&
+        sprite.x < zone.x + zone.width &&
+        sprite.y > zone.y &&
+        sprite.y < zone.y + zone.height
+    );
 }

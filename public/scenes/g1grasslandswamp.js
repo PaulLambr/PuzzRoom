@@ -133,6 +133,14 @@ this.physics.add.collider(this.sprite, noGoZone);
             this.scene.start('G2grasslandswamp');
         }
 
+         // Transition to dining room if sprite moves beyond 1500 pixels on the right
+         if (this.sprite.y > 790 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y - 650);
+            this.hasTransitioned = true;
+            this.scene.start('GFinalSwamp');
+        }
+
         // Play walking animation if moving
         if (moving) {
             this.sprite.anims.play('walk', true);

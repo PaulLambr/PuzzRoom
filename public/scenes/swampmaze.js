@@ -145,8 +145,9 @@ poppyItemZone.on('pointerdown', () => {
     endGame() {
         this.gameOver = true;
         this.sprite.setVelocity(0, 0); // Stop the player's movement
+        
         showMessage("You've fallen asleep in the poisonous swamp! The game is over.", this); // Display the game over message
-        this.cameras.main.fadeOut(2000, 0, 0, 0);  // Fade to black
+        this.cameras.main.fadeOut(5000, 0, 0, 0);  // Fade to black
     }
 
 

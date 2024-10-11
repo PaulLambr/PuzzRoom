@@ -5,7 +5,7 @@ class HallThrone2 extends Phaser.Scene {
 
     preload() {
         // Preload assets
-        this.load.image('background_ht2', 'graphics/hallway_throne.png');
+        this.load.image('background_ht2', 'graphics/hallway_throne_open.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.spritesheet('goblin', 'graphics/goblin.png', { frameWidth: 28.5, frameHeight: 70 }); // Preload goblin spritesheet
         this.load.image('parchment_bg', 'graphics/parchment_bg.png'); // Preload message background
@@ -111,7 +111,7 @@ class HallThrone2 extends Phaser.Scene {
                 const distance = Phaser.Math.Distance.Between(this.goblin.x, this.goblin.y, this.sprite.x, this.sprite.y);
                 if (distance < 10 && !this.messageShown) {
                     this.goblin.setVelocity(0).anims.stop();
-                    showMessage("You're too late. We made it through the tunnel. Prepare to die.", this);
+                    showMessage("You're too late. We made it through the tunnel. GAME OVER!", this);
                     this.messageShown = true;
 
                     // After the message, fade to cavern
@@ -167,10 +167,13 @@ class HallThrone2 extends Phaser.Scene {
 
         // Transition to the next scene (Bridge) if the sprite moves beyond 50 pixels on the left
         if (this.sprite.x < 50 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x + 1400);
-            localStorage.setItem('spriteY', this.sprite.y);
+            this.sprite.x=50;
+            showMessage("Your father is straight ahead. Go say Hi!", this);
+        }
+
+        if (this.sprite.y < 500 && this.sprite.x > 550 && this.sprite.x < 950 && !this.hasTransitioned) {
             this.hasTransitioned = true;
-            this.scene.start('Bridge');
+            this.scene.start('EndSequence');
         }
 
         // Play walking animation if moving

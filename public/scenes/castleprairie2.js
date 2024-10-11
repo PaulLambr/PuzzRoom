@@ -167,20 +167,16 @@ this.physics.add.overlap(this.sprite, this.pokeZone, this.startPokeScene, null, 
         }
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
-        if (this.sprite.x > 1500 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x - 1400);
-            localStorage.setItem('spriteY', this.sprite.y);
-            this.hasTransitioned = true;
-            this.scene.start('G1grasslandswamp');
+        if (this.sprite.x > 1450 && !this.hasTransitioned) {
+            this.sprite.x=1450;
+            showMessage("You want to get home ASAP to see if your Dad is truly home.", this);
         }
 
         // Transition to another scene if sprite moves beyond 1550 pixels on the Y axis
-        if (this.sprite.y > 900 && !this.hasTransitioned) {
-            console.log('Transitioning to G3grasslandcorn scene');
-            localStorage.setItem('spriteX', this.sprite.x);
-            localStorage.setItem('spriteY', this.sprite.y - 750);
-            this.hasTransitioned = true;
-            this.scene.start('G3grasslandcorn');
+        if (this.sprite.y > 850 && !this.hasTransitioned) {
+            this.sprite.y = 850;
+            showMessage("You want to get home ASAP to see if your Dad is truly home.", this);
+
         }
 
         // Check if the player leaves the rock's bounds

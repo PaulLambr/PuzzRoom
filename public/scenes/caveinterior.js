@@ -178,20 +178,14 @@ class CaveInterior extends Phaser.Scene {
         }
 
         // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
-        if (this.sprite.x < 80 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x + 1000);
+        if (this.sprite.x < 106 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x + 700);
             localStorage.setItem('spriteY', this.sprite.y);
             this.hasTransitioned = true;
             this.scene.start('CaveEntrance');
         }
 
-        // Transition to CaveInterior if sprite.x is greater than 1200 and sprite.y is between 300 and 500
-        if (this.sprite.y > 1380 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', this.sprite.x);
-            localStorage.setItem('spriteY', this.sprite.y - 1250);
-            this.hasTransitioned = true;
-            this.scene.start('CaveEntrance');
-        }
+       
 
         // Play walking animation if moving
         if (moving) {

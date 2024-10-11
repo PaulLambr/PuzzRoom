@@ -271,8 +271,8 @@ class HutInterior2 extends Phaser.Scene {
 
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y > 850 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', 250);
-            localStorage.setItem('spriteY', 650);
+            localStorage.setItem('spriteX', 740);
+            localStorage.setItem('spriteY', 850);
             this.hasTransitioned = true;
             this.scene.start('Poke');
         }

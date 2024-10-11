@@ -88,6 +88,11 @@ class Cavern1 extends Phaser.Scene {
 
         // Add Grak sprite
         this.grak = this.add.sprite(550, 260, 'grak').setScale(1.5);
+        // Make doorZone interactive
+        this.grak.setInteractive();
+        this.grak.on('pointerdown', () => {
+            showMessage("Here is a particularly surly and rather disinterested looking guard. A soulless nothing.", this);
+        });
 
         // Enable dragging from the inventory
         this.setupDragEvents();
@@ -103,7 +108,7 @@ class Cavern1 extends Phaser.Scene {
         inventory.updateInventoryDisplay();
 
         // Start a delayed event for spawning the Goblin King
-        this.time.delayedCall(10000, this.spawnGoblinKing, [], this);
+        this.time.delayedCall(40000, this.spawnGoblinKing, [], this);
     }
 
     update() {
@@ -364,7 +369,7 @@ class Cavern1 extends Phaser.Scene {
 
 
         inventory.updateInventoryDisplay();
-        showMessage("Grak's soul is captured in the amulet, which is now the SoulSwitcher!", this);
+        showMessage("Grak's soul is captured by the ancient cursed amulet.", this);
         this.grak.destroy();
         this.spawnSword(this.grak.x, this.grak.y);
         this.transformToGoblin();
@@ -412,7 +417,7 @@ class Cavern1 extends Phaser.Scene {
         // Fade out and restart the scene after a delay
         this.time.delayedCall(2000, () => {  // 2-second delay before restarting
             this.cameras.main.fadeOut(1000, 0, 0, 0, () => {
-                this.scene.restart();  // Restart the scene after fade-out
+                
             });
         });
     }

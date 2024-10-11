@@ -159,7 +159,7 @@ noGoZones.forEach(zone => {
             const pointerInNoGoZone = Phaser.Geom.Circle.Contains(noGoZoneBounds, pointer.x, pointer.y);
     
             if (pointerInNoGoZone && gameObject.texture.key === 'poppysoakedbone') {
-                showMessage("Cerberus accepts the bone, allowing you to proceed!", this);
+                showMessage("Cerberus accepts the bone, then teeters and falls over, allowing you to proceed!", this);
                 inventory.removeItem({ name: 'poppysoakedbone', img: 'poppysoakedbone' });
     
                 // Call the moveNoGoZone function from within the scene's context

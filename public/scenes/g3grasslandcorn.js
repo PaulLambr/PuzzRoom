@@ -129,7 +129,14 @@ if (!this.anims.exists('walk')) {
             this.scene.start('ShoreRiver1');
         }
 
-
+// Transition to another scene if sprite moves beyond 1550 pixels on the Y axis
+if (this.sprite.x > 1390 && !this.hasTransitioned) {
+    console.log('Transitioning to G3grasslandcorn scene');
+    localStorage.setItem('spriteX', this.sprite.x - 1200);
+    localStorage.setItem('spriteY', this.sprite.y);
+    this.hasTransitioned = true;
+    this.scene.start('GFinalSwamp');
+}
 
         
         // Play walking animation if moving

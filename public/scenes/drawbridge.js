@@ -6,7 +6,7 @@ class Drawbridge extends Phaser.Scene {
     preload() {
         // Preload assets
         this.load.image('background_db', 'graphics/Drawbridge.png');
-        this.load.image('background_db2', 'graphics/Drawbridge_blown.png');
+        
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('amulet', 'graphics/graks_amulet.png');
@@ -16,6 +16,7 @@ class Drawbridge extends Phaser.Scene {
         this.load.image('redorb', 'graphics/redorb.png');            // Load the red orb
         this.load.image('debris_cloud', 'graphics/debris.png'); 
         this.load.image('powderkeg2', 'graphics/powderkeg2.png'); 
+        this.load.image('background_db2', 'graphics/Drawbridge_explode.png');
 
         // Fetch and load inventory items from inventory-library.json
         fetch('components/inventory-library.json')
@@ -167,11 +168,13 @@ class Drawbridge extends Phaser.Scene {
                         const debrisCloud = this.add.image(360, 560, 'debris_cloud').setScale(3);
                         this.time.delayedCall(500, () => {
                             debrisCloud.destroy();
-                            const graphics = this.add.graphics();
+                            /* const graphics = this.add.graphics();
                             graphics.fillStyle(0x000000, 1);
-                            graphics.fillRect(300, 590, 300, 300);
-                            showMessage("You blow the grate and the moat starts flowing into the cellar", this); 
+                            graphics.fillRect(300, 590, 300, 300); */
+                            showMessage("You blow the grate and the moat starts flowing into the cellar. You hear the sounds of goblins screeching in agony as the rushing fetid water submerges them in their unauthorized underground tunnel.", this); 
                             localStorage.setItem('moatblown', 'True');
+                           inventory.removeItem({ name: 'powderkeg', img: 'powderkeg' });
+                            this.add.image(750, 450, 'background_db2')
                         });
                     } else {
                         showMessage("You need to set the powder keg first.", this); // Add this to handle the case where swordDragged is false
@@ -222,12 +225,22 @@ class Drawbridge extends Phaser.Scene {
         }
 
         // Transition to the next scene (ThroneHall2) if sprite's y < 550 and x is between 550 and 950
-if (this.sprite.y < 550 && this.sprite.x > 550 && this.sprite.x < 950 && !this.hasTransitioned) {
+if (this.sprite.y < 500 && this.sprite.x > 550 && this.sprite.x < 950 && !this.hasTransitioned) {
     localStorage.setItem('spriteX', this.sprite.x);
     localStorage.setItem('spriteY', this.sprite.y + 150);
     this.hasTransitioned = true;
     this.scene.start('HallThrone2');
 }
+// Transition to the next scene (ThroneHall2) if sprite's y < 550 and x is between 550 and 950
+if (this.sprite.x < 560 && !this.hasTransitioned) {
+    this.sprite.x=560
+    
+}
 
+// Transition to the next scene (ThroneHall2) if sprite's y < 550 and x is between 550 and 950
+if (this.sprite.x > 940 && !this.hasTransitioned) {
+    this.sprite.x=940
+    
+}
     }
 }

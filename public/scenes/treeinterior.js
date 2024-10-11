@@ -145,7 +145,7 @@ class TreeInterior extends Phaser.Scene {
                 } else if (gameObject.texture.key === 'redorb') {
                     // Red orb logic based on whether the sword was dragged first
                     if (this.swordDragged) {
-
+                        inventory.removeItem({ name: 'redorb', img: 'redorb' });
                         showMessage(
                             "You decide to trust the shifty rodent and hand him the pulsing red orb",
                             this
@@ -153,12 +153,15 @@ class TreeInterior extends Phaser.Scene {
                         // If sword was dragged, fade out and start 'Poke' scene
                         this.cameras.main.fadeOut(3000, 0, 0, 0);
                         this.cameras.main.once('camerafadeoutcomplete', () => {
+                            localStorage.setItem('spriteX', 1250); // Adjust as needed
+                            localStorage.setItem('spriteY', 800); // Keep the same Y coordinate
                             this.scene.start('CastlePrairie2');
                         });
                     } else {
                         // If sword was not dragged, show failure message
+                        inventory.removeItem({ name: 'redorb', img: 'redorb' });
                         showMessage(
-                            "You hand the evil squirrel back the object of his shiny desire. He then sucks you inside of it where you are reunited with your father, but it's cold comfort considering you're entombed within a shiny bauble.",
+                            "You hand the evil squirrel back the object of his shiny desire. He then sucks you inside of it where you are reunited with your father, but it's cold comfort considering you're entombed within a shiny bauble. GAME OVER!",
                             this
                         );
                     }
