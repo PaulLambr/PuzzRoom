@@ -37,7 +37,7 @@ class Cavern1b extends Phaser.Scene {
         }
     
         // Show intro message when entering Cavernhall
-        checkIntroMessage(this, "Cavern1b", "Testing.", this);
+        checkIntroMessage(this, "Cavern1b", "You're filled with the fear of being discovered and confined back behind those iron bars.", this);
 
           // Hashmark debugging graphics
           hashmarkGraphics = this.add.graphics();
@@ -264,6 +264,8 @@ class Cavern1b extends Phaser.Scene {
         // Add collision detection between the player and the open door
         this.physics.add.overlap(this.sprite, this.doorZone, () => {
             // Transition to the next scene (Caverncellar)
+            localStorage.setItem('spriteX', 250);
+            localStorage.setItem('spriteY', 650);
             this.scene.start('GoblinCellar');
         });
     }

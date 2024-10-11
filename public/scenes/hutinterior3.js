@@ -89,11 +89,11 @@ class HutInterior3 extends Phaser.Scene {
     // Create interactive pool rectangle zone
 const wizardRectangle = this.add.zone(925, 190, 250, 250).setRectangleDropZone(250, 250).setInteractive();
 
-// Debugging: Draw the rectangle representing the wizard interaction zone
+/* // Debugging: Draw the rectangle representing the wizard interaction zone
 const debugWizardGraphics = this.add.graphics();
 debugWizardGraphics.lineStyle(2, 0x00ff00, 1); // Green color with full opacity
 debugWizardGraphics.strokeRect(wizardRectangle.x - wizardRectangle.input.hitArea.width / 2, wizardRectangle.y - wizardRectangle.input.hitArea.height / 2, wizardRectangle.input.hitArea.width, wizardRectangle.input.hitArea.height);
-
+*/
         // Create the new interactive rectangular zone at (650, 60) with size 300x110
         const bookZone = this.add.zone(650, 60, 300, 110).setRectangleDropZone(300, 110);
         bookZone.setInteractive();
@@ -115,7 +115,7 @@ debugWizardGraphics.strokeRect(wizardRectangle.x - wizardRectangle.input.hitArea
         // Make Shifty Wizard interactive
         shiftyWizard.setInteractive();
         shiftyWizard.on('pointerdown', () => {
-            showMessage("Thank you dear Princess for saving me! I feared I might be trapped by that dratted pig, but I had to take the risk. Here is the amulet. I fear you may need it as your father has most likely found him in a similar fix. I have reason to believe the wily warlock, Grak, may have a hand in this. Please succeed where I have failed dear Princess. Bring him home safe!", this);
+            showMessage("Thank you dear Princess for saving me! I feared I might be trapped by that dratted pig, but I had to take the risk. Now how to get you past that accursed cur who guards the Bridge of Souls. Maybe there's something in my lorebooks.", this);
         });
     
         // Initialize the inventory
@@ -175,7 +175,7 @@ debugWizardGraphics.strokeRect(wizardRectangle.x - wizardRectangle.input.hitArea
         
                 if (hasBone && hasPoppy) {
                     console.log('The wizard has both the bone and potent poppy.');
-                    showMessage("'That was a lot of work,' but this should put a charging rhino to sleep. Also, please take this amulet with you, I can't bear the thought of sharing a brain with that pig again. Sigh...'", this);
+                    showMessage("'That was a lot of work,' but this should put a charging rhino to sleep. Also, please take this amulet with you, I can't bear the thought of sharing a brain with that pig again. Sigh... I fear you may need it as your father has most likely found himself in a similar fix. I have reason to believe the wily warlock, Grak, may have a hand in this. Please succeed where I have failed dear Princess. Bring him home safe!'", this);
         
                     // Create the new item "Poppy-soaked bone" and add it to the inventory
                     inventory.addItemnp({ name: 'poppysoakedbone', img: 'poppysoakedbone' });

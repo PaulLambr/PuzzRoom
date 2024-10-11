@@ -36,7 +36,7 @@ class Cavern1 extends Phaser.Scene {
         checkIntroMessage(this, "Cavern1", "The first thing that assaults you, besides the indignity of your false imprisonment, is the reek of this dank cavern.", this);
 
         // Create the character sprite (princess) and position it in the cage
-        this.sprite = this.physics.add.sprite(1050, 500, 'character').setScale(3);
+        this.sprite = this.physics.add.sprite(1050, 500, 'character').setScale(3).setDepth(1);
         this.sprite.body.collideWorldBounds = true;
 
         // Remove 'walk' animation if it exists
@@ -84,7 +84,7 @@ class Cavern1 extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
 
         // Create the cage
-        this.createCage();
+        this.createCage().setDepth(2);
 
         // Add Grak sprite
         this.grak = this.add.sprite(550, 260, 'grak').setScale(1.5);
@@ -103,7 +103,7 @@ class Cavern1 extends Phaser.Scene {
         inventory.updateInventoryDisplay();
 
         // Start a delayed event for spawning the Goblin King
-        this.time.delayedCall(40000, this.spawnGoblinKing, [], this);
+        this.time.delayedCall(10000, this.spawnGoblinKing, [], this);
     }
 
     update() {
@@ -205,7 +205,7 @@ class Cavern1 extends Phaser.Scene {
     // Ensure Goblin Girl's walk animation starts
     this.sprite.anims.play('goblinWalk3', true);
 
-    showMessage("You have transformed into the Goblin Girl!", this);
+    showMessage("You feel the Goblin guard's presence inhabiting your very soul.", this);
     localStorage.setItem('isGoblinForm', true);  // Set true when transforming into Goblin Girl
 
 }
@@ -214,7 +214,7 @@ class Cavern1 extends Phaser.Scene {
 
     freeGoblinGirl() {
         this.cageLocked = false;
-        showMessage("The Goblin Girl is free!", this);
+        showMessage("The Goblin King unlocks your cage. You are free to leave!", this);
 
         // Ensure Goblin Girl's walk animation plays continuously
         this.sprite.anims.play('goblinWalk3', true);
@@ -288,19 +288,22 @@ class Cavern1 extends Phaser.Scene {
         const cageSize = 350;
         const cageX = 1050;
         const cageY = 500;
-
+    
         const cageGraphics = this.add.graphics({ lineStyle: { width: 12, color: 0x000000 } });
         cageGraphics.strokeRect(cageX - cageSize / 2, cageY - cageSize / 2, cageSize, cageSize);
-
+    
         cageGraphics.beginPath();
         for (let i = cageX - cageSize / 2 + 25; i <= cageX + cageSize / 2 - 25; i += 50) {
             cageGraphics.moveTo(i, cageY - cageSize / 2);
             cageGraphics.lineTo(i, cageY + cageSize / 2);
         }
         cageGraphics.strokePath();
-
+    
         this.cageBounds = new Phaser.Geom.Rectangle(cageX - cageSize / 2, cageY - cageSize / 2, cageSize, cageSize);
+        
+        return cageGraphics;  // Return the cage graphics so you can set depth
     }
+    
 
     setupDragEvents() {
         this.input.on('dragstart', (pointer, gameObject) => {
@@ -404,7 +407,7 @@ class Cavern1 extends Phaser.Scene {
         this.sprite.setVelocity(0, 0);  // Stop any movement of the sprite
         this.isGameOver = true;  // Set the flag to prevent any further input
     
-        showMessage("Game Over! The Goblin King caught you before you transformed.", this);  // Display the game over message
+        showMessage("Game Over! The Goblin King has tired of your continued existence so he decides to end it.", this);  // Display the game over message
     
         // Fade out and restart the scene after a delay
         this.time.delayedCall(2000, () => {  // 2-second delay before restarting
@@ -416,7 +419,7 @@ class Cavern1 extends Phaser.Scene {
 
     unlockDoor(gameObject) {
         // Overlay the 'dooropen' image on top of the 'door' image
-        this.add.image(350, 175, 'dooropen').setScale(1).setDepth(1);
+        this.add.image(350, 175, 'dooropen').setScale(1).setDepth(0);
     
         showMessage("To your utter amazement, these keys unlock the door in the Goblin King's Castle!", this);
     

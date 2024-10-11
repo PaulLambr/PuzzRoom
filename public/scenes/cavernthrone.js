@@ -96,12 +96,12 @@ class Cavernthrone extends Phaser.Scene {
             this.interactWithGoblinKing();
         });
 
-        // Draw debugging zone around Goblin King interactive zone
+      /*  // Draw debugging zone around Goblin King interactive zone
     const debugGraphics = this.add.graphics();
     debugGraphics.lineStyle(2, 0xff0000);  // Red outline
     debugGraphics.strokeRect(this.goblinKingZone.x, this.goblinKingZone.y, this.goblinKingZone.width, this.goblinKingZone.height);
 
-   
+   */
      
 
        // Handle dragging
@@ -124,7 +124,7 @@ class Cavernthrone extends Phaser.Scene {
             // Call the function to handle the event when the shard is given to Grak
             
             showMessage("You confront the Goblin King with the shard of the Magick Mirror to see who really is behind this hall of mirrors.", this);
-
+            inventory.removeItem({ name: 'mirrorshard', img: 'mirrorshard' });
             // Set a 5-second freeze
         this.time.delayedCall(5000, () => {
             // Camera shake for 4 seconds

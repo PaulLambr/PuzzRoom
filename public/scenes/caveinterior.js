@@ -83,11 +83,11 @@ class CaveInterior extends Phaser.Scene {
         // Create interactive pool rectangle zone
         const poolRectangle = this.add.zone(1150, 720, 860, 220).setRectangleDropZone(860, 220).setInteractive();
 
-        // Optionally, you can add a debug graphic to visualize the zone (for testing purposes)
+        /* // Optionally, you can add a debug graphic to visualize the zone (for testing purposes)
         const debugGraphics = this.add.graphics();
         debugGraphics.lineStyle(2, 0x00ff00);
         debugGraphics.strokeRect(poolRectangle.x - poolRectangle.input.hitArea.width / 2, poolRectangle.y - poolRectangle.input.hitArea.height / 2, poolRectangle.input.hitArea.width, poolRectangle.input.hitArea.height);
-
+*/
         // Define the bounds of the inventory panel
         const inventoryBounds = new Phaser.Geom.Rectangle(1500, 0, 300, 900);
         const tolerance = 15;  // Tolerance for dropping near edges

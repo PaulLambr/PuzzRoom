@@ -184,12 +184,15 @@ class HutInterior2 extends Phaser.Scene {
                     if (pigWearingAmulet) {
                         console.log('The magic mirror is within the pig zone.');
                         showMessage("The pig catches his reflection in the magic mirror and all hell breaks loose. The magic mirror explodes. The pig squeals in fear, and the room is temporarily clothed in darkness.", this);
+                        inventory.removeItem({ name: 'magicmirror', img: 'magicmirror' });
                         this.cameras.main.shake(4000, 0.01);
         
                         // After shake completes, fade to black for 2 seconds
                         this.time.delayedCall(4000, () => {
                             this.cameras.main.fadeOut(2000, 0, 0, 0);
                             this.cameras.main.once('camerafadeoutcomplete', () => {
+                                localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y);
                                 this.scene.start('HutInterior3');
                                 this.cameras.main.fadeIn(2000, 0, 0, 0);  // Fade in over 2 seconds
                             });

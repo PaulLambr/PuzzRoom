@@ -60,7 +60,7 @@ if (!this.anims.exists('walk')) {
     });
 }
 
-
+/*
         // Create interactive zone for the whale
 const rectangleZone = this.add.zone(440, 370, 450, 250).setRectangleDropZone(450, 250);
 rectangleZone.setInteractive();
@@ -76,7 +76,21 @@ rectangleZone.on('pointerdown', () => {
            boneAddedToInventory = true;
         }
     }
-});
+}); */
+
+ // Create interactive zone for the whale
+ const rectangleZone = this.add.zone(440, 370, 450, 250).setRectangleDropZone(450, 250);
+ rectangleZone.setInteractive();
+ rectangleZone.on('pointerdown', () => {
+    
+         inventory.addItem({ name: 'bone', img: 'bone', x: rectangleZone.x, y: rectangleZone.y }, this.sprite);
+ 
+         if (inventory.items.find(item => item.name === 'bone')) {
+            showMessage("Amongst the license parchments of carriages, ocean litter, and rotted blubber, you fish out (yes I know it's a mammal) what's left of this creature's lunch.", this);
+            rectangleZone.destroy(); // Remove the torch zone
+         }})
+     
+ 
 
         // Input cursor keys for controlling the character
         this.cursors = this.input.keyboard.createCursorKeys();

@@ -160,6 +160,7 @@ noGoZones.forEach(zone => {
     
             if (pointerInNoGoZone && gameObject.texture.key === 'poppysoakedbone') {
                 showMessage("Cerberus accepts the bone, allowing you to proceed!", this);
+                inventory.removeItem({ name: 'poppysoakedbone', img: 'poppysoakedbone' });
     
                 // Call the moveNoGoZone function from within the scene's context
                 this.moveNoGoZone();
@@ -188,6 +189,12 @@ noGoZones.forEach(zone => {
             ease: 'Linear',            // Movement easing type
             onComplete: () => {
                 console.log("Cerberus has moved to the new position.");
+
+                // Stop the current Cerberus animation
+            this.cerberus.anims.stop(); 
+
+            // Change the Cerberus texture to the single frame image after the animation completes
+            this.cerberus.setTexture('cerberus_singleframe');
             }
         });
     

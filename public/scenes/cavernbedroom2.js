@@ -75,10 +75,10 @@ class Cavernbedroom2 extends Phaser.Scene {
         const shardY = 470;
         const pickupRadius = 90;  // Increase pickup radius for easier proximity detection
     
-        // Draw the debugging circle where the player can pick up the shard
+       /* // Draw the debugging circle where the player can pick up the shard
         const debugGraphics = this.add.graphics();
         debugGraphics.lineStyle(2, 0xff0000, 1);  // Red color with full opacity
-        debugGraphics.strokeCircle(shardX, shardY, pickupRadius);  // Draw the circle at the shard's position
+        debugGraphics.strokeCircle(shardX, shardY, pickupRadius);  // Draw the circle at the shard's position */
     
         // Add a listener for when the player clicks near the shard
         this.input.on('pointerdown', (pointer) => {
@@ -102,8 +102,8 @@ class Cavernbedroom2 extends Phaser.Scene {
     
                 // Draw a little green box in the shard zone
                 const greenBox = this.add.graphics();
-                greenBox.fillStyle(0x00ff00, 1);  // Set the color to green with full opacity
-                greenBox.fillRect(shardX - 20, shardY - 20, 40, 40);  // Draw the 25x25 box centered at the shard's position
+                greenBox.fillStyle(0x019051, 1);  // Set the color to green with full opacity
+                greenBox.fillRect(shardX - 20, shardY - 10, 40, 45);  // Draw the 25x25 box centered at the shard's position
     
                 // Optionally, you can stop further pointerdown listeners for this shard after it's picked up
                 this.input.off('pointerdown');

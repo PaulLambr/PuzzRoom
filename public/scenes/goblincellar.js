@@ -216,7 +216,7 @@ class GoblinCellar extends Phaser.Scene {
     createShardPickup() {
         const orbX = 560;
         const orbY = 60;
-        const pickupRadius = 120;  // Increase pickup radius for easier proximity detection
+        const pickupRadius = 200;  // Increase pickup radius for easier proximity detection
     
         // Draw the debugging circle where the player can pick up the shard
         const debugGraphics = this.add.graphics();
@@ -245,8 +245,8 @@ class GoblinCellar extends Phaser.Scene {
     
                 // Draw a little green box in the shard zone
                 const whiteBox = this.add.graphics();
-                whiteBox.fillStyle(0x00ff00, 1);  // Set the color to green with full opacity
-                whiteBox.fillRect(orbX - 20, orbY - 20, 40, 40);  // Draw the 40x40 box centered at the shard's position
+                whiteBox.fillStyle(0x929000, 1);  // Set the color to green with full opacity
+                whiteBox.fillRect(orbX - 65, orbY - 21, 119, 68);  // Draw the 40x40 box centered at the shard's position
     
                 // Optionally, you can stop further pointerdown listeners for this shard after it's picked up
                 this.input.off('pointerdown');
@@ -255,7 +255,7 @@ class GoblinCellar extends Phaser.Scene {
 
             } else {
                 // If player clicks outside of range, display a too far message
-                showMessage("You're too far away to pick up the shard.", this);
+                showMessage("You're too far away to pick up the powder keg.", this);
                 console.log('Player clicked outside of shard pickup range.');
             }
         });
@@ -348,8 +348,8 @@ class GoblinCellar extends Phaser.Scene {
 
         // Transition back to Tower2 if sprite moves beyond the left side (x < 0)
         if (this.sprite.x < 106 && !this.hasTransitioned) {
-            localStorage.setItem('spriteX', 500);  // Adjust as needed
-            localStorage.setItem('spriteY', 5000);
+            localStorage.setItem('spriteX', 280);  // Adjust as needed
+            localStorage.setItem('spriteY', 400);
             this.hasTransitioned = true;
             console.log("Transitioning to Tower2");
             this.scene.start('Cavern1b');  // Replace with the correct scene key

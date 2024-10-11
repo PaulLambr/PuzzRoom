@@ -73,11 +73,11 @@ class Cavernthrone2 extends Phaser.Scene {
             this.transitionToCastleBedroom();
         });
 
-        // Draw debugging zone around Goblin King interactive zone
+      /*  // Draw debugging zone around Goblin King interactive zone
         const debugGraphics = this.add.graphics();
         debugGraphics.lineStyle(2, 0xff0000);  // Red outline
         debugGraphics.strokeRect(this.goblinKingZone.x, this.goblinKingZone.y, this.goblinKingZone.width, this.goblinKingZone.height);
-
+*/
         // Call the shard pickup creation function
         this.createShardPickup();
     }
@@ -85,12 +85,7 @@ class Cavernthrone2 extends Phaser.Scene {
     createShardPickup() {
         const orbX = 450;
         const orbY = 800;
-        const pickupRadius = 90;  // Increase pickup radius for easier proximity detection
-    
-        // Draw the debugging circle where the player can pick up the shard
-        const debugGraphics = this.add.graphics();
-        debugGraphics.lineStyle(2, 0xff0000, 1);  // Red color with full opacity
-        debugGraphics.strokeCircle(orbX, orbY, pickupRadius);  // Draw the circle at the shard's position
+        const pickupRadius = 150;  // Increase pickup radius for easier proximity detection
     
         // Add a listener for when the player clicks near the shard
         this.input.on('pointerdown', (pointer) => {
@@ -98,37 +93,41 @@ class Cavernthrone2 extends Phaser.Scene {
             console.log('Player Position:', this.sprite.x, this.sprite.y);
             console.log('Shard Position:', orbX, orbY);
     
+            // Calculate the distance between the player and the orb
             const distance = Phaser.Math.Distance.Between(this.sprite.x, this.sprite.y, orbX, orbY);
     
             console.log('Distance between player and shard:', distance);
     
-            if (distance <= pickupRadius) {
-                // Log the shard pick up for debugging
-                console.log('Player clicked within range of the shard.');
+            // Check if the player clicked within the orb zone
+            if (Phaser.Math.Distance.Between(pointer.x, pointer.y, orbX, orbY) <= pickupRadius) {
+                // Perform proximity check based on player position
+                if (distance <= pickupRadius) {
+                    // Log the shard pick up for debugging
+                    console.log('Player clicked within range of the shard.');
     
-                // Add the shard to the inventory (proximity is already checked in the addItem method)
-                inventory.addItem({ name: 'redorb', img: 'redorb', x: orbX, y: orbY }, this.sprite);
+                    // Add the shard to the inventory (proximity is already checked in the addItem method)
+                    inventory.addItem({ name: 'redorb', img: 'redorb', x: orbX, y: orbY }, this.sprite);
     
-                // Show a message that the shard was picked up
-                showMessage("You have picked up the orb at the tip of the Goblin King's scepter.", this);
+                    // Show a message that the shard was picked up
+                    showMessage("You have picked up the orb at the tip of the Goblin King's scepter.", this);
     
-                // Draw a little green box in the shard zone
-                const whiteBox = this.add.graphics();
-                whiteBox.fillStyle(0x00ff00, 1);  // Set the color to green with full opacity
-                whiteBox.fillRect(orbX - 20, orbY - 20, 40, 40);  // Draw the 40x40 box centered at the shard's position
+                    // Draw a little green box in the shard zone
+                    const whiteBox = this.add.graphics();
+                    whiteBox.fillStyle(0xebebeb, 1);  // Set the color to green with full opacity
+                    whiteBox.fillRect(orbX - 20, orbY - 10, 50, 50);  // Draw the 40x40 box centered at the shard's position
     
-                // Optionally, you can stop further pointerdown listeners for this shard after it's picked up
-                this.input.off('pointerdown');
-
-                localStorage.setItem('has shard', true);
-
+                    localStorage.setItem('hasShard', true);
+                } else {
+                    // If player is too far from the shard, show message
+                    showMessage("You're too far away to pick up the red orb.", this);
+                }
             } else {
-                // If player clicks outside of range, display a too far message
-                showMessage("You're too far away to pick up the shard.", this);
-                console.log('Player clicked outside of shard pickup range.');
+                // If the click is outside the red orb zone, no action
+                console.log('Player clicked outside of the red orb zone.');
             }
         });
     }
+    
     
     createAnimations() {
         // Remove 'walk' animation if it exists

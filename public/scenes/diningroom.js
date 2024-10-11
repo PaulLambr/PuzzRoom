@@ -62,9 +62,9 @@ class DiningRoom extends Phaser.Scene {
 
         // Create an interactive zone for unlocking the door
         this.rectangleZone2 = this.add.zone(1130, 125, 190, 190).setRectangleDropZone(190, 190);
-        this.graphics = this.add.graphics();
+       /* this.graphics = this.add.graphics();
         this.graphics.lineStyle(2, 0xff0000); // Red outline for debugging
-        this.graphics.strokeRect(1130-95, 125-95, 190, 190);
+        this.graphics.strokeRect(1130-95, 125-95, 190, 190); */
 
         this.rectangleZone2.setInteractive();
         this.rectangleZone2.on('pointerdown', () => {

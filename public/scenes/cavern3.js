@@ -30,7 +30,7 @@ class Cavernhall extends Phaser.Scene {
         }
     
         // Show intro message when entering Cavernhall
-        checkIntroMessage(this, "Cavernhall", "Nothing is as it seems.", this);
+        checkIntroMessage(this, "Cavernhall", "Everything seems familiar and yet nothing is as it seems.", this);
 
           // Hashmark debugging graphics
           hashmarkGraphics = this.add.graphics();

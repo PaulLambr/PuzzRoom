@@ -192,8 +192,8 @@ create() {
 
     // Transition to the next scene (Bridge) if the sprite moves beyond 50 pixels on the left
     if (this.sprite.x < 50 && !this.hasTransitioned) {
-        localStorage.setItem('spriteX', this.sprite.x + 1400);
-        localStorage.setItem('spriteY', this.sprite.y);
+        localStorage.setItem('spriteX', 1350);
+        localStorage.setItem('spriteY', 520);
         this.hasTransitioned = true;
         this.scene.start('Bridge');
     }

@@ -5,7 +5,7 @@ class CastlePrairie2 extends Phaser.Scene {
 
     preload() {
         // Preload assets
-        this.load.image('background_castleprairie2', 'graphics/castleprairie.png');
+        this.load.image('background_castleprairie2', 'graphics/castleonmap.png');
         this.load.image('rockprairie', 'graphics/rock_prairie.png');
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
@@ -126,8 +126,8 @@ this.physics.add.overlap(this.sprite, this.pokeZone, this.startPokeScene, null, 
     startPokeScene() {
         if (!this.hasTransitioned) {
             this.hasTransitioned = true;
-            localStorage.setItem('spriteX', this.sprite.x); // Save sprite position
-            localStorage.setItem('spriteY', this.sprite.y);
+            localStorage.setItem('spriteX', 750); // Save sprite position
+            localStorage.setItem('spriteY', 800);
             this.scene.start('Drawbridge');  // Start the Poke scene
         }
     }

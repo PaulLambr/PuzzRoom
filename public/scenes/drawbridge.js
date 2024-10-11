@@ -15,6 +15,7 @@ class Drawbridge extends Phaser.Scene {
         this.load.image('silversword', 'graphics/silversword.png');  // Load the silver sword
         this.load.image('redorb', 'graphics/redorb.png');            // Load the red orb
         this.load.image('debris_cloud', 'graphics/debris.png'); 
+        this.load.image('powderkeg2', 'graphics/powderkeg2.png'); 
 
         // Fetch and load inventory items from inventory-library.json
         fetch('components/inventory-library.json')
@@ -86,7 +87,7 @@ class Drawbridge extends Phaser.Scene {
         this.hasTransitioned = false;
 
         // Add the interactive zone at (560, 360) with width 150 and height 280
-        const zone = this.add.zone(330, 530, 200, 130).setOrigin(0);
+        const zone = this.add.zone(330, 570, 200, 130).setOrigin(0);
         this.physics.world.enable(zone);
         zone.body.setAllowGravity(false);
         zone.setInteractive();
@@ -140,13 +141,20 @@ class Drawbridge extends Phaser.Scene {
                 if (gameObject.texture.key === 'powderkeg') {
                     // Sword was successfully dragged into the zone
                     this.swordDragged = true;
-                    const graphics = this.add.graphics();
-                            graphics.fillStyle(0x000000, 1);
-                            graphics.fillRect(300, 610, 200, 100);
+            
+                    // Instead of drawing a black box, overlay the image
+                    const powderkegImage = this.add.image(410, 680, 'powderkeg2'); // Adjusted to match the center of the black box
+            
+                    // Optionally, adjust the scale or size of the image if needed
+                    powderkegImage.setDisplaySize(180, 150); // Matching the dimensions of the original box
+            
+                    // Show the message
                     showMessage(
                         "You wedge the powder keg up against the grate. Now you just have to light it to blow the moat and drown the goblins in their tunnel.",
                         this
                     );
+           
+            
                 } else if (gameObject.texture.key === 'torch') {
                     // Red orb logic based on whether the sword was dragged first
                     if (this.swordDragged) {
@@ -156,12 +164,12 @@ class Drawbridge extends Phaser.Scene {
                         );
                         // If sword was dragged, fade out and start 'Poke' scene
                         this.cameras.main.shake(4000, 0.01);
-                        const debrisCloud = this.add.image(360, 560, 'debris_cloud').setScale(1.5);
+                        const debrisCloud = this.add.image(360, 560, 'debris_cloud').setScale(3);
                         this.time.delayedCall(500, () => {
                             debrisCloud.destroy();
                             const graphics = this.add.graphics();
                             graphics.fillStyle(0x000000, 1);
-                            graphics.fillRect(360, 560, 200, 100);
+                            graphics.fillRect(300, 590, 300, 300);
                             showMessage("You blow the grate and the moat starts flowing into the cellar", this); 
                             localStorage.setItem('moatblown', 'True');
                         });

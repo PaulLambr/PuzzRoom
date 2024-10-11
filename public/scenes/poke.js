@@ -76,7 +76,7 @@ class Poke extends Phaser.Scene {
             // Pig logic
             const randomX = Phaser.Math.Between(0, configBridge.width - 57 * 5);
             const randomY = Phaser.Math.Between(0, configBridge.height - 70 * 5);
-            this.pig = this.physics.add.sprite(randomX, randomY, 'pig').setScale(5);
+            this.pig = this.physics.add.sprite(randomX, randomY, 'pig').setScale(4);
             this.pig.anims.play('pigMove', true);
             movePig.call(this);
         
@@ -90,7 +90,7 @@ class Poke extends Phaser.Scene {
         
             this.pig.setInteractive();
             this.pig.on('pointerdown', () => {
-                showMessage("This pig is too slippery to grab.", this);
+                showMessage("This pig is too slippery to catch.", this);
             });
         }
     
@@ -133,11 +133,14 @@ class Poke extends Phaser.Scene {
     
  // Corn drop zone setup
  this.cornDropZone = this.add.zone(725, 560, 150, 225).setRectangleDropZone(150, 225).setInteractive();
+ this.cornDropZone.on('pointerdown', () => {
+            showMessage("The door to this very humble hut is boarded up. Through the gaps in the planks you can make out the cozy insides of the domicile.", this);
+        })
 
- // For debugging, visualize the drop zone
+ /* // For debugging, visualize the drop zone
  const graphics = this.add.graphics();
  graphics.lineStyle(2, 0xff0000);  // Red outline for debugging
- graphics.strokeRect(this.cornDropZone.x - 75, this.cornDropZone.y - 125, 150, 250);
+ graphics.strokeRect(this.cornDropZone.x - 75, this.cornDropZone.y - 125, 150, 250); */
 
  // Enable physics for the corn drop zone
  this.physics.world.enable(this.cornDropZone);
@@ -169,30 +172,43 @@ class Poke extends Phaser.Scene {
  });
 
  this.input.on('dragend', (pointer, gameObject) => {
-     if (gameObject.texture.key === 'corn') {
-         gameObject.setScale(0.15);  // Reset size after dragging
+    if (gameObject.texture.key === 'corn') {
+        gameObject.setScale(0.15);  // Reset size after dragging
 
-         const dropZoneBounds = this.cornDropZone.getBounds();
-         const tolerance = 30;
+        const pigBounds = this.pig.getBounds();  // Get the pig's bounds
+        const dropZoneBounds = this.cornDropZone.getBounds();  // Get the drop zone bounds
+        const tolerance = 30;
 
-         // Check if the pointer is within the drop zone bounds and the corn is being dropped
-         if (
-             pointer.x >= dropZoneBounds.x - tolerance &&
-             pointer.x <= dropZoneBounds.x + dropZoneBounds.width + tolerance &&
-             pointer.y >= dropZoneBounds.y - tolerance &&
-             pointer.y <= dropZoneBounds.y + dropZoneBounds.height + tolerance
-         ) {
-             console.log('Corn dropped in the correct zone');
-             handleCornDropSuccess.call(this, gameObject);  // Show success message and perform the actions
-         } else {
-             // Corn dropped in the wrong zone
-             console.log("Corn dropped in the wrong zone");
-             showMessage("You can't drop the corn here!", this);  // Show error message only when dropped in the wrong place
-             gameObject.x = gameObject.originalX;  // Return the item to its original position
-             gameObject.y = gameObject.originalY;
-         }
-     }
- });
+        // Check if the corn was dropped onto the pig's area
+        if (
+            pointer.x >= pigBounds.x - tolerance &&
+            pointer.x <= pigBounds.x + pigBounds.width + tolerance &&
+            pointer.y >= pigBounds.y - tolerance &&
+            pointer.y <= pigBounds.y + pigBounds.height + tolerance
+        ) {
+            // Display the message when the corn is dragged onto the pig
+            showMessage("The pig doesn't trust you enough to eat from your hand apparently. Plus he's disgusting.", this);
+        } 
+        // Check if the corn was dropped in the door drop zone
+        else if (
+            pointer.x >= dropZoneBounds.x - tolerance &&
+            pointer.x <= dropZoneBounds.x + dropZoneBounds.width + tolerance &&
+            pointer.y >= dropZoneBounds.y - tolerance &&
+            pointer.y <= dropZoneBounds.y + dropZoneBounds.height + tolerance
+        ) {
+            console.log('Corn dropped in the correct zone');
+            handleCornDropSuccess.call(this, gameObject);  // Show success message and perform the actions
+        } 
+        // Corn dropped in neither the pig nor the drop zone
+        else {
+            console.log("Corn dropped in the wrong zone");
+            showMessage("You can't drop the corn here!", this);  // Show error message
+            gameObject.x = gameObject.originalX;  // Return the item to its original position
+            gameObject.y = gameObject.originalY;
+        }
+    }
+});
+
 
  // Overlap logic to transition to the Cellar scene after unlocking the corn zone
  this.physics.add.overlap(this.sprite, this.cornDropZone, () => {

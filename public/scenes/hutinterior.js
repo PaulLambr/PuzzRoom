@@ -98,13 +98,13 @@ class HutInterior extends Phaser.Scene {
             showMessage("OINK?", this);
         })
 
-        // Debugging: Draw the circle representing the interactive zone
+       /* // Debugging: Draw the circle representing the interactive zone
         const debugGraphics = this.add.graphics();
         debugGraphics.lineStyle(2, 0xff0000, 1); // Red color with full opacity
         debugGraphics.strokeCircle(pigCircle.x, pigCircle.y, pigCircle.radius);
 
         // Log the circle's bounds for debugging
-        console.log('Pig (circular zone) center:', pigCircle.x, pigCircle.y, 'radius:', pigCircle.radius);
+        console.log('Pig (circular zone) center:', pigCircle.x, pigCircle.y, 'radius:', pigCircle.radius); */
 
         // Create an interactive rectangular zone at (1300, 300) with size 150x270
         const rectangleZone = this.add.zone(1260, 300, 125, 250).setRectangleDropZone(125, 250);
@@ -130,9 +130,9 @@ class HutInterior extends Phaser.Scene {
             }
         });
 
-        // Debugging: Draw the rectangle representing the interactive zone
+     /*   // Debugging: Draw the rectangle representing the interactive zone
         debugGraphics.lineStyle(2, 0x00ff00, 1);
-        debugGraphics.strokeRect(1325 - 75, 300 - 135, 125, 250);
+        debugGraphics.strokeRect(1325 - 75, 300 - 135, 125, 250); */
 
         // Create the new interactive rectangular zone at (650, 60) with size 300x110
         const bookZone = this.add.zone(650, 60, 300, 110).setRectangleDropZone(300, 110);
@@ -146,8 +146,8 @@ class HutInterior extends Phaser.Scene {
             this.scene.start('Spellbooks');
         });
 
-        debugGraphics.lineStyle(2, 0x0000ff, 1);
-        debugGraphics.strokeRect(650, 60, 300, 110);
+      /*  debugGraphics.lineStyle(2, 0x0000ff, 1);
+        debugGraphics.strokeRect(650, 60, 300, 110); */
 
         // Initialize the inventory
         createInventory(this);
@@ -209,8 +209,10 @@ class HutInterior extends Phaser.Scene {
                 if (gameObject.texture.key === 'wineskinwater') {
                     console.log('The wineskinwater is within the cauldron zone.');
                     showMessage("You fill up the cauldron with the contents of the wineskin. The waters sparkle green and purple.", this);
-        
+                    inventory.removeItem({ name: 'wineskinwater', img: 'wineskinwater' });
                     // Transition to the next scene
+                    localStorage.setItem('spriteX', this.sprite.x);
+            localStorage.setItem('spriteY', this.sprite.y);
                     this.scene.start('HutInterior2');
                 } else {
                     showMessage("Error: The cauldron doesn't seem interested in this item.", this);

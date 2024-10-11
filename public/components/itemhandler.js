@@ -14,7 +14,7 @@ function handleCornDropSuccess(gameObject) {
         ease: 'Power2',
         onComplete: () => {
             this.pig.destroy();
-            const debrisCloud = this.add.image(725, 575, 'debris_cloud').setScale(1.5);
+            const debrisCloud = this.add.image(725, 575, 'debris_cloud').setScale(3);
             this.time.delayedCall(500, () => {
                 debrisCloud.destroy();
                 const graphics = this.add.graphics();
