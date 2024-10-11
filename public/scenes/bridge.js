@@ -163,6 +163,10 @@ noGoZones.forEach(zone => {
     
                 // Call the moveNoGoZone function from within the scene's context
                 this.moveNoGoZone();
+            } else if(pointerInNoGoZone && gameObject.texture.key === 'bone') {
+                showMessage("Cerberus eats the delicious bone with alacrity!", this);
+                inventory.removeItem({ name: 'bone', img: 'bone' });
+            
             } else {
                 gameObject.x = gameObject.originalX;
                 gameObject.y = gameObject.originalY;

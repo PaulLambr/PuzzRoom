@@ -129,7 +129,7 @@ poppyItemZone.on('pointerdown', () => {
         inventory.addItem({ name: 'potentpoppy', img: 'potentpoppy', x: 790, y: 350 }, this.sprite);
 
         // Replace the item zone with a green box
-        const greenBox = this.add.rectangle(790 + 110 / 2, 350 + 100 / 2, 110, 100, 0x00ff00).setOrigin(0.5, 0.5);
+        const greenBox = this.add.rectangle(790 + 110 / 2, 350 + 150 / 2, 110, 150, 0xc1e724).setOrigin(0.5, 0.5);
         poppyItemZone.destroy();  // Remove the interactive zone after the item is collected
 
         showMessage("You have picked up the potent poppy.", this);  // Display success message

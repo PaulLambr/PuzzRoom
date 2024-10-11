@@ -9,9 +9,11 @@ class GoblinCellar extends Phaser.Scene {
         this.load.image('parchment_bg', 'graphics/parchment_bg.png');
         this.load.spritesheet('character', 'graphics/grahamprincesspng.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.spritesheet('goblinKing', 'graphics/goblin.png', { frameWidth: 28.5, frameHeight: 70 });
+        this.load.spritesheet('goblingirl', 'graphics/goblingirl.png', { frameWidth: 28.5, frameHeight: 70 });
         this.load.image('torch', 'graphics/torch.png');
         this.load.image('amulet', 'graphics/graks_amulet.png');
         this.load.image('mirror', 'graphics/mirror.png');
+        
 
         // Fetch and load inventory items from the JSON file
         fetch('components/inventory-library.json')
@@ -34,6 +36,7 @@ class GoblinCellar extends Phaser.Scene {
         this.goblinKing = null;
         this.darkOverlay = null;
         this.noGoZones = null;
+        this.hasTransitioned = false;
 
         console.log('Creating Caverntower1 scene');
     
@@ -71,11 +74,11 @@ class GoblinCellar extends Phaser.Scene {
         // Retrieve isGoblinForm from local storage or set default to false (princess)
         this.isGoblinForm = localStorage.getItem('isGoblinForm') === 'true';
     
-         // Remove 'walk' animation if it exists
-         if (this.anims.exists('walk')) {
+        // Remove 'walk' animation if it exists
+        if (this.anims.exists('walk')) {
             this.anims.remove('walk');
         }
-
+    
         // Create walking animations for both forms
         if (!this.anims.exists('walk')) {
             this.anims.create({
@@ -86,11 +89,10 @@ class GoblinCellar extends Phaser.Scene {
             });
         }
     
-        // Remove 'walk' animation if it exists
-       if (this.anims.exists('goblinWalk4')) {
-        this.anims.remove('goblinWalk4');
-    }
-
+        if (this.anims.exists('goblinWalk4')) {
+            this.anims.remove('goblinWalk4');
+        }
+    
         if (!this.anims.exists('goblinWalk4')) {
             this.anims.create({
                 key: 'goblinWalk4',
@@ -103,6 +105,7 @@ class GoblinCellar extends Phaser.Scene {
         // Create the main sprite for the player character based on isGoblinForm
         this.sprite = this.physics.add.sprite(startX, startY, this.isGoblinForm ? 'goblingirl' : 'character');
         this.sprite.setScale(3);
+        this.sprite.setDepth(1);
         this.sprite.body.collideWorldBounds = true;
     
         // Play the correct animation on creation
@@ -179,7 +182,7 @@ class GoblinCellar extends Phaser.Scene {
                     duration: 3000,
                     onComplete: () => {
                         this.goblinKing.destroy();
-                        showMessage("The Goblin King has fled!", this);
+                        showMessage("Goblins are moving out from the castle.", this);
                     }
                 });
 
@@ -272,7 +275,25 @@ class GoblinCellar extends Phaser.Scene {
    showamissive() {
     showMessage("Some magick precludes you following the goblin army.", this);
     } 
-
+    toggleForm() {
+        // Toggle the form
+        this.isGoblinForm = !this.isGoblinForm;
+        
+        // Save the updated form to local storage
+        localStorage.setItem('isGoblinForm', this.isGoblinForm);
+    
+        // Stop any currently playing animations
+        this.sprite.anims.stop();
+    
+        // Switch the sprite texture and play the appropriate animation
+        if (this.isGoblinForm) {
+            this.sprite.setTexture('goblingirl'); // Switch to goblin girl texture
+            this.sprite.anims.play('goblinWalk4', true); // Play goblin girl walking animation
+        } else {
+            this.sprite.setTexture('character'); // Switch to princess texture
+            this.sprite.anims.play('walk', true); // Play princess walking animation
+        }
+    }
     update() {
         let moving = false;
 
@@ -299,14 +320,23 @@ class GoblinCellar extends Phaser.Scene {
             this.sprite.setVelocityY(0); // Stop vertical movement
         }
 
-        // Play the walking animation when the character moves
-        if (moving) {
-            this.sprite.anims.play('walk', true);
+        // Play the correct walking animation based on the current form
+    if (moving) {
+        if (this.isGoblinForm) {
+            if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'goblinWalk4') {
+                this.sprite.anims.play('goblinWalk4', true);  // Play Goblin Girl walking animation
+            }
         } else {
-            this.sprite.setVelocity(0, 0);
-            this.sprite.anims.stop();
-            this.sprite.setFrame(1); // Idle frame when not moving
+            if (!this.sprite.anims.isPlaying || this.sprite.anims.currentAnim.key !== 'walk') {
+                this.sprite.anims.play('walk', true);  // Play Princess walking animation
+            }
         }
+    } else {
+        this.sprite.setVelocity(0, 0);
+        this.sprite.anims.stop();
+        this.sprite.setFrame(1);  // Idle frame when not moving
+    }
+
 
         // Prevent the sprite from going out of bounds
         if (this.sprite.y < 160) {

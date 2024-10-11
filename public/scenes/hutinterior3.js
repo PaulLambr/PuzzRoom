@@ -81,7 +81,11 @@ class HutInterior3 extends Phaser.Scene {
         // Prevent multiple transitions
         this.hasTransitioned = false;
     
-       
+        const circularZone = this.add.zone(290, 310).setSize(280, 280); // Add a zone for interactive purposes
+        circularZone.setInteractive();
+        circularZone.on('pointerdown', () => {
+            showMessage("OINK!", this);
+        })
     // Create interactive pool rectangle zone
 const wizardRectangle = this.add.zone(925, 190, 250, 250).setRectangleDropZone(250, 250).setInteractive();
 

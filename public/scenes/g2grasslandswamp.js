@@ -131,6 +131,14 @@ this.physics.add.collider(this.sprite, noGoZone2);
             this.scene.start('G1grasslandswamp');
         }
 
+         // Transition to dining room if sprite moves beyond 1500 pixels on the right
+         if (this.sprite.x > 1390 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x - 1300);
+            localStorage.setItem('spriteY', this.sprite.y);
+            this.hasTransitioned = true;
+            this.scene.start('GFCM');
+        }
+
         // Transition to next scene if the player is between 950 and 1300 pixels x and greater than 875 pixels y
 if (this.sprite.x > 950 && this.sprite.x < 1300 && this.sprite.y > 875 && !this.hasTransitioned) {
     localStorage.setItem('spriteX', this.sprite.x);

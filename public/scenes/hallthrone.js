@@ -83,7 +83,16 @@ class HallThrone extends Phaser.Scene {
         localStorage.setItem('currentScene', 'HallThrone');
         // Initialize hashmark graphics
         this.hashmarkGraphics = this.add.graphics();
-        this.input.keyboard.on('keydown-H', toggleHashmarks, this);
+        this.input.keyboard.on('keydown-H', (event) => toggleHashmarks(this, event));
+
+
+        // Create another zone for interaction with a fixed torch
+        const rectangleZone2 = this.add.zone(710, 300, 350, 500).setRectangleDropZone(350, 500);
+        rectangleZone2.setInteractive();
+        rectangleZone2.on('pointerdown', () => {
+            showMessage("You don't go in the throne room out of respect for your missing father, the King.", this);
+        });
+
 
         // Enable drag and drop for inventory items
         this.input.on('dragstart', (pointer, gameObject) => {
@@ -139,7 +148,7 @@ class HallThrone extends Phaser.Scene {
                     this.guard.setVelocity(0);
                     this.guard.anims.stop();
                     this.guard.setFrame(1);  // Guard dies and freezes in position
-                    showMessage("The goblins were in the castle, Princess. I tried to stop them...", this);
+                    showMessage("The goblins were in the castle, Princess. I tried to stop them. They said they were looking for a wuzzard and a magick booke. I fought 'em off and locked 'em back in the cellar, but they got me on the way out.", this);
                     localStorage.setItem('guardState', 'expired');  // Mark the guard as dead
 
                     // Make guard interactive for searching

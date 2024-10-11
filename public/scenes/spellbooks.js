@@ -142,6 +142,8 @@ exitButton.on('pointerdown', () => {
 
     if (lastScene) {
         console.log(`Exiting to ${lastScene}`);
+        localStorage.setItem('spriteX', 750);
+        localStorage.setItem('spriteY', 350);
         this.scene.start(lastScene);  // Start the last visited HutInterior scene
     } else {
         console.log('Exiting to HutInterior (default)');

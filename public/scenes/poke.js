@@ -132,7 +132,7 @@ class Poke extends Phaser.Scene {
         });
     
  // Corn drop zone setup
- this.cornDropZone = this.add.zone(725, 570, 150, 315).setRectangleDropZone(150, 250).setInteractive();
+ this.cornDropZone = this.add.zone(725, 560, 150, 225).setRectangleDropZone(150, 225).setInteractive();
 
  // For debugging, visualize the drop zone
  const graphics = this.add.graphics();
@@ -204,6 +204,8 @@ class Poke extends Phaser.Scene {
 
          if (lastScene) {
              console.log(`Transitioning to ${lastScene}`);
+             localStorage.setItem('spriteX', 750);
+        localStorage.setItem('spriteY', 750);
              this.scene.start(lastScene);  // Transition to the last visited HutInterior scene
          } else {
              console.log('Transitioning to HutInterior (default)');

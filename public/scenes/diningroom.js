@@ -45,6 +45,7 @@ class DiningRoom extends Phaser.Scene {
         // Create the main sprite for the player character
         this.sprite = this.physics.add.sprite(startX, startY, 'character');
         this.sprite.setScale(3);
+        this.sprite.setDepth(2);
 
         // Create walking animation
         if (!this.anims.exists('walk')) {
@@ -81,6 +82,7 @@ if (inventory.items.find(item => item.name === 'wineskin')) {
     const brownBoxGraphics = this.add.graphics();
     brownBoxGraphics.fillStyle(0x742c0c, 1);
     brownBoxGraphics.fillRect(715, 260, 200, 200); // Brown box where the wineskin was
+    brownBoxGraphics.setDepth(1)
     this.wineskinAddedToInventory = true;
 } else {
     // Wineskin is not in inventory, create a zone for picking it up
@@ -98,6 +100,7 @@ if (inventory.items.find(item => item.name === 'wineskin')) {
                 const brownBoxGraphics = this.add.graphics();
                 brownBoxGraphics.fillStyle(0x742c0c, 1);
                 brownBoxGraphics.fillRect(715, 260, 200, 200); // Brown box where the wineskin was
+                brownBoxGraphics.setDepth(1)
                 this.rectangleZone.destroy(); // Remove wineskin zone after it's picked up
                 this.wineskinAddedToInventory = true; // Mark wineskin as collected
             }
@@ -167,7 +170,7 @@ this.input.on('dragend', (pointer, gameObject) => {
         this.doorOpenImage = this.add.image(1135, 115, 'dooropen').setScale(0.77);
 
         // Create a new interactive zone for the open door
-        this.doorOpenZone = this.add.zone(1130, 125, 190, 190);
+        this.doorOpenZone = this.add.zone(1130, 75, 190, 140);
         this.physics.add.existing(this.doorOpenZone);
         this.doorOpenZone.body.setAllowGravity(false); 
         this.doorOpenZone.body.setImmovable(true);

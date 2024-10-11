@@ -66,6 +66,7 @@ animationManager.createAnimations(this);
 
         this.sprite = this.physics.add.sprite(startX, startY, 'character');
         this.sprite.setScale(3);
+        this.sprite.setDepth(2)
 
 
     // Play the walking animation
@@ -99,6 +100,7 @@ animationManager.createAnimations(this);
                     const brownBoxGraphics = this.add.graphics();
                     brownBoxGraphics.fillStyle(0x7f2100, 1);
                     brownBoxGraphics.fillRect(750, 290, 100, 45);
+                    brownBoxGraphics.setDepth(1)
 
                     // Destroy the rectangle zone once the mirror is picked up
                     rectangleZone.destroy();
@@ -167,7 +169,17 @@ animationManager.createAnimations(this);
             this.hasTransitioned = true;
 
             // Transition to Tower scene
-            this.scene.start('Bridge');
+            this.scene.start('Tower');
+        }
+
+        if (this.sprite.y < 325) {
+            this.sprite.y = 325;
+
+        }
+
+        if (this.sprite.x < 125) {
+            this.sprite.x = 125;
+
         }
 
         if (moving) {

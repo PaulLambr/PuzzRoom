@@ -124,7 +124,7 @@ noGoZones.forEach(zone => {
         // Transition to dining room if sprite moves beyond 1500 pixels on the right
         if (this.sprite.y < 106 && !this.hasTransitioned) {
             localStorage.setItem('spriteX', this.sprite.x);
-            localStorage.setItem('spriteY', this.sprite.y + 500);
+            localStorage.setItem('spriteY', this.sprite.y + 650);
             this.hasTransitioned = true;
             this.scene.start('Bridge');
         }
@@ -135,6 +135,14 @@ noGoZones.forEach(zone => {
             localStorage.setItem('spriteY', this.sprite.y - 750);
             this.hasTransitioned = true;
             this.scene.start('CaveEntrance');
+        }
+
+         // Transition to dining room if sprite moves beyond 1500 pixels on the right
+         if (this.sprite.x < 50 && !this.hasTransitioned) {
+            localStorage.setItem('spriteX', this.sprite.x + 1270);
+            localStorage.setItem('spriteY', this.sprite.y);
+            this.hasTransitioned = true;
+            this.scene.start('G2grasslandswamp');
         }
 
         // Play walking animation if moving

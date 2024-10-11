@@ -88,6 +88,10 @@ class HutInterior2 extends Phaser.Scene {
          // Create the circular zone for the pig
          const pigCircle = new Phaser.Geom.Circle(290, 310, 140); // Circle centered at (290, 310) with a radius of 140
          circularZone = this.add.zone(290, 310).setSize(280, 280); // Add a zone for interactive purposes
+         circularZone.setInteractive();
+         circularZone.on('pointerdown', () => {
+             showMessage("OINK?", this);
+         })
 
         // Create an interactive rectangular zone at (1300, 300) with size 150x270
         const rectangleZone = this.add.zone(1260, 300, 125, 250).setRectangleDropZone(125, 250);
@@ -104,7 +108,7 @@ class HutInterior2 extends Phaser.Scene {
                 localStorage.setItem('amuletCollected', 'true');
 
                 const brownBoxGraphics = this.add.graphics();
-                brownBoxGraphics.fillStyle(0x8B4513, 1);
+                brownBoxGraphics.fillStyle(0xb97a57, 1);
                 brownBoxGraphics.fillRect(1200, 175, 125, 250);
 
                 rectangleZone.destroy();
@@ -227,7 +231,7 @@ class HutInterior2 extends Phaser.Scene {
 
         if (this.amuletCollected) {
             const brownBoxGraphics = this.add.graphics();
-            brownBoxGraphics.fillStyle(0x8B4513, 1);
+            brownBoxGraphics.fillStyle(0xb97a57, 1);
             brownBoxGraphics.fillRect(1200, 175, 125, 250);
             rectangleZone.destroy();
         }

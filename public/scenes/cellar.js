@@ -26,12 +26,14 @@ class Cellar extends Phaser.Scene {
 
     create() {
         console.log('Creating Cellar Scene');
+        
 
         // Initialize key variables
         this.torchUsed = false;
         this.goblinKing = null;
         this.darkOverlay = null;
         this.noGoZones = null;
+        this.hasTransitioned = false;
 
         // Set background image for Cellar
         this.add.image(750, 450, 'backgroundc');

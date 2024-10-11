@@ -418,7 +418,7 @@ class Cavern1 extends Phaser.Scene {
         // Overlay the 'dooropen' image on top of the 'door' image
         this.add.image(350, 175, 'dooropen').setScale(1).setDepth(1);
     
-        showMessage("The door is unlocked!", this);
+        showMessage("To your utter amazement, these keys unlock the door in the Goblin King's Castle!", this);
     
         // Add collision detection between the player and the open door
         this.physics.add.overlap(this.sprite, this.doorZone, () => {

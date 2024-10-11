@@ -193,6 +193,11 @@ if (messagePanel) {
             this.scene.start('Tower2');
         }
 
+        if (this.sprite.y < 435) {
+            this.sprite.y = 435;
+
+        }
+
         // Play walking animation if moving
         if (moving) {
             this.sprite.anims.play('walk', true);
